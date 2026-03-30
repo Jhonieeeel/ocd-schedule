@@ -12,3 +12,15 @@ export type NavItem = {
     icon?: LucideIcon | null;
     isActive?: boolean;
 };
+
+type Item = {
+    title: string;
+    href: NonNullable<InertiaLinkProps['href']>;
+    icon?: LucideIcon | null;
+    isActive?: boolean;
+};
+
+export type MainNav = {
+    label: string;
+    items: Item[];
+};

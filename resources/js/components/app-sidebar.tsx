@@ -1,5 +1,3 @@
-import { Link } from '@inertiajs/react';
-import { BookOpen, FolderGit2, LayoutGrid } from 'lucide-react';
 import AppLogo from '@/components/app-logo';
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
@@ -14,13 +12,37 @@ import {
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
-import type { NavItem } from '@/types';
+import balance from '@/routes/balance';
+import leave from '@/routes/leave';
+import type { MainNav, NavItem } from '@/types';
+import { Link } from '@inertiajs/react';
+import { BookOpen, FileText, FolderGit2, LayoutGrid, User } from 'lucide-react';
 
-const mainNavItems: NavItem[] = [
+const mainNavItems: MainNav[] = [
     {
-        title: 'Dashboard',
-        href: dashboard(),
-        icon: LayoutGrid,
+        label: 'Platform',
+        items: [
+            {
+                title: 'Dashboard',
+                href: dashboard(),
+                icon: LayoutGrid,
+            },
+        ],
+    },
+    {
+        label: 'User Management',
+        items: [
+            {
+                title: 'Balance',
+                href: balance.index(),
+                icon: User,
+            },
+            {
+                title: 'File Leave',
+                href: leave.index(),
+                icon: FileText,
+            },
+        ],
     },
 ];
 

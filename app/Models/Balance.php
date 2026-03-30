@@ -20,4 +20,14 @@ class Balance extends Model
     public function user() {
         return $this->belongsTo(User::class);
     }
+
+    public function getVL() {
+        // vl = current - ( undertime + (used vl or used fl)) + 1.25
+        // return
+    }
+
+    public function getSL() {
+        // sl = current - used sl + current leave
+        // return
+    }
 }

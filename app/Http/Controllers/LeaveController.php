@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Leave;
 use App\Http\Requests\StoreLeaveRequest;
 use App\Http\Requests\UpdateLeaveRequest;
+use Inertia\Inertia;
 
 class LeaveController extends Controller
 {
@@ -13,7 +14,7 @@ class LeaveController extends Controller
      */
     public function index()
     {
-        //
+        return Inertia::render("leave/index", []);
     }
 
     /**

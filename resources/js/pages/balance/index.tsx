@@ -1,11 +1,11 @@
 import { PlaceholderPattern } from '@/components/ui/placeholder-pattern';
-import { dashboard } from '@/routes';
+import { index } from '@/routes/balance';
 import { Head } from '@inertiajs/react';
 
-export default function Dashboard() {
+export default function Balance() {
     return (
         <>
-            <Head title="Dashboard" />
+            <Head title="Balance" />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
                 <div className="grid auto-rows-min gap-4 md:grid-cols-3">
                     <div className="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
@@ -26,11 +26,11 @@ export default function Dashboard() {
     );
 }
 
-Dashboard.layout = {
+Balance.layout = {
     breadcrumbs: [
         {
-            title: 'Dashboard',
-            href: dashboard(),
+            title: 'Balance',
+            href: index(),
         },
     ],
 };
