@@ -19,6 +19,8 @@ return new class extends Migration
             $table->decimal('vl_used', 8, 3)->nullable();
             $table->decimal('sl_balance', 8, 3)->nullable();
             $table->decimal('sl_used', 8, 3)->nullable();
+            $table->decimal('fl_balance')->nullable();
+            $table->decimal('fl_used')->nullable();
             $table->decimal('undertime', 8, 3)->nullable();
             $table->tinyInteger('month')->nullable();
             $table->integer('year')->nullable();

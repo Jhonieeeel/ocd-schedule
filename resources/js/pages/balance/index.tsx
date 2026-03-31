@@ -1,26 +1,49 @@
-import { PlaceholderPattern } from '@/components/ui/placeholder-pattern';
-import { index } from '@/routes/balance';
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Head } from '@inertiajs/react';
+import { DataTable } from './data-table';
+import { columns } from './columns';
+import { index } from '@/routes/balance';
 
-export default function Balance() {
+type Balance = {
+    id: number;
+    user_id: number;
+    year: number;
+    month: number;
+    user: {
+        id: number;
+        name: string;
+    };
+    vl_balance: number;
+    vl_used?: number;
+    sl_balance: number;
+    sl_used?: number;
+    fl_balance: number;
+    fl_used?: number;
+    undertime?: number;
+};
+
+export default function Balance({ balances }: { balances: Balance[] }) {
+    console.log(balances);
     return (
         <>
             <Head title="Balance" />
-            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-                    <div className="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
-                        <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
-                    </div>
-                    <div className="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
-                        <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
-                    </div>
-                    <div className="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
-                        <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
-                    </div>
-                </div>
-                <div className="relative min-h-[100vh] flex-1 overflow-hidden rounded-xl border border-sidebar-border/70 md:min-h-min dark:border-sidebar-border">
-                    <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
-                </div>
+            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4 md:m-6">
+                <Tabs defaultValue="table" className="w-full">
+                    <TabsList>
+                        <TabsTrigger value="table">Table</TabsTrigger>
+                    </TabsList>
+                    <TabsContent value="table" className="my-4 space-y-3">
+                        {/* BALANCE CREATION */}
+                        <DataTable data={balances} columns={columns} />
+                    </TabsContent>
+                </Tabs>
             </div>
         </>
     );

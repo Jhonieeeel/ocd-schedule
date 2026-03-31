@@ -14,7 +14,8 @@ class BalanceController extends Controller
      */
     public function index()
     {
-        return Inertia::render('balance/index', []);
+        $balance = Balance::with('user:id,name')->get();
+        return Inertia::render('balance/index', ['balances' => $balance]);
     }
 
     /**
@@ -30,7 +31,9 @@ class BalanceController extends Controller
      */
     public function store(StoreBalanceRequest $request)
     {
-        //
+        Balance::create($request->validated());
+
+        return redirect()->route("balance.store")->with("message", 'Balance created successfully');
     }
 
     /**
@@ -38,7 +41,9 @@ class BalanceController extends Controller
      */
     public function show(Balance $balance)
     {
-        //
+        return response()->json([
+            'data' => $balance->getVL()
+        ]);
     }
 
     /**
@@ -54,7 +59,8 @@ class BalanceController extends Controller
      */
     public function update(UpdateBalanceRequest $request, Balance $balance)
     {
-        //
+        $balance->update($request->validated());
+        return redirect()->route('balance.index')->with('message', 'Balance updated successfully.');
     }
 
     /**
@@ -62,6 +68,6 @@ class BalanceController extends Controller
      */
     public function destroy(Balance $balance)
     {
-        //
+        $balance->delete();
     }
 }

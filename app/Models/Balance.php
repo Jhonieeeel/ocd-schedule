@@ -12,6 +12,8 @@ class Balance extends Model
         'vl_used',
         'sl_balance',
         'sl_used',
+        'fl_balance',
+        'fl_used',
         'undertime',
         'month',
         'year'
@@ -21,13 +23,14 @@ class Balance extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function getVL() {
-        // vl = current - ( undertime + (used vl or used fl)) + 1.25
-        // return
+    public function getVL(): float {
+        $vl = $this->vl_balance - ($this->undertime + ($this->used_vl ?? $this->used_fl)) + 1.25;
+        return $vl;
     }
 
-    public function getSL() {
-        // sl = current - used sl + current leave
-        // return
+    public function getSL(): float {
+        $sl = $this->sl_balance - ($this->used_sl) + 1.25;
+        return $sl;
     }
+
 }

@@ -18,7 +18,7 @@ class LeaveController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Show the form for creating  a new resource.
      */
     public function create()
     {
@@ -30,7 +30,9 @@ class LeaveController extends Controller
      */
     public function store(StoreLeaveRequest $request)
     {
-        //
+       Leave::create($request->validated());
+
+       return redirect()->route('leave.index')->with('message', 'Leave created successfully.');
     }
 
     /**
@@ -38,7 +40,7 @@ class LeaveController extends Controller
      */
     public function show(Leave $leave)
     {
-        //
+        return Inertia::render("", ['leave' => $leave]);
     }
 
     /**
@@ -54,7 +56,9 @@ class LeaveController extends Controller
      */
     public function update(UpdateLeaveRequest $request, Leave $leave)
     {
-        //
+        $leave->update($request->validated());
+
+        return redirect()->route("leave.index")->with('message', 'Leave updated successfully.');
     }
 
     /**
@@ -62,6 +66,8 @@ class LeaveController extends Controller
      */
     public function destroy(Leave $leave)
     {
-        //
+        $leave->delete();
+
+        return redirect()->route('leave.index')->with('message', 'Leave deleted successfully.');
     }
 }
