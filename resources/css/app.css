@@ -1,5 +1,4 @@
 @import 'tailwindcss';
-
 @import 'tw-animate-css';
 
 @source '../views';
@@ -7,11 +6,24 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* ====================== AKIRA EXPANDED FONT ====================== */
+@font-face {
+  font-family: "Akira Expanded";
+  src: url("../js/fonts/Akira Expanded Demo.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+/* ================================================================ */
+
 @theme {
     --font-sans:
         'Instrument Sans', ui-sans-serif, system-ui, sans-serif,
         'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
         'Noto Color Emoji';
+
+    /* You can use this if you want a utility class later */
+    --font-akira: "Akira Expanded", sans-serif;
 
     --radius-lg: var(--radius);
     --radius-md: calc(var(--radius) - 2px);
