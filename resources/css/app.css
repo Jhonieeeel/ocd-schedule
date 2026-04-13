@@ -8,13 +8,22 @@
 
 /* ====================== AKIRA EXPANDED FONT ====================== */
 @font-face {
-  font-family: "Akira Expanded";
-  src: url("../js/fonts/Akira Expanded Demo.otf") format("opentype");
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
+    font-family: 'Akira Expanded';
+    src: url('../js/fonts/Akira Expanded Demo.otf') format('opentype');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
 }
 /* ================================================================ */
+
+/* calendar css */
+.sx-react-calendar-wrapper {
+    width: 1200px;
+    max-width: 100vw;
+    height: 800px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
 
 @theme {
     --font-sans:
@@ -23,7 +32,7 @@
         'Noto Color Emoji';
 
     /* You can use this if you want a utility class later */
-    --font-akira: "Akira Expanded", sans-serif;
+    --font-akira: 'Akira Expanded', sans-serif;
 
     --radius-lg: var(--radius);
     --radius-md: calc(var(--radius) - 2px);

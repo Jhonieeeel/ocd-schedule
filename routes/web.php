@@ -22,6 +22,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // leave
     Route::get("leave", [LeaveController::class, 'index'])->name('leave.index');
+    Route::post("leave", [LeaveController::class, 'store'])->name('leave.store');
 
 });
 

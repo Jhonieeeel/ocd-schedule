@@ -16,7 +16,9 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(User::class)->constrained()->cascadeOnDelete();
             $table->string('leave_type');
-            $table->date('leave_date');
+            $table->date('date_from');
+            $table->date('date_to');
+            $table->text('description');
             $table->timestamps();
         });
     }

@@ -12,7 +12,7 @@ class StoreLeaveRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,8 +22,12 @@ class StoreLeaveRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-            //
+       return [
+            'user_id'     => ['required', 'exists:users,id'],
+            'leave_type'  => ['required', 'string'],
+            'date_from'   => ['required', 'date'],
+            'date_to'     => ['required', 'date', 'after_or_equal:date_from'],
+            'description' => ['nullable', 'string'],
         ];
     }
 }
