@@ -16,7 +16,19 @@ class LeaveController extends Controller
     public function index()
     {
         $users = User::select(['id', 'name'])->get();
-        $leaves = Leave::all();
+
+        $leaves = Leave::with('user')->get()->map(function ($leave) {
+            return [
+                'id' => (string) $leave->id,
+                'calendarId' => $leave->leave_type,
+                'title' => $leave->leave_type,
+                'user' => $leave->user->name,
+                'description' => $leave->description,
+                'start' => $leave->date_from->toDateString(),
+                'end' => $leave->date_to->toDateString()
+            ];
+        });
+
         return Inertia::render("leave/index", ['users' => $users, 'leaves' => $leaves]);
     }
 

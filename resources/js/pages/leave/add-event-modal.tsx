@@ -26,7 +26,7 @@ import { store } from '@/routes/leave';
 import { Form, useForm, usePage } from '@inertiajs/react';
 import { addDays, format } from 'date-fns';
 import { CalendarIcon, CalendarOff, UserIcon } from 'lucide-react';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { DateRange } from 'react-day-picker';
 
 type AddModalProps = {
@@ -48,6 +48,7 @@ type FileLeave = {
 const statuses = [
     {
         label: 'CTO',
+        type: 'cto',
         bg: 'bg-green-100',
         text: 'text-green-700',
         ring: 'ring-green-200',
@@ -55,6 +56,7 @@ const statuses = [
     },
     {
         label: 'On Leave',
+        type: 'on_leave',
         bg: 'bg-red-100',
         text: 'text-red-700',
         ring: 'ring-red-200',
@@ -62,6 +64,7 @@ const statuses = [
     },
     {
         label: 'Auto Offset',
+        type: 'auto_offset',
         bg: 'bg-blue-100',
         text: 'text-blue-700',
         ring: 'ring-blue-200',
@@ -69,6 +72,7 @@ const statuses = [
     },
     {
         label: 'On Leave (not filled)',
+        type: 'on_leave_not_filled',
         bg: 'bg-yellow-100',
         text: 'text-yellow-700',
         ring: 'ring-yellow-200',
@@ -76,6 +80,7 @@ const statuses = [
     },
     {
         label: 'Auto Offset (not filled)',
+        type: 'auto_offset_not_filled',
         bg: 'bg-zinc-100',
         text: 'text-zinc-600',
         ring: 'ring-zinc-200',
@@ -86,72 +91,72 @@ const statuses = [
 const leave_types = [
     {
         id: 1,
-        key: 'vacation_leave',
+        leave_type: 'vacation_leave',
         name: 'Vacation Leave',
     },
     {
         id: 2,
-        key: 'force_leave',
+        leave_type: 'force_leave',
         name: 'Mandatory/Force Leave',
     },
     {
         id: 3,
-        key: 'sick_leave',
+        leave_type: 'sick_leave',
         name: 'Sick Leave',
     },
     {
         id: 4,
-        key: 'wellness_leave',
+        leave_type: 'wellness_leave',
         name: 'Wellness Leave',
     },
     {
         id: 5,
-        key: 'maternity_leave',
+        leave_type: 'maternity_leave',
         name: 'Maternity Leave',
     },
     {
         id: 6,
-        key: 'paternity_leave',
+        leave_type: 'paternity_leave',
         name: 'Paternity Leave',
     },
     {
         id: 7,
-        key: 'special_privilege_leave',
+        leave_type: 'special_privilege_leave',
         name: 'Special Privilege Leave',
     },
     {
         id: 8,
-        key: 'solo_parent_leave',
+        leave_type: 'solo_parent_leave',
         name: 'Solo Parent Leave',
     },
     {
         id: 9,
-        key: 'study_leave',
+        leave_type: 'study_leave',
         name: 'Study Leave',
     },
     {
         id: 10,
-        key: '10_day_leave',
+        leave_type: '10_day_leave',
         name: '10 Day VAWC Leave',
     },
     {
         id: 11,
-        key: 'rehabilitation_privilege',
+        leave_type: 'rehabilitation_privilege',
         name: 'Rehabilitation Privilege',
     },
     {
         id: 12,
-        key: 'special_leave_benefits_for_women',
+        leave_type: 'special_leave_benefits_for_women',
         name: 'Special Leave Benefits for Women',
     },
     {
         id: 13,
-        key: 'special_emergency_calamity_leave',
+        leave_type: 'special_emergency_calamity_leave',
         name: 'Special Emergency Calamity Leave',
     },
     {
         id: 14,
-        key: 'adoption_leave',
+        leave_type: 'adoption_leave',
         name: 'Adoption Leave',
     },
 ];
@@ -170,13 +175,23 @@ export default function AddEventModal({
     });
 
     // useForm
-    const { data, setData, processing, post } = useForm({
+    const { data, setData, processing, submit } = useForm({
         user_id: '' as number | string, // 1, 2, 3...
         leave_type: '', // Sick Leave, Vacation Leave
         date_from: '', // march 1 to april etc
         date_to: '', // march 1 to april etc
         description: '', // asdsad optiomal
     });
+
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        submit(store(), {
+            onSuccess: () => {
+                setOpenAddEvent(false);
+                setSelectedStatus(null);
+            },
+        });
+    };
 
     type User = {
         id: number;
@@ -193,12 +208,7 @@ export default function AddEventModal({
 
     // usePage
     const { users, flash, leaves } = usePage<PageProps>().props;
-
-    function handleForm(e) {
-        e.preventDefaut();
-
-        post(store());
-    }
+    console.log(leaves);
 
     return (
         <Dialog
@@ -222,7 +232,7 @@ export default function AddEventModal({
                 </div>
 
                 <div className="px-6 pb-6">
-                    <Form action={store()}>
+                    <form onSubmit={handleSubmit} method="post">
                         <FieldGroup className="gap-4">
                             {/* EMPLOYEE NAME */}
                             <Field>
@@ -230,10 +240,10 @@ export default function AddEventModal({
                                     Employee Name
                                 </FieldLabel>
                                 <Combobox
-                                    items={users}
-                                    onValueChange={(value) =>
-                                        setData('user_id', value)
+                                    onValueChange={(user) =>
+                                        setData('user_id', user)
                                     }
+                                    items={users}
                                 >
                                     <ComboboxInput placeholder="Select an employee">
                                         <InputGroupAddon>
@@ -266,6 +276,16 @@ export default function AddEventModal({
                                 <FieldLabel className="text-[13px] font-medium text-zinc-700 dark:text-zinc-300">
                                     Date Range
                                 </FieldLabel>
+                                <input
+                                    type="hidden"
+                                    name="date_to"
+                                    value={data.date_to}
+                                />
+                                <input
+                                    type="hidden"
+                                    name="date_from"
+                                    value={data.date_from}
+                                />
                                 <Popover>
                                     <PopoverTrigger asChild>
                                         <Button
@@ -338,6 +358,7 @@ export default function AddEventModal({
                                 <FieldLabel className="text-[13px] font-medium text-zinc-700 dark:text-zinc-300">
                                     Leave Status
                                 </FieldLabel>
+                                <input type="hidden" value={data.leave_type} />
                                 <div className="flex flex-wrap gap-2">
                                     {statuses.map((status) => {
                                         const isSelected =
@@ -383,11 +404,12 @@ export default function AddEventModal({
                                     <FieldLabel className="text-[13px] font-medium text-zinc-700 dark:text-zinc-300">
                                         Leave Type
                                     </FieldLabel>
+
                                     <Combobox
                                         items={leave_types}
-                                        onValueChange={(value) =>
-                                            setData('leave_type', value)
-                                        }
+                                        onValueChange={(value) => {
+                                            setData('leave_type', value);
+                                        }}
                                     >
                                         <ComboboxInput
                                             name="leave_type"
@@ -409,12 +431,6 @@ export default function AddEventModal({
                                                     <ComboboxItem
                                                         key={leave.id}
                                                         value={leave.name}
-                                                        onChange={(leave) =>
-                                                            setData(
-                                                                'leave_type',
-                                                                leave.name,
-                                                            )
-                                                        }
                                                     >
                                                         {leave.name}
                                                     </ComboboxItem>
@@ -431,7 +447,7 @@ export default function AddEventModal({
                                     Description/Remarks (Optional)
                                 </FieldLabel>
                                 <Textarea
-                                    value={data.description}
+                                    name="description"
                                     onChange={(e) =>
                                         setData('description', e.target.value)
                                     }
@@ -452,14 +468,13 @@ export default function AddEventModal({
                                 <Button
                                     type="submit"
                                     disabled={processing}
-                                    onClick={() => console.log(data)}
                                     className="bg-blue-500 text-[13px] text-white hover:bg-blue-600"
                                 >
                                     {processing ? 'Submitting...' : 'Submit'}
                                 </Button>
                             </div>
                         </FieldGroup>
-                    </Form>
+                    </form>
                 </div>
             </DialogContent>
         </Dialog>

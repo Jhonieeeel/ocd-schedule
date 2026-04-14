@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('leave_type');
             $table->date('date_from');
             $table->date('date_to');
-            $table->text('description');
+            $table->text('description')->nullable();
             $table->timestamps();
         });
     }

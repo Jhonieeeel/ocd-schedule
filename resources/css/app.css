@@ -20,8 +20,8 @@
 .sx-react-calendar-wrapper {
     width: 1200px;
     max-width: 100vw;
-    height: 800px;
-    max-height: 90vh;
+    height: 1200px;
+    max-height: 100vh;
     overflow-y: auto;
 }
 
