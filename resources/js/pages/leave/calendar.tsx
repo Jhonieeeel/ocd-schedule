@@ -1,3 +1,4 @@
+import { usePage } from '@inertiajs/react';
 import {
     createViewDay,
     createViewMonthGrid,
@@ -8,14 +9,10 @@ import { createEventModalPlugin } from '@schedule-x/event-modal';
 import { createEventsServicePlugin } from '@schedule-x/events-service';
 import { ScheduleXCalendar, useCalendarApp } from '@schedule-x/react';
 import '@schedule-x/theme-default/dist/index.css';
-import { CalendarIcon, Clock, FileText, User, UserIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import 'temporal-polyfill/global';
-import { customComponents } from './custom-modal';
 import AddEventModal from './add-event-modal';
-import { usePage } from '@inertiajs/react';
-
-// custom
+import { customComponents } from './custom-modal';
 
 type LeaveEvent = {
     id: string;
@@ -314,6 +311,8 @@ function CalendarLeave() {
                     return;
                 }
 
+                // if mo click setData then open it on Dialog
+
                 setOpenAddEvent(true);
             },
         },
@@ -322,8 +321,6 @@ function CalendarLeave() {
     useEffect(() => {
         eventsService.set(mappedEvents);
     }, [leaves]);
-
-    // custom modal
 
     return (
         <div>

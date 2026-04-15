@@ -1,3 +1,4 @@
+import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import {
@@ -175,7 +176,7 @@ export default function AddEventModal({
     });
 
     // useForm
-    const { data, setData, processing, submit } = useForm({
+    const { data, setData, processing, submit, errors } = useForm({
         user_id: '' as number | string, // 1, 2, 3...
         leave_type: '', // Sick Leave, Vacation Leave
         date_from: '', // march 1 to april etc
@@ -269,6 +270,10 @@ export default function AddEventModal({
                                         </ComboboxList>
                                     </ComboboxContent>
                                 </Combobox>
+                                <InputError
+                                    message={errors.user_id}
+                                    className="mt-2"
+                                />
                             </Field>
 
                             {/* DATE RAMGE 2 field*/}
@@ -276,16 +281,6 @@ export default function AddEventModal({
                                 <FieldLabel className="text-[13px] font-medium text-zinc-700 dark:text-zinc-300">
                                     Date Range
                                 </FieldLabel>
-                                <input
-                                    type="hidden"
-                                    name="date_to"
-                                    value={data.date_to}
-                                />
-                                <input
-                                    type="hidden"
-                                    name="date_from"
-                                    value={data.date_from}
-                                />
                                 <Popover>
                                     <PopoverTrigger asChild>
                                         <Button
@@ -351,6 +346,10 @@ export default function AddEventModal({
                                         />
                                     </PopoverContent>
                                 </Popover>
+                                <InputError
+                                    message={errors.date_from && errors.date_to}
+                                    className="mt-2"
+                                />
                             </Field>
 
                             {/* LEAVE STATUS */}
@@ -358,7 +357,6 @@ export default function AddEventModal({
                                 <FieldLabel className="text-[13px] font-medium text-zinc-700 dark:text-zinc-300">
                                     Leave Status
                                 </FieldLabel>
-                                <input type="hidden" value={data.leave_type} />
                                 <div className="flex flex-wrap gap-2">
                                     {statuses.map((status) => {
                                         const isSelected =
@@ -398,6 +396,10 @@ export default function AddEventModal({
                                         );
                                     })}
                                 </div>
+                                <InputError
+                                    message={errors.leave_type}
+                                    className="mt-2"
+                                />
                             </Field>
                             {selectedStatus === 'On Leave' && (
                                 <Field>
@@ -438,6 +440,10 @@ export default function AddEventModal({
                                             </ComboboxList>
                                         </ComboboxContent>
                                     </Combobox>
+                                    <InputError
+                                        message={errors.leave_type}
+                                        className="mt-2"
+                                    />
                                 </Field>
                             )}
 
