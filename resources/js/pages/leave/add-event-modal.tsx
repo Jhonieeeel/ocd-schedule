@@ -209,7 +209,6 @@ export default function AddEventModal({
 
     // usePage
     const { users, flash, leaves } = usePage<PageProps>().props;
-    console.log(leaves);
 
     return (
         <Dialog

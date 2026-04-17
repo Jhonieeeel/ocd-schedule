@@ -21,8 +21,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('balances/{balance}', [BalanceController::class, 'destroy'])->name('balance.destroy');
 
     // leave
-    Route::get("leave", [LeaveController::class, 'index'])->name('leave.index');
-    Route::post("leave", [LeaveController::class, 'store'])->name('leave.store');
+    Route::get("leaves", [LeaveController::class, 'index'])->name('leave.index');
+    Route::post("leaves", [LeaveController::class, 'store'])->name('leave.store');
+    Route::delete('leaves/{id}', [LeaveController::class, 'destroy'])->name('leave.destroy');
 
 });
 
