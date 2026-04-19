@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 
 class Leave extends Model
 {
@@ -12,7 +13,6 @@ class Leave extends Model
         'date_from' => 'date',
         'date_to' => 'date'
     ];
-
 
 
     public function user() {

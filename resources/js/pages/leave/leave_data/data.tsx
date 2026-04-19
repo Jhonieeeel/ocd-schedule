@@ -236,3 +236,172 @@ export const CALENDARS = {
         },
     },
 };
+
+export const statuses = [
+    {
+        label: 'CTO',
+        type: 'cto',
+        bg: 'bg-green-100',
+        text: 'text-green-700',
+        ring: 'ring-green-200',
+        activeBg: 'bg-green-500',
+    },
+    {
+        label: 'On Leave',
+        type: 'on_leave',
+        bg: 'bg-red-100',
+        text: 'text-red-700',
+        ring: 'ring-red-200',
+        activeBg: 'bg-red-500',
+    },
+    {
+        label: 'Auto Offset',
+        type: 'auto_offset',
+        bg: 'bg-blue-100',
+        text: 'text-blue-700',
+        ring: 'ring-blue-200',
+        activeBg: 'bg-blue-500',
+    },
+    {
+        label: 'On Leave (not filled)',
+        type: 'on_leave_not_filled',
+        bg: 'bg-yellow-100',
+        text: 'text-yellow-700',
+        ring: 'ring-yellow-200',
+        activeBg: 'bg-yellow-500',
+    },
+    {
+        label: 'Auto Offset (not filled)',
+        type: 'auto_offset_not_filled',
+        bg: 'bg-zinc-100',
+        text: 'text-zinc-600',
+        ring: 'ring-zinc-200',
+        activeBg: 'bg-zinc-500',
+    },
+];
+
+export const leave_types = [
+    {
+        id: 1,
+        leave_type: 'vacation_leave',
+        name: 'Vacation Leave',
+    },
+    {
+        id: 2,
+        leave_type: 'force_leave',
+        name: 'Mandatory/Force Leave',
+    },
+    {
+        id: 3,
+        leave_type: 'sick_leave',
+        name: 'Sick Leave',
+    },
+    {
+        id: 4,
+        leave_type: 'wellness_leave',
+        name: 'Wellness Leave',
+    },
+    {
+        id: 5,
+        leave_type: 'maternity_leave',
+        name: 'Maternity Leave',
+    },
+    {
+        id: 6,
+        leave_type: 'paternity_leave',
+        name: 'Paternity Leave',
+    },
+    {
+        id: 7,
+        leave_type: 'special_privilege_leave',
+        name: 'Special Privilege Leave',
+    },
+    {
+        id: 8,
+        leave_type: 'solo_parent_leave',
+        name: 'Solo Parent Leave',
+    },
+    {
+        id: 9,
+        leave_type: 'study_leave',
+        name: 'Study Leave',
+    },
+    {
+        id: 10,
+        leave_type: '10_day_leave',
+        name: '10 Day VAWC Leave',
+    },
+    {
+        id: 11,
+        leave_type: 'rehabilitation_privilege',
+        name: 'Rehabilitation Privilege',
+    },
+    {
+        id: 12,
+        leave_type: 'special_leave_benefits_for_women',
+        name: 'Special Leave Benefits for Women',
+    },
+    {
+        id: 13,
+        leave_type: 'special_emergency_calamity_leave',
+        name: 'Special Emergency Calamity Leave',
+    },
+    {
+        id: 14,
+        leave_type: 'adoption_leave',
+        name: 'Adoption Leave',
+    },
+];
+
+export type Balance = {
+    id: number;
+    user_id: number;
+    year: number;
+    month: number;
+    user: {
+        id: number;
+        name: string;
+    };
+    vl_balance: number;
+    vl_used?: number;
+    sl_balance: number;
+    sl_used?: number;
+    fl_balance: number;
+    fl_used?: number;
+    undertime?: number;
+    as_of?: string;
+
+    created_at: string;
+    updated_at: string;
+};
+
+export type LeaveEvent = {
+    id: string | number;
+    calendarId: string;
+    title: string;
+    card_title: string;
+    leave_type: string;
+    user: string;
+    user_id: string | number;
+    description: string;
+    start: string;
+    end: string;
+
+    theme?: any;
+};
+
+export type TypeCalendar = {
+    calendarId: string;
+    description: string;
+    end: Temporal.PlainDate;
+    id: string;
+    leaves: string;
+    location?: string | undefined;
+    people?: any;
+    resourceId: string | number;
+    start: Temporal.PlainDate;
+    theme?: any;
+    title: string;
+    user: string;
+    user_id: string | number;
+};

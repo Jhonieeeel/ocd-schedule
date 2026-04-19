@@ -14,8 +14,24 @@ class BalanceController extends Controller
      */
     public function index()
     {
-        $balance = Balance::with('user:id,name')->get();
-        return Inertia::render('balance/index', ['balances' => $balance]);
+         /**
+            * Checker soon if super-admin or not
+         */
+
+        $user = auth()->user();
+
+        $isAdmin = $user->hasRole('admin') || $user->hasRole('gip');
+
+        $balances = Balance::where('user_id', $user->id)->latest()->get();
+
+        return Inertia::render('balance/index', ['balances' => $balances, 'isAdmin' => $isAdmin]);
+    }
+
+    public function all()
+    {
+        return Inertia::render('balances/index', [
+            'balances' => Balance::with('user')->latest()->get(),
+        ]);
     }
 
     /**

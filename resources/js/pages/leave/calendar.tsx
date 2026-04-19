@@ -13,34 +13,39 @@ import 'temporal-polyfill/global';
 
 import AddEventModal from './add-event-modal';
 import { ViewEventModal } from './custom-modal';
-import { CALENDARS } from './leave_data/data';
-
-type LeaveEvent = {
-    id: string;
-    calendarId: string;
-    title: string;
-    leave_type: string;
-    user: string;
-    description: string;
-    start: string;
-    end: string;
-};
+import { CALENDARS, LeaveEvent } from './leave_data/data';
+import EditEventModal from './edit-event-modal';
+import { useAppearance } from '@/hooks/use-appearance';
 
 type Props = {
     leaves: LeaveEvent[];
 };
 
+type CalendarId = keyof typeof CALENDARS;
+
 function CalendarLeave() {
-    const { leaves } = usePage<Props>().props;
+    const { leaves, auth } = usePage<Props>().props;
+    const [openAddEvent, setOpenAddEvent] = useState(false);
+    const [viewEvent, setViewEvent] = useState(false);
+    const [editEvent, setEditEvent] = useState(false);
+    const [event, setEvent] = useState<LeaveEvent | undefined>(undefined);
+
+    const eventsService = useState(() => createEventsServicePlugin())[0];
+
+    // dark mode
+    const { appearance } = useAppearance();
 
     const mappedEvents = (leaves ?? []).map((leave) => {
-        const calendar = CALENDARS[leave.calendarId];
+        const calendar = CALENDARS[leave.calendarId as CalendarId];
 
         return {
             id: leave.id,
             calendarId: leave.calendarId,
-            title: leave.title,
+            title: `${leave.title} - ${leave.user}`,
+            card_title: leave.title,
+            leave: leave.title,
             user: leave.user,
+            user_id: leave.user_id,
             description: leave.description,
             start: Temporal.PlainDate.from(leave.start),
             end: Temporal.PlainDate.from(leave.end),
@@ -48,36 +53,32 @@ function CalendarLeave() {
             theme: calendar ?? null,
         };
     });
-    const [openAddEvent, setOpenAddEvent] = useState(false);
-    const [viewEvent, setViewEvent] = useState(false);
-    const [event, setEvent] = useState<any>(null);
-
-    const eventsService = useState(() => createEventsServicePlugin())[0];
 
     const calendar = useCalendarApp({
         views: [createViewDay(), createViewWeek(), createViewMonthGrid()],
-
         calendars: CALENDARS,
-
         defaultView: viewMonthGrid.name,
         events: mappedEvents,
-
         plugins: [eventsService],
-
+        timezone: 'Asia/Taipei',
+        isDark: appearance === 'dark',
+        monthGridOptions: {
+            nEventsPerDay: 20,
+        },
         callbacks: {
             onClickDate(date) {
                 const today = Temporal.PlainDate.from(
-                    new Date().toISOString().split('T')[0],
+                    new Intl.DateTimeFormat('en-CA').format(new Date()),
                 );
                 const clicked = Temporal.PlainDate.from(date);
 
                 if (Temporal.PlainDate.compare(clicked, today) < 0) return;
 
-                setOpenAddEvent(true);
+                if (auth.role !== 'employee') setOpenAddEvent(true);
             },
 
             onEventClick(event) {
-                setEvent(event);
+                setEvent(event as unknown as LeaveEvent);
                 setViewEvent(true);
             },
         },
@@ -88,7 +89,7 @@ function CalendarLeave() {
     }, [leaves]);
 
     return (
-        <div>
+        <div className="w-full">
             <ScheduleXCalendar calendarApp={calendar} />
 
             <AddEventModal
@@ -100,7 +101,20 @@ function CalendarLeave() {
                 open={viewEvent}
                 onOpenChange={setViewEvent}
                 event={event}
+                onEdit={() => {
+                    setViewEvent(false);
+                    setEditEvent(true);
+                }}
             />
+
+            {event && (
+                <EditEventModal
+                    key={event.id}
+                    event={event}
+                    open={editEvent}
+                    onOpenChange={setEditEvent}
+                />
+            )}
         </div>
     );
 }

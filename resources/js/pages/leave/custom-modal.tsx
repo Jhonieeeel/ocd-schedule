@@ -1,7 +1,3 @@
-import { Dialog, DialogContent } from '@/components/ui/dialog';
-import { useState } from 'react';
-import { CALENDARS } from './leave_data/data';
-import { CalendarDays, FileText } from 'lucide-react';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -13,33 +9,38 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { useForm } from '@inertiajs/react';
+import { Dialog, DialogContent, DialogHeader } from '@/components/ui/dialog';
 import { destroy } from '@/routes/leave';
+import { useForm, usePage } from '@inertiajs/react';
+import { DialogTitle } from '@radix-ui/react-dialog';
+import { CalendarDays, FileText } from 'lucide-react';
+import { useState } from 'react';
+import { CALENDARS, LeaveEvent } from './leave_data/data';
 
-type CustomCalendarEvent = {
-    calendarId: string;
-    id: string;
-    title: string;
-    start: any;
-    end: any;
-    user?: string;
-    description?: string;
-};
+type CalendarId = keyof typeof CALENDARS;
 
 export const ViewEventModal = ({
     open,
     onOpenChange,
+    onEdit,
     event,
 }: {
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    event: CustomCalendarEvent | null;
+    event: LeaveEvent | undefined;
+    onEdit: () => void;
 }) => {
-    const [internalOpen] = useState(true);
+    const [internalOpen, setInternalOpen] = useState(true);
 
+    // check role
+    const { auth } = usePage().props;
+
+    const { submit, processing } = useForm({
+        id: event?.id,
+    });
     if (!event) return null;
 
-    const calendar = CALENDARS[event.calendarId];
+    const calendar = CALENDARS[event.calendarId as CalendarId];
 
     const colors = calendar?.lightColors ?? {
         main: '#71717a',
@@ -47,15 +48,27 @@ export const ViewEventModal = ({
         onContainer: '#3f3f46',
     };
 
-    const form = useForm({});
-
-    const handleDelete = (event: any) => {
-        form.submit(destroy(event.id));
-    };
+    function deleteEvent() {
+        submit(destroy(Number(event?.id)), {
+            onSuccess: () => {
+                onOpenChange(false);
+            },
+        });
+    }
 
     return (
-        <Dialog open={open ?? internalOpen} onOpenChange={onOpenChange}>
-            <DialogContent className="max-w-md overflow-hidden p-0">
+        <Dialog
+            modal={false}
+            open={open ?? internalOpen}
+            onOpenChange={onOpenChange}
+        >
+            <DialogHeader>
+                <DialogTitle>{event.title}</DialogTitle>
+            </DialogHeader>
+            <DialogContent
+                aria-describedby="undefined"
+                className="max-w-md overflow-hidden p-0"
+            >
                 <div className="overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-md dark:border-zinc-700 dark:bg-zinc-900">
                     {/* ACCENT LINE */}
                     <div
@@ -78,7 +91,7 @@ export const ViewEventModal = ({
                             </span>
 
                             <h2 className="truncate text-base font-medium text-zinc-900 dark:text-white">
-                                {event.title}
+                                {event.card_title}
                             </h2>
                         </div>
 
@@ -166,41 +179,49 @@ export const ViewEventModal = ({
                     </div>
 
                     {/* ACTIONS */}
-                    <div className="flex gap-2 border-t border-zinc-100 px-5 py-3 dark:border-zinc-800">
-                        <button className="flex-1 rounded-lg border border-zinc-200 py-1.5 text-[13px] text-zinc-700 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-300">
-                            Edit
-                        </button>
+                    {auth.role !== 'employee' && (
+                        <div className="flex gap-2 border-t border-zinc-100 px-5 py-3 dark:border-zinc-800">
+                            <button
+                                onClick={onEdit}
+                                className="flex-1 rounded-lg border border-zinc-200 py-1.5 text-[13px] text-zinc-700 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-300"
+                            >
+                                Edit
+                            </button>
 
-                        <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                                <button className="flex-1 rounded-lg border border-red-200 bg-red-50 py-1.5 text-[13px] text-red-700 hover:bg-red-100">
-                                    Delete
-                                </button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                                <AlertDialogHeader>
-                                    <AlertDialogTitle>
-                                        Delete Leave Request?
-                                    </AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                        This will permanently delete This action
-                                        cannot be undone.
-                                    </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                    <AlertDialogCancel>
-                                        Cancel
-                                    </AlertDialogCancel>
-                                    <AlertDialogAction
-                                        onClick={() => handleDelete(event)}
-                                        className="bg-red-600 text-white hover:bg-red-700"
-                                    >
-                                        Yes, Delete
-                                    </AlertDialogAction>
-                                </AlertDialogFooter>
-                            </AlertDialogContent>
-                        </AlertDialog>
-                    </div>
+                            <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                    <button className="flex-1 rounded-lg border border-red-200 bg-red-600 py-1.5 text-[13px] text-white hover:bg-red-700">
+                                        Delete
+                                    </button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                        <AlertDialogTitle>
+                                            Delete Leave Request?
+                                        </AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                            This will permanently delete This
+                                            action cannot be undone.
+                                        </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                        <AlertDialogCancel>
+                                            Cancel
+                                        </AlertDialogCancel>
+                                        <AlertDialogAction
+                                            onClick={deleteEvent}
+                                            disabled={processing}
+                                            className="bg-red-600 text-white hover:bg-red-700"
+                                        >
+                                            {processing
+                                                ? 'Submitting...'
+                                                : 'Yes, Delete'}
+                                        </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                </AlertDialogContent>
+                            </AlertDialog>
+                        </div>
+                    )}
                 </div>
             </DialogContent>
         </Dialog>

@@ -24,6 +24,9 @@ return new class extends Migration
             $table->decimal('undertime', 8, 3)->nullable();
             $table->tinyInteger('month')->nullable();
             $table->integer('year')->nullable();
+
+            // last updated
+            $table->date('as_of')->nullable();
             $table->timestamps();
         });
     }

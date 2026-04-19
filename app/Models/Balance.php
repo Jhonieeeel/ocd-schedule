@@ -16,7 +16,19 @@ class Balance extends Model
         'fl_used',
         'undertime',
         'month',
-        'year'
+        'year',
+        'as_of'
+    ];
+
+    protected $casts = [
+        'vl_balance' => 'float',
+        'vl_used'    => 'float',
+        'sl_balance' => 'float',
+        'sl_used'    => 'float',
+        'fl_balance' => 'float',
+        'fl_used'    => 'float',
+        'undertime'  => 'float',
+        'as_of'      => 'date',
     ];
 
     public function user() {

@@ -1,24 +1,12 @@
+import { Card } from '@/components/ui/card';
 import { Head } from '@inertiajs/react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import {
-    Calendar,
-    DoorOpen,
-    Clock,
-    UserX,
-    Users,
-    Laptop,
-    AlertTriangle,
-    MoreVertical,
-    LucideIcon,
-    DoorClosed,
-    User2,
-} from 'lucide-react';
-import StatCard from './dashboard/stat-card';
-import { LeaveTable } from './dashboard/leave-table';
+import { Clock, DoorClosed, LucideIcon, User2 } from 'lucide-react';
 import { columns } from './dashboard/leave-columns';
+import { LeaveTable } from './dashboard/leave-table';
 import { offSetColumns } from './dashboard/offset-columns';
 import { OffSetTable } from './dashboard/offset-table';
+import StatCard from './dashboard/stat-card';
+import { LeaveEvent } from './leave/leave_data/data';
 
 type Card = {
     title: string;
@@ -27,28 +15,28 @@ type Card = {
     css: string;
 };
 
-const statData: Card[] = [
-    {
-        title: 'On Leave',
-        total: 99,
-        icon: DoorClosed,
-        css: 'text-white bg-red-500',
-    },
-    {
-        title: 'Compensatory time off',
-        total: 99,
-        icon: Clock,
-        css: 'text-white bg-green-500',
-    },
-    {
-        title: 'Auto Offset',
-        total: 25,
-        icon: User2,
-        css: 'text-white bg-blue-500',
-    },
-];
+export default function Dashboard({ cto }: LeaveEvent[]) {
+    const statData: Card[] = [
+        {
+            title: 'On Leave',
+            total: 99,
+            icon: DoorClosed,
+            css: 'text-white bg-red-500',
+        },
+        {
+            title: 'Compensatory time off',
+            total: cto,
+            icon: Clock,
+            css: 'text-white bg-green-500',
+        },
+        {
+            title: 'Auto Offset',
+            total: 25,
+            icon: User2,
+            css: 'text-white bg-blue-500',
+        },
+    ];
 
-export default function Dashboard() {
     return (
         <>
             <Head title="Dashboard" />

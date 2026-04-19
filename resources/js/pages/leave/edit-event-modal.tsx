@@ -23,61 +23,53 @@ import {
     PopoverTrigger,
 } from '@/components/ui/popover';
 import { Textarea } from '@/components/ui/textarea';
-import { store } from '@/routes/leave';
-import { Form, useForm, usePage } from '@inertiajs/react';
-import { addDays, format } from 'date-fns';
+
+import { Spinner } from '@/components/ui/spinner';
+import { update } from '@/routes/leave';
+import { useForm, usePage } from '@inertiajs/react';
+import { format } from 'date-fns';
 import { CalendarIcon, CalendarOff, UserIcon } from 'lucide-react';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { DateRange } from 'react-day-picker';
-import { leave_types, statuses } from './leave_data/data';
+import { leave_types, LeaveEvent, statuses } from './leave_data/data';
 
-type AddModalProps = {
-    openAddEvent: boolean;
-    setOpenAddEvent: (value: boolean) => void;
-};
+export default function EditEventModal({
+    open,
+    onOpenChange,
+    event,
+}: {
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
+    event: LeaveEvent | undefined;
+}) {
+    const { setData, processing, submit, errors } = useForm({
+        id: event?.id as string | number,
+        user_id: event?.user_id as number | string,
+        leave_type: event?.calendarId as string,
+        date_from: event?.start?.toString() ?? '',
+        date_to: event?.end?.toString() ?? '',
+        description: event?.description ?? '',
+    });
 
-type User = {
-    email: string;
-    name: string;
-    id: string | number;
-};
-
-type FileLeave = {
-    user_id: number;
-    leave_type: string;
-};
-
-export default function AddEventModal({
-    openAddEvent,
-    setOpenAddEvent,
-}: AddModalProps) {
-    const [leave, setLeave] = useState([]);
-    const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
-
-    // date picker
     const [date, setDate] = useState<DateRange | undefined>({
-        from: new Date(),
-        to: undefined,
+        from: event?.start ? new Date(event.start.toString()) : undefined,
+        to: event?.end ? new Date(event.end.toString()) : undefined,
     });
 
-    // useForm
-    const { data, setData, processing, submit, errors } = useForm({
-        user_id: '' as number | string, // 1, 2, 3...
-        leave_type: '', // Sick Leave, Vacation Leave
-        date_from: '', // march 1 to april etc
-        date_to: '', // march 1 to april etc
-        description: '', // asdsad optiomal
-    });
+    let leaveType = '';
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        submit(store(), {
-            onSuccess: () => {
-                setOpenAddEvent(false);
-                setSelectedStatus(null);
-            },
-        });
-    };
+    if (
+        event?.title !== 'CTO' &&
+        event?.title !== 'Auto Offset' &&
+        event?.title !== 'On Leave (not filled)' &&
+        event?.title !== 'Auto Offset (not filled)'
+    ) {
+        leaveType = 'On Leave';
+    }
+
+    const [selectedStatus, setSelectedStatus] = useState<string | null>(
+        (leaveType || event?.title) ?? null,
+    );
 
     type User = {
         id: number;
@@ -92,14 +84,22 @@ export default function AddEventModal({
         leaves: [];
     };
 
-    // usePage
-    const { users, flash, leaves } = usePage<PageProps>().props;
+    const { users } = usePage<PageProps>().props;
+
+    function handleSubmit() {
+        submit(update(Number(event?.id)), {
+            onSuccess: () => {
+                onOpenChange(false);
+            },
+        });
+    }
 
     return (
         <Dialog
+            key={event?.id}
             modal={false}
-            open={openAddEvent}
-            onOpenChange={setOpenAddEvent}
+            open={open}
+            onOpenChange={onOpenChange}
         >
             <DialogContent className="gap-0 overflow-hidden p-0 sm:max-w-md">
                 {/* accent bar */}
@@ -117,7 +117,12 @@ export default function AddEventModal({
                 </div>
 
                 <div className="px-6 pb-6">
-                    <form onSubmit={handleSubmit} method="post">
+                    <form
+                        onSubmit={(e) => {
+                            e.preventDefault();
+                            handleSubmit();
+                        }}
+                    >
                         <FieldGroup className="gap-4">
                             {/* EMPLOYEE NAME */}
                             <Field>
@@ -125,6 +130,7 @@ export default function AddEventModal({
                                     Employee Name
                                 </FieldLabel>
                                 <Combobox
+                                    defaultInputValue={event?.user}
                                     onValueChange={(user) =>
                                         setData(
                                             'user_id',
@@ -145,6 +151,7 @@ export default function AddEventModal({
                                         <ComboboxEmpty>
                                             No employees found.
                                         </ComboboxEmpty>
+
                                         <ComboboxList>
                                             {(user) => (
                                                 <ComboboxItem
@@ -206,7 +213,9 @@ export default function AddEventModal({
                                     >
                                         <Calendar
                                             mode="range"
-                                            defaultMonth={new Date()}
+                                            defaultMonth={
+                                                date?.from ?? new Date()
+                                            }
                                             selected={date}
                                             onSelect={(range) => {
                                                 setDate(range);
@@ -296,6 +305,11 @@ export default function AddEventModal({
 
                                     <Combobox
                                         items={leave_types}
+                                        defaultValue={
+                                            leaveType === 'On Leave'
+                                                ? event?.title
+                                                : ''
+                                        }
                                         onValueChange={(value) => {
                                             setData(
                                                 'leave_type',
@@ -344,20 +358,19 @@ export default function AddEventModal({
                                 </FieldLabel>
                                 <Textarea
                                     name="description"
+                                    defaultValue={event?.description}
                                     onChange={(e) =>
                                         setData('description', e.target.value)
                                     }
                                     placeholder="Type your message here."
                                 />
                             </Field>
+
+                            {/* ACTIONS */}
                             <div className="flex justify-end gap-2 border-t border-zinc-100 px-6 py-3 dark:border-zinc-800">
                                 <Button
                                     variant="ghost"
                                     className="text-[13px] text-zinc-600"
-                                    onClick={() => {
-                                        setOpenAddEvent(false);
-                                        setSelectedStatus(null);
-                                    }}
                                 >
                                     Cancel
                                 </Button>
@@ -366,7 +379,8 @@ export default function AddEventModal({
                                     disabled={processing}
                                     className="bg-blue-500 text-[13px] text-white hover:bg-blue-600"
                                 >
-                                    {processing ? 'Submitting...' : 'Submit'}
+                                    {processing ?? <Spinner />}
+                                    Submit
                                 </Button>
                             </div>
                         </FieldGroup>

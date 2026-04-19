@@ -12,7 +12,7 @@ class UpdateLeaveRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -23,7 +23,11 @@ class UpdateLeaveRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'user_id'     => ['required', 'exists:users,id'],
+            'leave_type'  => ['required', 'string'],
+            'date_from'   => ['required', 'date'],
+            'date_to'     => ['required', 'date'],
+            'description' => ['nullable', 'string'],
         ];
     }
 }

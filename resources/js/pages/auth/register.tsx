@@ -24,7 +24,6 @@ export default function Register() {
                         <div className="grid gap-6">
                             <div className="grid gap-2">
                                 <Label htmlFor="name">Name</Label>
-                                ..{' '}
                                 <Input
                                     id="name"
                                     type="text"

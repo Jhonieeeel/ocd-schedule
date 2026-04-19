@@ -33,6 +33,7 @@ class StoreBalanceRequest extends FormRequest
             'undertime'   => ['nullable', 'numeric', 'min:0', 'max:99999.999'],
             'month'       => ['nullable', 'integer', 'min:1', 'max:12'],
             'year'        => ['nullable', 'integer', 'min:2000', 'max:' . now()->year],
+            'as_of'       => ['nullable', 'date']
         ];
     }
 }

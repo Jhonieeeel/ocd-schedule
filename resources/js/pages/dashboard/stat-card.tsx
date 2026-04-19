@@ -1,12 +1,10 @@
 import {
     Card,
     CardContent,
-    CardDescription,
     CardFooter,
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
-import { Button } from '@headlessui/react';
 import { LucideIcon } from 'lucide-react';
 
 type Card = {

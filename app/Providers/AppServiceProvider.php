@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
+use Spatie\Permission\Models\Role;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -23,6 +24,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+
+        // $roles = ['admin', 'hr', 'employee'];
+
+        // foreach ($roles as $role) {
+        //     Role::firstOrCreate(['name' => $role]);
+        // }
+
         $this->configureDefaults();
     }
 

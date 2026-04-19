@@ -1,3 +1,4 @@
+import { index } from '@/actions/App/Http/Controllers/DashboardController';
 import AppLogo from '@/components/app-logo';
 import { NavFooter } from '@/components/nav-footer';
 import { NavMain } from '@/components/nav-main';
@@ -11,12 +12,18 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { dashboard } from '@/routes';
 import balance from '@/routes/balance';
 import leave from '@/routes/leave';
 import type { MainNav, NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
-import { BookOpen, FileText, FolderGit2, LayoutGrid, User } from 'lucide-react';
+import {
+    BookOpen,
+    FileText,
+    FolderGit2,
+    LayoutGrid,
+    Rows,
+    User,
+} from 'lucide-react';
 
 const mainNavItems: MainNav[] = [
     {
@@ -24,21 +31,26 @@ const mainNavItems: MainNav[] = [
         items: [
             {
                 title: 'Dashboard',
-                href: dashboard(),
+                href: index(),
                 icon: LayoutGrid,
             },
         ],
     },
     {
-        label: 'User Management',
+        label: 'Leave Tracker',
         items: [
             {
-                title: 'Balance',
+                title: 'My Balance',
                 href: balance.index(),
                 icon: User,
             },
             {
-                title: 'File Leave',
+                title: 'All Balances',
+                href: balance.all(),
+                icon: Rows,
+            },
+            {
+                title: 'Leaves',
                 href: leave.index(),
                 icon: FileText,
             },
@@ -66,7 +78,7 @@ export function AppSidebar() {
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton size="lg" asChild>
-                            <Link href={dashboard()} prefetch>
+                            <Link href={index()} prefetch>
                                 <AppLogo />
                             </Link>
                         </SidebarMenuButton>

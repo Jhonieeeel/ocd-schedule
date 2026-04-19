@@ -23,13 +23,16 @@ class LeaveController extends Controller
                 'calendarId' => $leave->leave_type,
                 'title' => $leave->leave_type,
                 'user' => $leave->user->name,
+                'user_id' => $leave->user->id,
                 'description' => $leave->description,
                 'start' => $leave->date_from->toDateString(),
                 'end' => $leave->date_to->toDateString()
             ];
         });
 
-        return Inertia::render("leave/index", ['users' => $users, 'leaves' => $leaves]);
+        $test = Leave::with('user')->select(['id', 'leave_type', 'user_id', 'date_from', 'date_to', 'description']);
+
+        return Inertia::render("leave/index", ['users' => $users, 'leaves' => $leaves, 'test' => $test]);
     }
 
     /**

@@ -1,16 +1,17 @@
-import { Link } from '@inertiajs/react';
 import {
     SidebarGroup,
     SidebarGroupLabel,
-    SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
 import { useCurrentUrl } from '@/hooks/use-current-url';
-import type { MainNav, NavItem } from '@/types';
+import type { MainNav } from '@/types';
+import { Link, usePage } from '@inertiajs/react';
 
 export function NavMain({ items = [] }: { items: MainNav[] }) {
     const { isCurrentUrl } = useCurrentUrl();
+
+    const { auth } = usePage().props;
 
     return (
         <SidebarGroup className="px-2 py-0">
@@ -20,20 +21,28 @@ export function NavMain({ items = [] }: { items: MainNav[] }) {
                         {data.label}
                     </SidebarGroupLabel>
                     {data.items?.length &&
-                        data.items.map((item, index) => (
-                            <SidebarMenuItem key={index}>
-                                <SidebarMenuButton
-                                    asChild
-                                    isActive={isCurrentUrl(item.href)}
-                                    tooltip={{ children: item.title }}
-                                >
-                                    <Link href={item.href} prefetch>
-                                        {item.icon && <item.icon />}
-                                        <span>{item.title}</span>
-                                    </Link>
-                                </SidebarMenuButton>
-                            </SidebarMenuItem>
-                        ))}
+                        data.items
+                            .filter(
+                                (item) =>
+                                    !(
+                                        auth.role === 'employee' &&
+                                        item.title === 'All Balances'
+                                    ),
+                            )
+                            .map((item, index) => (
+                                <SidebarMenuItem key={index}>
+                                    <SidebarMenuButton
+                                        asChild
+                                        isActive={isCurrentUrl(item.href)}
+                                        tooltip={{ children: item.title }}
+                                    >
+                                        <Link href={item.href} prefetch>
+                                            {item.icon && <item.icon />}
+                                            <span>{item.title}</span>
+                                        </Link>
+                                    </SidebarMenuButton>
+                                </SidebarMenuItem>
+                            ))}
                 </div>
             ))}
         </SidebarGroup>
