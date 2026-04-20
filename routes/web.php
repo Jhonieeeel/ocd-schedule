@@ -27,6 +27,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // balance - admin only
     Route::middleware(['role:hr'])->group(function () {
+        // balances
         Route::get("all_balance", [BalanceController::class, 'all'])->name('balance.all');
         Route::post("balances", [BalanceController::class, "store"])->name("balance.store");
         Route::get("balances/{balance}", [BalanceController::class, 'show'])->name('balance.show');

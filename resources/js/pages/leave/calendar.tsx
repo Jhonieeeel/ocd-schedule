@@ -25,6 +25,7 @@ type CalendarId = keyof typeof CALENDARS;
 
 function CalendarLeave() {
     const { leaves, auth } = usePage<Props>().props;
+
     const [openAddEvent, setOpenAddEvent] = useState(false);
     const [viewEvent, setViewEvent] = useState(false);
     const [editEvent, setEditEvent] = useState(false);

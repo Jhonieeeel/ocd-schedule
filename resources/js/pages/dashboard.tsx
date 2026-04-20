@@ -1,5 +1,5 @@
 import { Card } from '@/components/ui/card';
-import { Head } from '@inertiajs/react';
+import { Head, usePage } from '@inertiajs/react';
 import { Clock, DoorClosed, LucideIcon, User2 } from 'lucide-react';
 import { columns } from './dashboard/leave-columns';
 import { LeaveTable } from './dashboard/leave-table';
@@ -15,23 +15,45 @@ type Card = {
     css: string;
 };
 
-export default function Dashboard({ cto }: LeaveEvent[]) {
+type LeaveType = {
+    id: number;
+    user_id: number;
+    leave_type: string;
+    description: string;
+    date_from: string;
+    date_to: string;
+
+    created_at: string;
+    updated_at: string;
+};
+
+type DashboardProps = {
+    cto: LeaveType[];
+    auto_offset: LeaveType[];
+    leaves: LeaveType[];
+};
+
+export default function Dashboard({
+    cto,
+    auto_offset,
+    leaves,
+}: DashboardProps) {
     const statData: Card[] = [
         {
             title: 'On Leave',
-            total: 99,
+            total: leaves.length,
             icon: DoorClosed,
             css: 'text-white bg-red-500',
         },
         {
             title: 'Compensatory time off',
-            total: cto,
+            total: cto.length,
             icon: Clock,
             css: 'text-white bg-green-500',
         },
         {
             title: 'Auto Offset',
-            total: 25,
+            total: auto_offset.length,
             icon: User2,
             css: 'text-white bg-blue-500',
         },

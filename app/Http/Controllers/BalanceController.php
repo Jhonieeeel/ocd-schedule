@@ -57,9 +57,7 @@ class BalanceController extends Controller
      */
     public function show(Balance $balance)
     {
-        return response()->json([
-            'data' => $balance->getVL()
-        ]);
+        return Inertia::render('balances/user-balance', ['userBalance' => $balance->load('user')]);
     }
 
     /**

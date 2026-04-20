@@ -6,6 +6,7 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { LucideIcon } from 'lucide-react';
+import CountUp from './CountUp';
 
 type Card = {
     title: string;
@@ -15,6 +16,7 @@ type Card = {
 };
 
 export default function StatCard({ data }: { data: Card }) {
+    console.log(data);
     return (
         <Card size="md" className="mx-auto w-full max-w-sm shadow">
             <CardHeader>
@@ -31,7 +33,18 @@ export default function StatCard({ data }: { data: Card }) {
                 </CardTitle>
             </CardHeader>
             <CardContent className="text-center">
-                <h1 className="text-2xl font-semibold">{data.total}</h1>
+                <h1 className="font-akira text-7xl font-semibold">
+                    {/* <CountUp start={0} end={data.total.toString()} /> */}
+                    <CountUp
+                        from={0}
+                        to={data.total}
+                        separator=","
+                        direction="up"
+                        duration={0.5}
+                        className="count-up-text"
+                        delay={0}
+                    />
+                </h1>
             </CardContent>
             <CardFooter className="flex justify-center">
                 <small>{data.title}</small>

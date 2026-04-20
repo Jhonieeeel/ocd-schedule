@@ -21,11 +21,26 @@ class DashboardController extends Controller
 
         $cto = Leave::where('leave_type', 'CTO')
             ->whereBetween('date_from', [now()->startOfMonth(), now()->endOfMOnth()])
-            ->count();
+            ->get();
+
+        $auto_offset = Leave::where('leave_type', 'Auto Offset')
+            ->whereBetween('date_from', [now()->startOfMonth(), now()->endOfMOnth()])
+            ->get();
 
 
+        $on_leave_not_filled = Leave::where('leave_type', 'On Leave (not filled)')
+            ->whereBetween('date_from', [now()->startOfMonth(), now()->endOfMOnth()])
+            ->get();
 
-        return Inertia::render('dashboard', ['cto' => $cto]);
+        $auto_offset_not_filled = Leave::where('leave_type', 'Auto Offset (not filled)')
+            ->whereBetween('date_from', [now()->startOfMonth(), now()->endOfMOnth()])
+            ->get();
+
+        $leaveTypes = ['CTO', 'Auto Offset', 'On Leave (not filled)', 'Auto Offset (not filled)'];
+
+        $leaves = Leave::whereNotIn('leave_type', $leaveTypes)->get();
+
+        return Inertia::render('dashboard', ['cto' => $cto, 'auto_offset' => $auto_offset, 'leaves' => $leaves]);
     }
 
     /**

@@ -194,9 +194,11 @@ export default function Balance({
                                     <span className="text-xs">Usage rate</span>
                                     <span className="text-xs">
                                         {data?.vl_balance
-                                            ? ((data?.vl_used ?? 0) /
-                                                  data.vl_balance) *
-                                              100
+                                            ? Math.floor(
+                                                  ((data?.vl_used ?? 0) /
+                                                      data.vl_balance) *
+                                                      100,
+                                              )
                                             : '0'}
                                         % used
                                     </span>
@@ -235,9 +237,11 @@ export default function Balance({
                                     <span className="text-xs">Usage rate</span>
                                     <span className="text-xs">
                                         {data?.sl_balance
-                                            ? ((data?.sl_used ?? 0) /
-                                                  data.sl_balance) *
-                                              100
+                                            ? Math.floor(
+                                                  ((data?.sl_used ?? 0) /
+                                                      data.sl_balance) *
+                                                      100,
+                                              )
                                             : '0'}
                                         % used
                                     </span>
@@ -280,7 +284,3 @@ Balance.layout = {
         },
     ],
 };
-
-// {balances.map((data, index) => (
-
-//             ))}
