@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Leave;
 use App\Models\User;
+use App\Models\Balance;
 use App\Http\Requests\StoreLeaveRequest;
 use App\Http\Requests\UpdateLeaveRequest;
 use Inertia\Inertia;
@@ -48,7 +49,11 @@ class LeaveController extends Controller
      */
     public function store(StoreLeaveRequest $request)
     {
-       Leave::create($request->validated());
+        Leave::create($request->validated());
+
+        // get user current balance leave this month
+        $user = Balance::where('user_id', auth()->user())->get();
+        info($user);
 
        return redirect()->route('leave.index')->with('message', 'Leave created successfully.');
     }

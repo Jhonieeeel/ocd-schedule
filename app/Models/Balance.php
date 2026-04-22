@@ -35,6 +35,10 @@ class Balance extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function addUndertime($value): float {
+        return $this->undertime + $value;
+    }
+
     public function getVL(): float {
         $vl = $this->vl_balance - ($this->undertime + ($this->used_vl ?? $this->used_fl)) + 1.25;
         return $vl;

@@ -62,25 +62,22 @@ export const ViewEventModal = ({
             open={open ?? internalOpen}
             onOpenChange={onOpenChange}
         >
-            <DialogHeader>
-                <DialogTitle>{event.title}</DialogTitle>
-            </DialogHeader>
             <DialogContent
                 aria-describedby="undefined"
-                className="max-w-md overflow-hidden p-0"
+                className="max-w-md overflow-hidden border-none bg-transparent p-0 shadow-none"
             >
-                <div className="overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-md dark:border-zinc-700 dark:bg-zinc-900">
+                <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-xl dark:border-zinc-800 dark:bg-zinc-950">
                     {/* ACCENT LINE */}
                     <div
-                        className="h-1"
+                        className="h-1.5"
                         style={{ backgroundColor: colors.main }}
                     />
 
                     {/* HEADER */}
-                    <div className="flex items-start justify-between gap-2.5 px-7 pt-6 pb-3.5">
-                        <div className="min-w-0">
+                    <div className="flex items-start justify-between gap-3 px-6 pt-5 pb-4">
+                        <div className="min-w-0 flex-1">
                             <span
-                                className="mb-1.5 inline-block rounded border px-2 py-0.5 text-[11px] font-medium"
+                                className="mb-2 inline-flex items-center rounded-md border px-2 py-0.5 text-[11px] font-semibold tracking-wide uppercase"
                                 style={{
                                     backgroundColor: colors.container,
                                     color: colors.onContainer,
@@ -89,15 +86,14 @@ export const ViewEventModal = ({
                             >
                                 {event.calendarId}
                             </span>
-
-                            <h2 className="truncate text-base font-medium text-zinc-900 dark:text-white">
+                            <h2 className="truncate text-base font-semibold text-zinc-900 dark:text-zinc-50">
                                 {event.card_title}
                             </h2>
                         </div>
 
                         {/* ICON BADGE */}
                         <div
-                            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg"
+                            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl"
                             style={{ backgroundColor: colors.container }}
                         >
                             <CalendarDays
@@ -108,14 +104,14 @@ export const ViewEventModal = ({
                     </div>
 
                     {/* DIVIDER */}
-                    <div className="mx-5 border-t border-zinc-100 dark:border-zinc-800" />
+                    <div className="mx-6 border-t border-zinc-100 dark:border-zinc-800" />
 
                     {/* DETAILS */}
-                    <div className="flex flex-col gap-4 px-5 py-4">
+                    <div className="flex flex-col gap-3.5 px-6 py-4">
                         {/* DATE */}
                         <div className="flex items-start gap-3">
                             <div
-                                className="flex h-[30px] w-[30px] items-center justify-center rounded-lg"
+                                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg"
                                 style={{ backgroundColor: colors.container }}
                             >
                                 <CalendarDays
@@ -123,12 +119,11 @@ export const ViewEventModal = ({
                                     style={{ color: colors.main }}
                                 />
                             </div>
-
-                            <div>
-                                <p className="text-[13px] font-medium text-zinc-900 dark:text-white">
+                            <div className="pt-0.5">
+                                <p className="text-[13px] font-medium text-zinc-900 dark:text-zinc-100">
                                     {event.start?.toString()}
                                 </p>
-                                <p className="text-[11px] text-zinc-400">
+                                <p className="text-[11px] text-zinc-400 dark:text-zinc-500">
                                     {event.end?.toString()}
                                 </p>
                             </div>
@@ -138,7 +133,7 @@ export const ViewEventModal = ({
                         {event.user && (
                             <div className="flex items-center gap-3">
                                 <div
-                                    className="flex h-[30px] w-[30px] items-center justify-center rounded-full text-[11px] font-medium"
+                                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold"
                                     style={{
                                         backgroundColor: colors.main + '20',
                                         color: colors.main,
@@ -149,8 +144,7 @@ export const ViewEventModal = ({
                                         .map((n) => n[0])
                                         .join('')}
                                 </div>
-
-                                <p className="text-[13px] font-medium text-zinc-900 dark:text-white">
+                                <p className="text-[13px] font-medium text-zinc-900 dark:text-zinc-100">
                                     {event.user}
                                 </p>
                             </div>
@@ -160,7 +154,7 @@ export const ViewEventModal = ({
                         {event.description && (
                             <div className="flex items-start gap-3">
                                 <div
-                                    className="flex h-[30px] w-[30px] items-center justify-center rounded-lg"
+                                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg"
                                     style={{
                                         backgroundColor: colors.container,
                                     }}
@@ -170,8 +164,7 @@ export const ViewEventModal = ({
                                         style={{ color: colors.main }}
                                     />
                                 </div>
-
-                                <p className="pt-1 text-xs leading-relaxed text-zinc-500">
+                                <p className="pt-1 text-xs leading-relaxed text-zinc-500 dark:text-zinc-400">
                                     {event.description}
                                 </p>
                             </div>
@@ -180,41 +173,41 @@ export const ViewEventModal = ({
 
                     {/* ACTIONS */}
                     {auth.role !== 'employee' && (
-                        <div className="flex gap-2 border-t border-zinc-100 px-5 py-3 dark:border-zinc-800">
+                        <div className="flex gap-2 border-t border-zinc-100 px-6 py-3 dark:border-zinc-800">
                             <button
                                 onClick={onEdit}
-                                className="flex-1 rounded-lg border border-zinc-200 py-1.5 text-[13px] text-zinc-700 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-300"
+                                className="flex-1 rounded-xl border border-zinc-200 py-2 text-[13px] font-medium text-zinc-700 transition hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
                             >
                                 Edit
                             </button>
 
                             <AlertDialog>
                                 <AlertDialogTrigger asChild>
-                                    <button className="flex-1 rounded-lg border border-red-200 bg-red-600 py-1.5 text-[13px] text-white hover:bg-red-700">
+                                    <button className="flex-1 rounded-xl bg-red-600 py-2 text-[13px] font-medium text-white transition hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-600">
                                         Delete
                                     </button>
                                 </AlertDialogTrigger>
-                                <AlertDialogContent>
+                                <AlertDialogContent className="dark:border-zinc-800 dark:bg-zinc-900">
                                     <AlertDialogHeader>
-                                        <AlertDialogTitle>
+                                        <AlertDialogTitle className="dark:text-zinc-50">
                                             Delete Leave Request?
                                         </AlertDialogTitle>
-                                        <AlertDialogDescription>
-                                            This will permanently delete This
-                                            action cannot be undone.
+                                        <AlertDialogDescription className="dark:text-zinc-400">
+                                            This will permanently delete this
+                                            event. This action cannot be undone.
                                         </AlertDialogDescription>
                                     </AlertDialogHeader>
                                     <AlertDialogFooter>
-                                        <AlertDialogCancel>
+                                        <AlertDialogCancel className="dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800">
                                             Cancel
                                         </AlertDialogCancel>
                                         <AlertDialogAction
                                             onClick={deleteEvent}
                                             disabled={processing}
-                                            className="bg-red-600 text-white hover:bg-red-700"
+                                            className="bg-red-600 text-white hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-600"
                                         >
                                             {processing
-                                                ? 'Submitting...'
+                                                ? 'Deleting...'
                                                 : 'Yes, Delete'}
                                         </AlertDialogAction>
                                     </AlertDialogFooter>

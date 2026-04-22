@@ -88,6 +88,27 @@ export default function Balance({
                             </span>
                         </div>
 
+                        {/* Undertime */}
+                        <Card
+                            className="col-span-4 dark:bg-zinc-900"
+                            key={index}
+                        >
+                            <CardContent className="flex items-center gap-4 py-4">
+                                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-yellow-100">
+                                    <Clock className="h-5 w-5 text-yellow-600" />
+                                </div>
+                                <div>
+                                    <p className="text-xs">Undertime</p>
+                                    <p className="text-2xl font-semibold">
+                                        {data.undertime} hrs
+                                    </p>
+                                    <p className="text-xs">
+                                        hours logged this period
+                                    </p>
+                                </div>
+                            </CardContent>
+                        </Card>
+
                         {/* mx-auto w-full max-w-sm dark:bg-zinc-900 */}
                         {/* VL Remaining */}
                         <Card className="mx-auto w-full max-w-sm dark:bg-zinc-900">
@@ -245,27 +266,6 @@ export default function Balance({
                                             : '0'}
                                         % used
                                     </span>
-                                </div>
-                            </CardContent>
-                        </Card>
-
-                        {/* Undertime */}
-                        <Card
-                            className="col-span-4 dark:bg-zinc-900"
-                            key={index}
-                        >
-                            <CardContent className="flex items-center gap-4 py-4">
-                                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-yellow-100">
-                                    <Clock className="h-5 w-5 text-yellow-600" />
-                                </div>
-                                <div>
-                                    <p className="text-xs">Undertime</p>
-                                    <p className="text-2xl font-semibold">
-                                        {data.undertime} hrs
-                                    </p>
-                                    <p className="text-xs">
-                                        hours logged this period
-                                    </p>
                                 </div>
                             </CardContent>
                         </Card>

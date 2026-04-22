@@ -16,7 +16,6 @@ type Card = {
 };
 
 export default function StatCard({ data }: { data: Card }) {
-    console.log(data);
     return (
         <Card size="md" className="mx-auto w-full max-w-sm shadow">
             <CardHeader>

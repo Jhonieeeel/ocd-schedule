@@ -74,7 +74,9 @@ class BalanceController extends Controller
     public function update(UpdateBalanceRequest $request, Balance $balance)
     {
         $balance->update($request->validated());
-        return redirect()->route('balance.index')->with('message', 'Balance updated successfully.');
+
+        return redirect()->route('balance.update', $request['id'])
+        ->with('message', 'Balance updated successfully.');
     }
 
     /**
