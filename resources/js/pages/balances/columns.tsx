@@ -112,7 +112,7 @@ export const columns: ColumnDef<Balance>[] = [
         accessorKey: 'updated_at',
         header: () => (
             <div className="font-semibold text-teal-600 dark:text-teal-400">
-                Updated at
+                Updated
             </div>
         ),
         cell: ({ row }) => {

@@ -11,8 +11,10 @@ class Leave extends Model
 
     protected $casts = [
         'date_from' => 'date',
-        'date_to' => 'date'
+        'date_to' => 'date',
+        'is_approve' => 'boolean'
     ];
+
 
 
     public function user() {

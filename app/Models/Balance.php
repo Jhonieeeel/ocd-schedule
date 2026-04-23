@@ -39,9 +39,13 @@ class Balance extends Model
         return $this->undertime + $value;
     }
 
-    public function getVL(): float {
-        $vl = $this->vl_balance - ($this->undertime + ($this->used_vl ?? $this->used_fl)) + 1.25;
-        return $vl;
+    public function updateUndertime(float $undertime): float {
+        return $this->undertime = $this->undertime + $undertime;
+    }
+
+    public function getVL(float $undertime): float {
+       return $this->vl_balance = $this->vl_balance - ($undertime ?? 0 + ($this->used_vl ?? $this->used_fl)) + 1.25;
+
     }
 
     public function getSL(): float {

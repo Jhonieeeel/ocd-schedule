@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Balance;
+use App\Models\Leave;
+use Illuminate\Http\Request;
 use App\Http\Requests\StoreBalanceRequest;
 use App\Http\Requests\UpdateBalanceRequest;
 use Inertia\Inertia;
@@ -27,11 +29,32 @@ class BalanceController extends Controller
         return Inertia::render('balance/index', ['balances' => $balances, 'isAdmin' => $isAdmin]);
     }
 
-    public function all()
+
+  public function all_balances(Request $request)
     {
-        return Inertia::render('balances/index', [
-            'balances' => Balance::with('user')->latest()->get(),
-        ]);
+        $month = $request->input('month');
+        $year  = $request->input('year');
+
+        info($year);
+
+        $balances = Balance::with('user')
+            ->when($month, function($q) use ($month) {
+                $q->where('month', $month);
+            })
+            ->when($year, function($q) use ($year) {
+                $q->where('year', $year);
+            })
+            ->latest()
+            ->get();
+
+        return response()->json($balances);
+    }
+
+    public function all(Request $request)
+    {
+
+
+        return Inertia::render('balances/index', []);
     }
 
     /**
@@ -73,7 +96,12 @@ class BalanceController extends Controller
      */
     public function update(UpdateBalanceRequest $request, Balance $balance)
     {
-        $balance->update($request->validated());
+        // validated['field_name;]
+        $validated = $request->validated();
+
+
+
+
 
         return redirect()->route('balance.update', $request['id'])
         ->with('message', 'Balance updated successfully.');

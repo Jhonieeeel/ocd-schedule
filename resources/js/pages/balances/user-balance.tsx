@@ -8,6 +8,14 @@ import { Input } from '@/components/ui/input';
 import { useForm } from '@inertiajs/react';
 import { Field } from '@/components/ui/field';
 import { update } from '@/routes/balance';
+import {
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 
 export default function UserBalance({ userBalance }: { userBalance: Balance }) {
     const { submit, setData, errors, processing, data } = useForm({
@@ -50,12 +58,11 @@ export default function UserBalance({ userBalance }: { userBalance: Balance }) {
                 className="grid auto-rows-min gap-4 md:grid-cols-4"
             >
                 {/* Undertime */}
-                <Card className="col-span-4 dark:bg-zinc-900">
+                <Card className="col-span-4 dark:border-zinc-700 dark:bg-zinc-900">
                     <CardContent className="flex items-center gap-4 py-4">
                         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-yellow-100">
                             <Clock className="h-5 w-5 text-yellow-600" />
                         </div>
-                        {/* naka input ni */}
                         <Field className="w-full">
                             <p className="text-xs">Undertime</p>
                             <Input
@@ -73,7 +80,7 @@ export default function UserBalance({ userBalance }: { userBalance: Balance }) {
                 </Card>
 
                 {/* VL Balance */}
-                <Card className="col-span-2 mx-auto w-full dark:bg-zinc-900">
+                <Card className="col-span-2 mx-auto w-full dark:border-zinc-700 dark:bg-zinc-900">
                     <CardHeader className="flex flex-row items-center justify-between pb-4">
                         <CardTitle className="text-base font-semibold">
                             Vacation Leave
@@ -116,7 +123,7 @@ export default function UserBalance({ userBalance }: { userBalance: Balance }) {
                 </Card>
 
                 {/* SL Balance */}
-                <Card className="col-span-2 mx-auto w-full dark:bg-zinc-900">
+                <Card className="col-span-2 mx-auto w-full dark:border-zinc-700 dark:bg-zinc-900">
                     <CardHeader className="flex flex-row items-center justify-between pb-4">
                         <CardTitle className="text-base font-semibold">
                             Sick Leave

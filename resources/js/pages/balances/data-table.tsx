@@ -22,15 +22,26 @@ import {
 import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import {
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import { Spinner } from '@/components/ui/spinner';
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
     data: TData[];
+    isLoading: boolean;
 }
 
 export function DataTable<TData, TValue>({
     columns,
     data,
+    isLoading,
 }: DataTableProps<TData, TValue>) {
     // filter state
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -50,7 +61,7 @@ export function DataTable<TData, TValue>({
         <>
             <div className="flex items-center gap-4 py-4">
                 <Input
-                    placeholder="Filter emails..."
+                    placeholder="Filter names..."
                     value={
                         (table
                             .getColumn('user.name')
@@ -63,6 +74,7 @@ export function DataTable<TData, TValue>({
                     }
                     className="max-w-sm"
                 />
+
                 <Button variant="default">Add User Balance</Button>
             </div>
             <div className="overflow-hidden rounded-md border-2">
