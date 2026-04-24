@@ -1,3 +1,4 @@
+// lib/calendar-colors.ts
 export const CALENDARS = {
     'Sick Leave': {
         colorName: 'sick_leave',
@@ -25,7 +26,6 @@ export const CALENDARS = {
             onContainer: '#bfdbfe',
         },
     },
-
     'Mandatory/Force Leave': {
         colorName: 'force_leave',
         lightColors: {
@@ -182,7 +182,6 @@ export const CALENDARS = {
             onContainer: '#d9f99d',
         },
     },
-
     CTO: {
         colorName: 'cto',
         lightColors: {
@@ -235,7 +234,15 @@ export const CALENDARS = {
             onContainer: '#e4e4e7',
         },
     },
-};
+} as const;
+
+export type CalendarId = keyof typeof CALENDARS;
+
+export interface CalendarColors {
+    main: string;
+    container: string;
+    onContainer: string;
+}
 
 export const statuses = [
     {
@@ -376,7 +383,7 @@ export type Balance = {
 };
 
 export type LeaveEvent = {
-    id: string | number;
+    id: number;
     calendarId: string;
     title: string;
     card_title: string;
@@ -384,6 +391,7 @@ export type LeaveEvent = {
     user: string;
     user_id: string | number;
     description: string;
+    is_approve: boolean;
     start: string;
     end: string;
 

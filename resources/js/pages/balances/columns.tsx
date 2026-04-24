@@ -26,7 +26,11 @@ export const columns: ColumnDef<Balance>[] = [
         id: 'user.name',
         header: () => <div className="py-4">Employee Name</div>,
         cell: ({ row }) => {
-            return <div className="font-medium">{row.original.user.name}</div>;
+            return (
+                <div className="truncate font-medium">
+                    {row.original.user.name}
+                </div>
+            );
         },
     },
 
@@ -153,7 +157,10 @@ export const columns: ColumnDef<Balance>[] = [
                                 <MoreHorizontal className="h-4 w-4" />
                             </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
+                        <DropdownMenuContent
+                            align="end"
+                            className="dark:border-zinc-600"
+                        >
                             <DropdownMenuItem
                                 onClick={() => console.log(balance)}
                             >

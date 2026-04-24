@@ -51,6 +51,8 @@ export default function AddEventModal({
     openAddEvent,
     setOpenAddEvent,
 }: AddModalProps) {
+    const { users, flash, leaves, auth } = usePage<PageProps>().props;
+
     const [leave, setLeave] = useState([]);
     const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
 
@@ -62,7 +64,9 @@ export default function AddEventModal({
 
     // useForm
     const { data, setData, processing, submit, errors } = useForm({
-        user_id: '' as number | string, // 1, 2, 3...
+        user_id: (auth.role === 'employee' ? auth.user.id : '') as
+            | number
+            | string, // 1, 2, 3...
         leave_type: '', // Sick Leave, Vacation Leave
         date_from: '', // march 1 to april etc
         date_to: '', // march 1 to april etc
@@ -93,8 +97,6 @@ export default function AddEventModal({
     };
 
     // usePage
-    const { users, flash, leaves } = usePage<PageProps>().props;
-
     return (
         <Dialog
             modal={false}
@@ -125,6 +127,12 @@ export default function AddEventModal({
                                     Employee Name
                                 </FieldLabel>
                                 <Combobox
+                                    defaultInputValue={
+                                        auth.role === 'employee'
+                                            ? auth.user.id
+                                            : data.user_id
+                                    }
+                                    disabled={auth.role === 'employee'}
                                     onValueChange={(user) =>
                                         setData(
                                             'user_id',
@@ -145,16 +153,27 @@ export default function AddEventModal({
                                         <ComboboxEmpty>
                                             No employees found.
                                         </ComboboxEmpty>
-                                        <ComboboxList>
-                                            {(user) => (
+                                        {auth.role === 'employee' ? (
+                                            <ComboboxList>
                                                 <ComboboxItem
-                                                    key={user.id}
-                                                    value={user.id}
+                                                    key={auth.user.id}
+                                                    value={auth.user.id}
                                                 >
-                                                    {user.name}
+                                                    {auth.user.name}
                                                 </ComboboxItem>
-                                            )}
-                                        </ComboboxList>
+                                            </ComboboxList>
+                                        ) : (
+                                            <ComboboxList>
+                                                {(user) => (
+                                                    <ComboboxItem
+                                                        key={user.id}
+                                                        value={user.id}
+                                                    >
+                                                        {user.name}
+                                                    </ComboboxItem>
+                                                )}
+                                            </ComboboxList>
+                                        )}
                                     </ComboboxContent>
                                 </Combobox>
                                 <InputError

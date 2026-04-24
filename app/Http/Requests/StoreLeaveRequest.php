@@ -28,6 +28,7 @@ class StoreLeaveRequest extends FormRequest
             'date_from'   => ['required', 'date'],
             'date_to'     => ['required', 'date', 'after_or_equal:date_from'],
             'description' => ['nullable', 'string'],
+            'is_approve' =>  ['nullable', 'boolean']
         ];
     }
 }

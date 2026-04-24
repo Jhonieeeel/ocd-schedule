@@ -48,6 +48,7 @@ function CalendarLeave() {
             user: leave.user,
             user_id: leave.user_id,
             description: leave.description,
+            is_approve: leave.is_approve,
             start: Temporal.PlainDate.from(leave.start),
             end: Temporal.PlainDate.from(leave.end),
 
@@ -75,7 +76,8 @@ function CalendarLeave() {
 
                 if (Temporal.PlainDate.compare(clicked, today) < 0) return;
 
-                if (auth.role !== 'employee') setOpenAddEvent(true);
+                // if (auth.role !== 'employee') setOpenAddEvent(true);
+                setOpenAddEvent(true);
             },
 
             onEventClick(event) {
@@ -98,15 +100,18 @@ function CalendarLeave() {
                 setOpenAddEvent={setOpenAddEvent}
             />
 
-            <ViewEventModal
-                open={viewEvent}
-                onOpenChange={setViewEvent}
-                event={event}
-                onEdit={() => {
-                    setViewEvent(false);
-                    setEditEvent(true);
-                }}
-            />
+            {event && (
+                <ViewEventModal
+                    key={event.id}
+                    open={viewEvent}
+                    onOpenChange={setViewEvent}
+                    event={event}
+                    onEdit={() => {
+                        setViewEvent(false);
+                        setEditEvent(true);
+                    }}
+                />
+            )}
 
             {event && (
                 <EditEventModal

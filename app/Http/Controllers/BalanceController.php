@@ -100,9 +100,6 @@ class BalanceController extends Controller
         $validated = $request->validated();
 
 
-
-
-
         return redirect()->route('balance.update', $request['id'])
         ->with('message', 'Balance updated successfully.');
     }

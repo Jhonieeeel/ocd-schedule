@@ -201,14 +201,14 @@ export default function Balance({
                                 <div className="flex items-center justify-between">
                                     <span className="text-sm">Balance</span>
                                     <span className="text-sm font-semibold">
-                                        0.00 days
+                                        {data.vl_balance.toFixed(3)} days
                                     </span>
                                 </div>
                                 <Separator />
                                 <div className="flex items-center justify-between">
                                     <span className="text-sm">Used</span>
                                     <span className="text-sm font-semibold">
-                                        0.00 days
+                                        {data.vl_used} days
                                     </span>
                                 </div>
                                 <div className="flex items-center justify-between">
@@ -244,14 +244,14 @@ export default function Balance({
                                 <div className="flex items-center justify-between">
                                     <span className="text-sm">Balance</span>
                                     <span className="text-sm font-semibold">
-                                        0.00 days
+                                        {data.sl_balance} days
                                     </span>
                                 </div>
                                 <Separator />
                                 <div className="flex items-center justify-between">
                                     <span className="text-sm">Used</span>
                                     <span className="text-sm font-semibold">
-                                        0.00 days
+                                        {data.sl_used?.toFixed(3)} days
                                     </span>
                                 </div>
                                 <div className="flex items-center justify-between">

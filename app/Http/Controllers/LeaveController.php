@@ -27,16 +27,16 @@ class LeaveController extends Controller
                 'user_id' => $leave->user->id,
                 'description' => $leave->description,
                 'start' => $leave->date_from->toDateString(),
-                'end' => $leave->date_to->toDateString()
+                'end' => $leave->date_to->toDateString(),
+                'is_approve' => $leave->is_approve
             ];
         });
 
-        $test = Leave::with('user')->select(['id', 'leave_type', 'user_id', 'date_from', 'date_to', 'description']);
 
-        return Inertia::render("leave/index", ['users' => $users, 'leaves' => $leaves, 'test' => $test]);
+        return Inertia::render("leave/index", ['users' => $users, 'leaves' => $leaves]);
     }
 
-    /**
+    /**1
      * Show the form for creating  a new resource.
      */
     public function create()
@@ -79,7 +79,13 @@ class LeaveController extends Controller
      */
     public function update(UpdateLeaveRequest $request, Leave $leave)
     {
-        $leave->update($request->validated());
+
+        info($leave->update($request->validated()));
+
+
+        $leaves = Leave::all();
+        info($leaves);
+        info($request->validated());
 
         return redirect()->route("leave.index")->with('message', 'Leave updated successfully.');
     }

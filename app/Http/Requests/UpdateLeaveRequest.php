@@ -28,6 +28,7 @@ class UpdateLeaveRequest extends FormRequest
             'date_from'   => ['required', 'date'],
             'date_to'     => ['required', 'date'],
             'description' => ['nullable', 'string'],
+            'is_approve' => ['nullable', 'boolean']
         ];
     }
 }

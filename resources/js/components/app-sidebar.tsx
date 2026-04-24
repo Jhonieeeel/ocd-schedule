@@ -23,6 +23,8 @@ import {
     LayoutGrid,
     Rows,
     User,
+    User2Icon,
+    Users2,
 } from 'lucide-react';
 
 const mainNavItems: MainNav[] = [
@@ -53,6 +55,16 @@ const mainNavItems: MainNav[] = [
                 title: 'Leaves',
                 href: leave.index(),
                 icon: FileText,
+            },
+        ],
+    },
+    {
+        label: 'User Management',
+        items: [
+            {
+                title: 'Users',
+                href: '',
+                icon: Users2,
             },
         ],
     },

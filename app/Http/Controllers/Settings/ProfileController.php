@@ -5,15 +5,29 @@ namespace App\Http\Controllers\Settings;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Settings\ProfileDeleteRequest;
 use App\Http\Requests\Settings\ProfileUpdateRequest;
+use App\Http\Requests\StoreUserDetailsRequest;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
+use App\Models\User;
 
 class ProfileController extends Controller
 {
+
+    /**
+     * Update User Details
+     */
+
+    public function store(StoreUserDetailsRequest $request) {
+
+        User::create($request->validated());
+
+        return to_route('dashboard')->with('message', 'User Created Successfully!');
+    }
+
     /**
      * Show the user's profile settings page.
      */

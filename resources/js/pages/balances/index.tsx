@@ -35,8 +35,9 @@ export default function UserBalances() {
     }
 
     const { data: testBalances, isLoading } = useQuery({
-        queryKey: ['balances', data.month, data.year],
+        queryKey: ['userBalances', data.month, data.year],
         queryFn: () => fetchBalances(data.month, data.year),
+        staleTime: 2000,
     });
 
     return (

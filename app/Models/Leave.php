@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 class Leave extends Model
 {
-    protected $fillable = ['user_id', 'leave_type', 'date_from', 'date_to', 'description'];
+    protected $fillable = ['user_id', 'leave_type', 'date_from', 'date_to', 'description', 'is_approve'];
 
     protected $casts = [
         'date_from' => 'date',

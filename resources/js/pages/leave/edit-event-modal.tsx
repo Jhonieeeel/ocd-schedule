@@ -25,6 +25,7 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 
 import { Spinner } from '@/components/ui/spinner';
+import { Switch } from '@/components/ui/switch';
 import { update } from '@/routes/leave';
 import { useForm, usePage } from '@inertiajs/react';
 import { format } from 'date-fns';
@@ -42,13 +43,14 @@ export default function EditEventModal({
     onOpenChange: (open: boolean) => void;
     event: LeaveEvent | undefined;
 }) {
-    const { setData, processing, submit, errors } = useForm({
+    const { setData, processing, submit, errors, data } = useForm({
         id: event?.id as string | number,
         user_id: event?.user_id as number | string,
         leave_type: event?.calendarId as string,
         date_from: event?.start?.toString() ?? '',
         date_to: event?.end?.toString() ?? '',
         description: event?.description ?? '',
+        is_approve: event?.is_approve ?? (false as boolean | undefined),
     });
 
     const [date, setDate] = useState<DateRange | undefined>({
@@ -59,16 +61,16 @@ export default function EditEventModal({
     let leaveType = '';
 
     if (
-        event?.title !== 'CTO' &&
-        event?.title !== 'Auto Offset' &&
-        event?.title !== 'On Leave (not filled)' &&
-        event?.title !== 'Auto Offset (not filled)'
+        event?.calendarId !== 'CTO' &&
+        event?.calendarId !== 'Auto Offset' &&
+        event?.calendarId !== 'On Leave (not filled)' &&
+        event?.calendarId !== 'Auto Offset (not filled)'
     ) {
         leaveType = 'On Leave';
     }
 
     const [selectedStatus, setSelectedStatus] = useState<string | null>(
-        (leaveType || event?.title) ?? null,
+        (leaveType || event?.calendarId) ?? null,
     );
 
     type User = {
@@ -248,6 +250,23 @@ export default function EditEventModal({
                                 />
                             </Field>
 
+                            {/* Leave (Approve/Pending) */}
+                            <Field>
+                                <FieldLabel>Status</FieldLabel>
+                                <div className="flex items-center space-x-2">
+                                    <Switch
+                                        id="is_approve"
+                                        checked={data.is_approve ?? false}
+                                        onCheckedChange={() =>
+                                            setData(
+                                                'is_approve',
+                                                !event?.is_approve,
+                                            )
+                                        }
+                                    />
+                                </div>
+                            </Field>
+
                             {/* LEAVE STATUS */}
                             <Field>
                                 <FieldLabel className="text-[13px] font-medium text-zinc-700 dark:text-zinc-300">
@@ -307,7 +326,7 @@ export default function EditEventModal({
                                         items={leave_types}
                                         defaultValue={
                                             leaveType === 'On Leave'
-                                                ? event?.title
+                                                ? event?.calendarId
                                                 : ''
                                         }
                                         onValueChange={(value) => {
@@ -370,6 +389,7 @@ export default function EditEventModal({
                             <div className="flex justify-end gap-2 border-t border-zinc-100 px-6 py-3 dark:border-zinc-800">
                                 <Button
                                     variant="ghost"
+                                    type="button"
                                     className="text-[13px] text-zinc-600"
                                 >
                                     Cancel
