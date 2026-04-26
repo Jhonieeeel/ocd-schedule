@@ -13,6 +13,10 @@ export function NavMain({ items = [] }: { items: MainNav[] }) {
 
     const { auth } = usePage().props;
 
+    const navs = items.map((data) =>
+        data.items.filter((item) => !(auth.role === 'employee' && item.title)),
+    );
+
     return (
         <SidebarGroup className="px-2 py-0">
             {items.map((data, index) => (
@@ -20,29 +24,28 @@ export function NavMain({ items = [] }: { items: MainNav[] }) {
                     <SidebarGroupLabel key={index}>
                         {data.label}
                     </SidebarGroupLabel>
-                    {data.items?.length &&
-                        data.items
-                            .filter(
-                                (item) =>
-                                    !(
-                                        auth.role === 'employee' &&
-                                        item.title === 'All Balances'
-                                    ),
-                            )
-                            .map((item, index) => (
-                                <SidebarMenuItem key={index}>
-                                    <SidebarMenuButton
-                                        asChild
-                                        isActive={isCurrentUrl(item.href)}
-                                        tooltip={{ children: item.title }}
-                                    >
-                                        <Link href={item.href} cacheFor={0}>
-                                            {item.icon && <item.icon />}
-                                            <span>{item.title}</span>
-                                        </Link>
-                                    </SidebarMenuButton>
-                                </SidebarMenuItem>
-                            ))}
+                    {(data.items ?? [])
+                        .filter(
+                            (item) =>
+                                !(
+                                    auth.role === 'employee' &&
+                                    item.title === 'All Balances'
+                                ),
+                        )
+                        .map((item, index) => (
+                            <SidebarMenuItem key={index}>
+                                <SidebarMenuButton
+                                    asChild
+                                    isActive={isCurrentUrl(item.href)}
+                                    tooltip={{ children: item.title }}
+                                >
+                                    <Link href={item.href} cacheFor={0}>
+                                        {item.icon && <item.icon />}
+                                        <span>{item.title}</span>
+                                    </Link>
+                                </SidebarMenuButton>
+                            </SidebarMenuItem>
+                        ))}
                 </div>
             ))}
         </SidebarGroup>

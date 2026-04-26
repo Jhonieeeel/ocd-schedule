@@ -16,9 +16,9 @@ import {
     isThisWeek,
 } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
-import { Link } from '@inertiajs/react';
+import { Link, useForm } from '@inertiajs/react';
 import { dashboard } from '@/routes';
-import { show } from '@/routes/balance';
+import { carry, show } from '@/routes/balance';
 
 export const columns: ColumnDef<Balance>[] = [
     {
@@ -65,7 +65,7 @@ export const columns: ColumnDef<Balance>[] = [
             let flUsed = balance.fl_used ?? 0;
 
             let remainingVL =
-                vlBalance - (undertime + (vlUsed ?? flUsed)) + 1.25;
+                vlBalance! - (undertime + (vlUsed + flUsed)) + 1.25;
 
             return (
                 <div className="py-1.5 font-medium text-muted-foreground">
@@ -161,12 +161,7 @@ export const columns: ColumnDef<Balance>[] = [
                             align="end"
                             className="dark:border-zinc-600"
                         >
-                            <DropdownMenuItem
-                                onClick={() => console.log(balance)}
-                            >
-                                Add to Next month
-                            </DropdownMenuItem>
-                            <Link href={show(balance.id)}>
+                            <Link href={show(balance.id as number)}>
                                 <DropdownMenuItem>View</DropdownMenuItem>
                             </Link>
                             <DropdownMenuItem>Delete</DropdownMenuItem>

@@ -1,4 +1,4 @@
-import { usePage } from '@inertiajs/react';
+import { useForm, usePage } from '@inertiajs/react';
 import {
     createViewDay,
     createViewMonthGrid,
@@ -11,11 +11,11 @@ import '@schedule-x/theme-default/dist/index.css';
 import { useEffect, useState } from 'react';
 import 'temporal-polyfill/global';
 
+import { useAppearance } from '@/hooks/use-appearance';
 import AddEventModal from './add-event-modal';
 import { ViewEventModal } from './custom-modal';
-import { CALENDARS, LeaveEvent } from './leave_data/data';
 import EditEventModal from './edit-event-modal';
-import { useAppearance } from '@/hooks/use-appearance';
+import { CALENDARS, LeaveEvent } from './leave_data/data';
 
 type Props = {
     leaves: LeaveEvent[];
@@ -24,14 +24,24 @@ type Props = {
 type CalendarId = keyof typeof CALENDARS;
 
 function CalendarLeave() {
-    const { leaves, auth } = usePage<Props>().props;
+    const { leaves } = usePage<Props>().props;
 
     const [openAddEvent, setOpenAddEvent] = useState(false);
     const [viewEvent, setViewEvent] = useState(false);
     const [editEvent, setEditEvent] = useState(false);
-    const [event, setEvent] = useState<LeaveEvent | undefined>(undefined);
 
     const eventsService = useState(() => createEventsServicePlugin())[0];
+
+    // form
+    const form = useForm<LeaveEvent>({
+        id: undefined as number | undefined,
+        user_id: '',
+        leave_type: '',
+        start: '',
+        end: '',
+        description: '',
+        is_approve: false as boolean,
+    });
 
     // dark mode
     const { appearance } = useAppearance();
@@ -69,19 +79,19 @@ function CalendarLeave() {
         },
         callbacks: {
             onClickDate(date) {
-                const today = Temporal.PlainDate.from(
-                    new Intl.DateTimeFormat('en-CA').format(new Date()),
-                );
-                const clicked = Temporal.PlainDate.from(date);
+                // const today = Temporal.PlainDate.from(
+                //     new Intl.DateTimeFormat('en-CA').format(new Date()),
+                // );
+                // const clicked = Temporal.PlainDate.from(date);
 
-                if (Temporal.PlainDate.compare(clicked, today) < 0) return;
+                // if (Temporal.PlainDate.compare(clicked, today) < 0) return;
 
-                // if (auth.role !== 'employee') setOpenAddEvent(true);
                 setOpenAddEvent(true);
             },
 
-            onEventClick(event) {
-                setEvent(event as unknown as LeaveEvent);
+            onEventClick(clickedEvent) {
+                form.setData(clickedEvent as unknown as LeaveEvent);
+
                 setViewEvent(true);
             },
         },
@@ -96,16 +106,18 @@ function CalendarLeave() {
             <ScheduleXCalendar calendarApp={calendar} />
 
             <AddEventModal
+                form={form}
                 openAddEvent={openAddEvent}
                 setOpenAddEvent={setOpenAddEvent}
             />
 
-            {event && (
+            {form.data && (
                 <ViewEventModal
-                    key={event.id}
+                    key={form.data.id}
+                    form={form}
                     open={viewEvent}
                     onOpenChange={setViewEvent}
-                    event={event}
+                    event={form.data}
                     onEdit={() => {
                         setViewEvent(false);
                         setEditEvent(true);
@@ -113,10 +125,11 @@ function CalendarLeave() {
                 />
             )}
 
-            {event && (
+            {form.data && (
                 <EditEventModal
-                    key={event.id}
-                    event={event}
+                    key={form.data.calendarId}
+                    form={form}
+                    event={form.data}
                     open={editEvent}
                     onOpenChange={setEditEvent}
                 />

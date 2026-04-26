@@ -9,9 +9,12 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { Dialog, DialogContent, DialogHeader } from '@/components/ui/dialog';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Spinner } from '@/components/ui/spinner';
+import { Switch } from '@/components/ui/switch';
 import { destroy, update } from '@/routes/leave';
-import { useForm, usePage } from '@inertiajs/react';
+import { Form, useForm, usePage } from '@inertiajs/react';
 import { DialogTitle } from '@radix-ui/react-dialog';
 import {
     CalendarDays,
@@ -23,8 +26,6 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 import { CALENDARS, LeaveEvent } from './leave_data/data';
-import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
 
 type CalendarId = keyof typeof CALENDARS;
 
@@ -33,28 +34,35 @@ export const ViewEventModal = ({
     onOpenChange,
     onEdit,
     event,
+    form,
 }: {
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    event: LeaveEvent | undefined;
-    onEdit: () => void;
+    event: LeaveEvent;
+    onEdit: (open: boolean) => void;
+    form: ReturnType<typeof useForm<Partial<LeaveEvent>>>;
 }) => {
     const [internalOpen, setInternalOpen] = useState(true);
 
     // check role
     const { auth } = usePage().props;
 
-    const { submit, processing, data, errors, setData } = useForm({
-        id: event?.id as string | number,
-        user_id: event?.user_id as number | string,
-        leave_type: event?.calendarId as string,
-        date_from: event?.start?.toString() ?? '',
-        date_to: event?.end?.toString() ?? '',
-        description: event?.description ?? '',
-        is_approve: event?.is_approve ?? (false as boolean | undefined),
-    });
-
     if (!event) return null;
+
+    function handleApprove() {
+        const next = !form.data.is_approve;
+        form.setData('is_approve', next);
+        setTimeout(() => {
+            form.submit(update(Number(event.id)), {
+                onSuccess: () => {
+                    form.setData({
+                        user_id: undefined,
+                    });
+                },
+            });
+            onOpenChange(!open);
+        }, 500);
+    }
 
     const calendar = CALENDARS[event.calendarId as CalendarId];
 
@@ -64,34 +72,15 @@ export const ViewEventModal = ({
         onContainer: '#3f3f46',
     };
 
-    function deleteEvent() {
-        submit(destroy(Number(event?.id)), {
-            onSuccess: () => {
-                onOpenChange(false);
-            },
-        });
-    }
-
-    function updateApprove(event: LeaveEvent) {
-        setData('is_approve', !event.is_approve);
-
-        submit(update(event.id), {
-            onSuccess: () => {
-                onOpenChange(false);
-            },
-        });
-    }
-
-    console.log(errors);
-
     return (
         <Dialog
             modal={false}
             open={open ?? internalOpen}
             onOpenChange={onOpenChange}
         >
+            <DialogTitle>View Event</DialogTitle>
             <DialogContent
-                aria-describedby="undefined"
+                aria-describedby={undefined}
                 className="max-w-md overflow-hidden border-zinc-600 bg-transparent p-0 shadow-none"
             >
                 <div className="overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-xl dark:border-zinc-800 dark:bg-zinc-950">
@@ -122,7 +111,7 @@ export const ViewEventModal = ({
                                     {event.card_title}
                                 </h2>
 
-                                {event.is_approve ? (
+                                {form.data.is_approve ? (
                                     <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-green-200 bg-green-100 px-2 py-0.5 text-[11px] font-medium text-green-700 dark:border-green-900 dark:bg-green-950 dark:text-green-400">
                                         <span className="h-1.5 w-1.5 rounded-full bg-green-500 dark:bg-green-400" />
                                         Approved
@@ -156,7 +145,7 @@ export const ViewEventModal = ({
                         {/* DATE */}
                         <div className="flex items-start gap-3">
                             <div
-                                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg"
+                                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full"
                                 style={{ backgroundColor: colors.container }}
                             >
                                 <CalendarDays
@@ -165,11 +154,27 @@ export const ViewEventModal = ({
                                 />
                             </div>
                             <div className="pt-0.5">
+                                <p className="text-[10px] font-semibold tracking-wide text-zinc-400 uppercase dark:text-zinc-500">
+                                    Date
+                                </p>
                                 <p className="text-[13px] font-medium text-zinc-900 dark:text-zinc-100">
-                                    {event.start?.toString()}
+                                    {new Date(
+                                        event.start?.toString(),
+                                    ).toLocaleDateString('en-US', {
+                                        month: 'long',
+                                        day: 'numeric',
+                                        year: 'numeric',
+                                    })}
                                 </p>
                                 <p className="text-[11px] text-zinc-400 dark:text-zinc-500">
-                                    Until {event.end?.toString()}
+                                    Until{' '}
+                                    {new Date(
+                                        event.end?.toString(),
+                                    ).toLocaleDateString('en-US', {
+                                        month: 'long',
+                                        day: 'numeric',
+                                        year: 'numeric',
+                                    })}
                                 </p>
                             </div>
                         </div>
@@ -180,7 +185,7 @@ export const ViewEventModal = ({
                                 <div
                                     className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold"
                                     style={{
-                                        backgroundColor: colors.main + '20',
+                                        backgroundColor: colors.container,
                                         color: colors.main,
                                     }}
                                 >
@@ -190,9 +195,14 @@ export const ViewEventModal = ({
                                         .join('')
                                         .slice(0, 2)}
                                 </div>
-                                <p className="text-[13px] font-medium text-zinc-900 dark:text-zinc-100">
-                                    {event.user}
-                                </p>
+                                <div>
+                                    <p className="text-[10px] font-semibold tracking-wide text-zinc-400 uppercase dark:text-zinc-500">
+                                        Employee
+                                    </p>
+                                    <p className="text-[13px] font-medium text-zinc-900 dark:text-zinc-100">
+                                        {event.user}
+                                    </p>
+                                </div>
                             </div>
                         )}
 
@@ -200,7 +210,7 @@ export const ViewEventModal = ({
                         {event.description && (
                             <div className="flex items-start gap-3">
                                 <div
-                                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg"
+                                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full"
                                     style={{
                                         backgroundColor: colors.container,
                                     }}
@@ -210,9 +220,14 @@ export const ViewEventModal = ({
                                         style={{ color: colors.main }}
                                     />
                                 </div>
-                                <p className="pt-1 text-xs leading-relaxed text-zinc-500 dark:text-zinc-400">
-                                    {event.description}
-                                </p>
+                                <div>
+                                    <p className="text-[10px] font-semibold tracking-wide text-zinc-400 uppercase dark:text-zinc-500">
+                                        Reason
+                                    </p>
+                                    <p className="pt-0.5 text-xs leading-relaxed text-zinc-500 dark:text-zinc-400">
+                                        {event.description}
+                                    </p>
+                                </div>
                             </div>
                         )}
                     </div>
@@ -236,11 +251,10 @@ export const ViewEventModal = ({
                                 </Label>
                             </div>
                             <Switch
+                                disabled={form.processing}
                                 id="is_approve"
-                                checked={data.is_approve ?? false}
-                                onCheckedChange={() => {
-                                    updateApprove(event);
-                                }}
+                                checked={form.data.is_approve}
+                                onCheckedChange={handleApprove}
                                 className="data-[state=checked]:bg-green-500 dark:data-[state=checked]:bg-green-600"
                             />
                         </div>
@@ -250,7 +264,7 @@ export const ViewEventModal = ({
                     {auth.role !== 'employee' && (
                         <div className="flex gap-2 border-t border-zinc-200 px-5 py-3 dark:border-zinc-800">
                             <button
-                                onClick={onEdit}
+                                onClick={() => onEdit(true)}
                                 className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-zinc-200 py-2 text-[13px] font-medium text-zinc-700 transition hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
                             >
                                 <Pencil className="h-3.5 w-3.5" />
@@ -281,20 +295,30 @@ export const ViewEventModal = ({
                                         <AlertDialogCancel className="rounded-xl border-zinc-200 text-zinc-700 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800">
                                             Cancel
                                         </AlertDialogCancel>
-                                        <AlertDialogAction
-                                            onClick={deleteEvent}
-                                            disabled={processing}
-                                            className="rounded-xl bg-red-600 text-white hover:bg-red-700 disabled:opacity-60 dark:bg-red-700 dark:hover:bg-red-600"
+                                        <Form
+                                            {...destroy.form(Number(event.id))}
+                                            onSuccess={() => {
+                                                onOpenChange(!open);
+                                                form.reset();
+                                            }}
                                         >
-                                            {processing ? (
-                                                <span className="flex items-center gap-2">
-                                                    <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                                                    Deleting...
-                                                </span>
-                                            ) : (
-                                                'Yes, delete'
+                                            {({ processing }) => (
+                                                <AlertDialogAction
+                                                    type="submit"
+                                                    disabled={processing}
+                                                    className="rounded-xl bg-red-600 text-white hover:bg-red-700 disabled:opacity-60 dark:bg-red-700 dark:hover:bg-red-600"
+                                                >
+                                                    {processing ? (
+                                                        <span className="flex items-center gap-2">
+                                                            <Spinner />
+                                                            Deleting
+                                                        </span>
+                                                    ) : (
+                                                        'Yes, delete'
+                                                    )}
+                                                </AlertDialogAction>
                                             )}
-                                        </AlertDialogAction>
+                                        </Form>
                                     </AlertDialogFooter>
                                 </AlertDialogContent>
                             </AlertDialog>

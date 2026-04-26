@@ -9,13 +9,8 @@ import {
     ComboboxItem,
     ComboboxList,
 } from '@/components/ui/combobox';
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-} from '@/components/ui/dialog';
-import { Field, FieldGroup, FieldLabel } from '@/components/ui/field';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Field, FieldLabel } from '@/components/ui/field';
 import { InputGroupAddon } from '@/components/ui/input-group';
 import {
     Popover,
@@ -24,35 +19,27 @@ import {
 } from '@/components/ui/popover';
 import { Textarea } from '@/components/ui/textarea';
 
-import { Spinner } from '@/components/ui/spinner';
 import { Switch } from '@/components/ui/switch';
 import { update } from '@/routes/leave';
 import { useForm, usePage } from '@inertiajs/react';
 import { format } from 'date-fns';
-import { CalendarIcon, CalendarOff, UserIcon } from 'lucide-react';
+import { CalendarIcon, CalendarOff, CheckIcon, UserIcon } from 'lucide-react';
 import { useState } from 'react';
 import { DateRange } from 'react-day-picker';
 import { leave_types, LeaveEvent, statuses } from './leave_data/data';
+import { DialogTitle } from '@radix-ui/react-dialog';
 
 export default function EditEventModal({
     open,
     onOpenChange,
     event,
+    form,
 }: {
     open: boolean;
     onOpenChange: (open: boolean) => void;
     event: LeaveEvent | undefined;
+    form: ReturnType<typeof useForm<Partial<LeaveEvent>>>;
 }) {
-    const { setData, processing, submit, errors, data } = useForm({
-        id: event?.id as string | number,
-        user_id: event?.user_id as number | string,
-        leave_type: event?.calendarId as string,
-        date_from: event?.start?.toString() ?? '',
-        date_to: event?.end?.toString() ?? '',
-        description: event?.description ?? '',
-        is_approve: event?.is_approve ?? (false as boolean | undefined),
-    });
-
     const [date, setDate] = useState<DateRange | undefined>({
         from: event?.start ? new Date(event.start.toString()) : undefined,
         to: event?.end ? new Date(event.end.toString()) : undefined,
@@ -89,11 +76,15 @@ export default function EditEventModal({
     const { users } = usePage<PageProps>().props;
 
     function handleSubmit() {
-        submit(update(Number(event?.id)), {
-            onSuccess: () => {
-                onOpenChange(false);
-            },
-        });
+        setTimeout(() => {
+            form.submit(update(Number(form.data.id)), {
+                onSuccess: () => {
+                    onOpenChange(!open);
+                    setDate({ from: new Date() });
+                    form.reset();
+                },
+            });
+        }, 0);
     }
 
     return (
@@ -103,308 +94,294 @@ export default function EditEventModal({
             open={open}
             onOpenChange={onOpenChange}
         >
-            <DialogContent className="gap-0 overflow-hidden p-0 sm:max-w-md">
-                {/* accent bar */}
-                <div className="h-1 bg-blue-500" />
+            <DialogTitle>Edit Event</DialogTitle>
+            <DialogContent
+                aria-labelledby={undefined}
+                className="gap-0 overflow-hidden p-0 sm:max-w-md"
+            >
+                {/* ACCENT BAR */}
+                <div className="h-[3px] bg-blue-500" />
 
-                <div className="px-6 pt-5 pb-2">
-                    <DialogHeader>
-                        <DialogTitle className="text-base font-medium">
-                            Add New Leave
-                        </DialogTitle>
-                        <p className="text-[12px] text-zinc-400">
-                            Fill in the details below to submit a leave request.
-                        </p>
-                    </DialogHeader>
+                {/* HEADER */}
+                <div className="border-b border-zinc-100 px-6 pt-5 pb-3 dark:border-zinc-800">
+                    <p className="text-[15px] font-medium text-zinc-900 dark:text-zinc-50">
+                        Edit Leave
+                    </p>
+                    <p className="mt-0.5 text-[12px] text-zinc-400 dark:text-zinc-500">
+                        Fill in the details below to submit a leave request.
+                    </p>
                 </div>
 
-                <div className="px-6 pb-6">
-                    <form
-                        onSubmit={(e) => {
-                            e.preventDefault();
-                            handleSubmit();
-                        }}
-                    >
-                        <FieldGroup className="gap-4">
-                            {/* EMPLOYEE NAME */}
-                            <Field>
-                                <FieldLabel className="text-[13px] font-medium text-zinc-700 dark:text-zinc-300">
-                                    Employee Name
-                                </FieldLabel>
-                                <Combobox
-                                    defaultInputValue={event?.user}
-                                    onValueChange={(user) =>
-                                        setData(
-                                            'user_id',
-                                            user as string | number,
-                                        )
-                                    }
-                                    items={users}
-                                >
-                                    <ComboboxInput placeholder="Select an employee">
-                                        <InputGroupAddon>
-                                            <UserIcon className="h-4 w-4 text-zinc-400" />
-                                        </InputGroupAddon>
-                                    </ComboboxInput>
-                                    <ComboboxContent
-                                        alignOffset={-28}
-                                        className="w-60"
-                                    >
-                                        <ComboboxEmpty>
-                                            No employees found.
-                                        </ComboboxEmpty>
-
-                                        <ComboboxList>
-                                            {(user) => (
-                                                <ComboboxItem
-                                                    key={user.id}
-                                                    value={user.id}
-                                                >
-                                                    {user.name}
-                                                </ComboboxItem>
-                                            )}
-                                        </ComboboxList>
-                                    </ComboboxContent>
-                                </Combobox>
-                                <InputError
-                                    message={errors.user_id}
-                                    className="mt-2"
-                                />
-                            </Field>
-
-                            {/* DATE RAMGE 2 field*/}
-                            <Field>
-                                <FieldLabel className="text-[13px] font-medium text-zinc-700 dark:text-zinc-300">
-                                    Date Range
-                                </FieldLabel>
-                                <Popover>
-                                    <PopoverTrigger asChild>
-                                        <Button
-                                            variant="outline"
-                                            id="date-picker-range"
-                                            className="justify-start px-2.5 font-normal"
+                {/* BODY */}
+                <div className="flex flex-col gap-4 px-6 py-4">
+                    {/* EMPLOYEE NAME */}
+                    <Field>
+                        <FieldLabel className="text-[12px] font-medium tracking-wide text-zinc-400 dark:text-zinc-500">
+                            Employee name
+                        </FieldLabel>
+                        <Combobox
+                            defaultInputValue={event?.user}
+                            onValueChange={(user) =>
+                                form.setData('user_id', user as string | number)
+                            }
+                            items={users}
+                        >
+                            <ComboboxInput placeholder="Select an employee">
+                                <InputGroupAddon>
+                                    <UserIcon className="h-3.5 w-3.5 text-zinc-400" />
+                                </InputGroupAddon>
+                            </ComboboxInput>
+                            <ComboboxContent alignOffset={-28} className="w-60">
+                                <ComboboxEmpty>
+                                    No employees found.
+                                </ComboboxEmpty>
+                                <ComboboxList>
+                                    {(user) => (
+                                        <ComboboxItem
+                                            key={user.id}
+                                            value={user.id}
                                         >
-                                            <CalendarIcon />
-                                            {date?.from ? (
-                                                date.to ? (
-                                                    <>
-                                                        {format(
-                                                            date.from,
-                                                            'LLL dd, y',
-                                                        )}{' '}
-                                                        -{' '}
-                                                        {format(
-                                                            date.to,
-                                                            'LLL dd, y',
-                                                        )}
-                                                    </>
-                                                ) : (
-                                                    format(
-                                                        date.from,
-                                                        'LLL dd, y',
-                                                    )
-                                                )
-                                            ) : (
-                                                <span>Pick a date</span>
-                                            )}
-                                        </Button>
-                                    </PopoverTrigger>
-                                    <PopoverContent
-                                        className="w-auto p-0"
-                                        align="start"
-                                    >
-                                        <Calendar
-                                            mode="range"
-                                            defaultMonth={
-                                                date?.from ?? new Date()
-                                            }
-                                            selected={date}
-                                            onSelect={(range) => {
-                                                setDate(range);
-                                                setData(
-                                                    'date_from',
-                                                    range?.from
-                                                        ? format(
-                                                              range.from,
-                                                              'yyyy-MM-dd',
-                                                          )
-                                                        : '',
-                                                );
-                                                setData(
-                                                    'date_to',
-                                                    range?.to
-                                                        ? format(
-                                                              range.to,
-                                                              'yyyy-MM-dd',
-                                                          )
-                                                        : '',
-                                                );
-                                            }}
-                                            numberOfMonths={2}
-                                        />
-                                    </PopoverContent>
-                                </Popover>
-                                <InputError
-                                    message={errors.date_from && errors.date_to}
-                                    className="mt-2"
-                                />
-                            </Field>
+                                            {user.name}
+                                        </ComboboxItem>
+                                    )}
+                                </ComboboxList>
+                            </ComboboxContent>
+                        </Combobox>
+                        <InputError
+                            message={form.errors.user_id}
+                            className="mt-1"
+                        />
+                    </Field>
 
-                            {/* Leave (Approve/Pending) */}
-                            <Field>
-                                <FieldLabel>Status</FieldLabel>
-                                <div className="flex items-center space-x-2">
-                                    <Switch
-                                        id="is_approve"
-                                        checked={data.is_approve ?? false}
-                                        onCheckedChange={() =>
-                                            setData(
-                                                'is_approve',
-                                                !event?.is_approve,
-                                            )
-                                        }
-                                    />
-                                </div>
-                            </Field>
-
-                            {/* LEAVE STATUS */}
-                            <Field>
-                                <FieldLabel className="text-[13px] font-medium text-zinc-700 dark:text-zinc-300">
-                                    Leave Status
-                                </FieldLabel>
-                                <div className="flex flex-wrap gap-2">
-                                    {statuses.map((status) => {
-                                        const isSelected =
-                                            selectedStatus === status.label;
-                                        return (
-                                            <button
-                                                type="button"
-                                                key={status.label}
-                                                onClick={() => {
-                                                    setSelectedStatus(
-                                                        status.label,
-                                                    );
-
-                                                    if (
-                                                        status.label ===
-                                                        'On Leave'
-                                                    ) {
-                                                        setData(
-                                                            'leave_type',
-                                                            '',
-                                                        );
-                                                    } else {
-                                                        setData(
-                                                            'leave_type',
-                                                            status.label,
-                                                        );
-                                                    }
-                                                }}
-                                                className={`rounded-full px-3 py-1 text-[12px] font-medium ring-1 transition-colors ${
-                                                    isSelected
-                                                        ? `${status.activeBg} text-white ring-transparent`
-                                                        : `${status.bg} ${status.text} ${status.ring} hover:opacity-80`
-                                                }`}
-                                            >
-                                                {status.label}
-                                            </button>
+                    {/* DATE RANGE */}
+                    <Field>
+                        <FieldLabel className="text-[12px] font-medium tracking-wide text-zinc-400 dark:text-zinc-500">
+                            Date range
+                        </FieldLabel>
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button
+                                    variant="outline"
+                                    className="justify-start px-2.5 text-[13px] font-normal"
+                                >
+                                    <CalendarIcon className="h-3.5 w-3.5 text-zinc-400" />
+                                    {date?.from ? (
+                                        date.to ? (
+                                            <>
+                                                {format(
+                                                    date.from,
+                                                    'MMM dd, yyyy',
+                                                )}{' '}
+                                                —{' '}
+                                                {format(
+                                                    date.to,
+                                                    'MMM dd, yyyy',
+                                                )}
+                                            </>
+                                        ) : (
+                                            format(date.from, 'MMM dd, yyyy')
+                                        )
+                                    ) : (
+                                        <span className="text-zinc-400">
+                                            Pick a date
+                                        </span>
+                                    )}
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent
+                                className="w-auto p-0"
+                                align="start"
+                            >
+                                <Calendar
+                                    mode="range"
+                                    defaultMonth={date?.from ?? new Date()}
+                                    selected={date}
+                                    onSelect={(range) => {
+                                        setDate(range);
+                                        form.setData(
+                                            'date_from',
+                                            range?.from
+                                                ? format(
+                                                      range.from,
+                                                      'yyyy-MM-dd',
+                                                  ).toString()
+                                                : '',
                                         );
-                                    })}
-                                </div>
-                                <InputError
-                                    message={errors.leave_type}
-                                    className="mt-2"
+                                        form.setData(
+                                            'date_to',
+                                            range?.to
+                                                ? format(
+                                                      range.to,
+                                                      'yyyy-MM-dd',
+                                                  ).toString()
+                                                : '',
+                                        );
+                                    }}
+                                    numberOfMonths={2}
                                 />
-                            </Field>
-                            {selectedStatus === 'On Leave' && (
-                                <Field>
-                                    <FieldLabel className="text-[13px] font-medium text-zinc-700 dark:text-zinc-300">
-                                        Leave Type
-                                    </FieldLabel>
+                            </PopoverContent>
+                        </Popover>
+                        <InputError
+                            message={
+                                form.errors.date_from ?? form.errors.date_to
+                            }
+                            className="mt-1"
+                        />
+                    </Field>
 
-                                    <Combobox
-                                        items={leave_types}
-                                        defaultValue={
-                                            leaveType === 'On Leave'
-                                                ? event?.calendarId
-                                                : ''
-                                        }
-                                        onValueChange={(value) => {
-                                            setData(
+                    {/* STATUS TOGGLE */}
+                    <Field>
+                        <FieldLabel className="text-[12px] font-medium tracking-wide text-zinc-400 dark:text-zinc-500">
+                            Status
+                        </FieldLabel>
+                        <div className="flex items-center gap-2.5">
+                            <Switch
+                                id="is_approve"
+                                checked={form.data.is_approve ?? false}
+                                onCheckedChange={() => {
+                                    const next = !form.data.is_approve;
+                                    form.setData('is_approve', next);
+                                }}
+                                className="data-[state=checked]:bg-green-500 dark:data-[state=checked]:bg-green-600"
+                            />
+                            <span className="text-[13px] text-zinc-500 dark:text-zinc-400">
+                                {form.data.is_approve ? 'Approved' : 'Pending'}
+                            </span>
+                        </div>
+                    </Field>
+
+                    {/* LEAVE TYPE PILLS */}
+                    <Field>
+                        <FieldLabel className="text-[12px] font-medium tracking-wide text-zinc-400 dark:text-zinc-500">
+                            Leave type
+                        </FieldLabel>
+                        <div className="flex flex-wrap gap-1.5">
+                            {statuses.map((status) => {
+                                const isSelected =
+                                    selectedStatus === status.label;
+                                return (
+                                    <button
+                                        type="button"
+                                        key={status.label}
+                                        onClick={() => {
+                                            setSelectedStatus(status.label);
+                                            form.setData(
                                                 'leave_type',
-                                                value as string,
+                                                status.label === 'On Leave'
+                                                    ? ''
+                                                    : status.label,
                                             );
                                         }}
+                                        className={`rounded-full px-3 py-1 text-[12px] font-medium ring-[0.5px] transition-colors ${
+                                            isSelected
+                                                ? `${status.activeBg} text-white ring-transparent`
+                                                : `bg-zinc-50 text-zinc-500 ring-zinc-200 hover:opacity-80 dark:bg-zinc-800 dark:text-zinc-400 dark:ring-zinc-700`
+                                        }`}
                                     >
-                                        <ComboboxInput
-                                            name="leave_type"
-                                            placeholder="Select an leave type"
-                                        >
-                                            <InputGroupAddon>
-                                                <CalendarOff className="h-4 w-4 text-zinc-400" />
-                                            </InputGroupAddon>
-                                        </ComboboxInput>
-                                        <ComboboxContent
-                                            alignOffset={-28}
-                                            className="w-60"
-                                        >
-                                            <ComboboxEmpty>
-                                                No employees found.
-                                            </ComboboxEmpty>
-                                            <ComboboxList>
-                                                {(leave) => (
-                                                    <ComboboxItem
-                                                        key={leave.id}
-                                                        value={leave.name}
-                                                    >
-                                                        {leave.name}
-                                                    </ComboboxItem>
-                                                )}
-                                            </ComboboxList>
-                                        </ComboboxContent>
-                                    </Combobox>
-                                    <InputError
-                                        message={errors.leave_type}
-                                        className="mt-2"
-                                    />
-                                </Field>
-                            )}
+                                        {status.label}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                        <InputError
+                            message={form.errors.leave_type}
+                            className="mt-1"
+                        />
+                    </Field>
 
-                            {/* REMAKRS / DESCRIPTION */}
-                            <Field>
-                                <FieldLabel className="text-[13px] font-medium text-zinc-700 dark:text-zinc-300">
-                                    Description/Remarks (Optional)
-                                </FieldLabel>
-                                <Textarea
-                                    name="description"
-                                    defaultValue={event?.description}
-                                    onChange={(e) =>
-                                        setData('description', e.target.value)
-                                    }
-                                    placeholder="Type your message here."
-                                />
-                            </Field>
+                    {/* LEAVE TYPE COMBOBOX (On Leave only) */}
+                    {selectedStatus === 'On Leave' && (
+                        <Field>
+                            <FieldLabel className="text-[12px] font-medium tracking-wide text-zinc-400 dark:text-zinc-500">
+                                Leave subtype
+                            </FieldLabel>
+                            <Combobox
+                                items={leave_types}
+                                defaultValue={
+                                    leaveType === 'On Leave'
+                                        ? event?.calendarId
+                                        : ''
+                                }
+                                onValueChange={(value) =>
+                                    form.setData('leave_type', value as string)
+                                }
+                            >
+                                <ComboboxInput
+                                    name="leave_type"
+                                    placeholder="Select a leave type"
+                                >
+                                    <InputGroupAddon>
+                                        <CalendarOff className="h-3.5 w-3.5 text-zinc-400" />
+                                    </InputGroupAddon>
+                                </ComboboxInput>
+                                <ComboboxContent
+                                    alignOffset={-28}
+                                    className="w-60"
+                                >
+                                    <ComboboxEmpty>
+                                        No types found.
+                                    </ComboboxEmpty>
+                                    <ComboboxList>
+                                        {(leave) => (
+                                            <ComboboxItem
+                                                key={leave.id}
+                                                value={leave.name}
+                                            >
+                                                {leave.name}
+                                            </ComboboxItem>
+                                        )}
+                                    </ComboboxList>
+                                </ComboboxContent>
+                            </Combobox>
+                            <InputError
+                                message={form.errors.leave_type}
+                                className="mt-1"
+                            />
+                        </Field>
+                    )}
 
-                            {/* ACTIONS */}
-                            <div className="flex justify-end gap-2 border-t border-zinc-100 px-6 py-3 dark:border-zinc-800">
-                                <Button
-                                    variant="ghost"
-                                    type="button"
-                                    className="text-[13px] text-zinc-600"
-                                >
-                                    Cancel
-                                </Button>
-                                <Button
-                                    type="submit"
-                                    disabled={processing}
-                                    className="bg-blue-500 text-[13px] text-white hover:bg-blue-600"
-                                >
-                                    {processing ?? <Spinner />}
-                                    Submit
-                                </Button>
-                            </div>
-                        </FieldGroup>
-                    </form>
+                    {/* DESCRIPTION */}
+                    <Field>
+                        <FieldLabel className="text-[12px] font-medium tracking-wide text-zinc-400 dark:text-zinc-500">
+                            Description / remarks
+                            <span className="ml-1 font-normal text-zinc-300 dark:text-zinc-600">
+                                (optional)
+                            </span>
+                        </FieldLabel>
+                        <Textarea
+                            name="description"
+                            defaultValue={event?.description}
+                            onChange={(e) =>
+                                form.setData('description', e.target.value)
+                            }
+                            placeholder="Type your message here."
+                            className="h-16 resize-none text-[13px]"
+                        />
+                    </Field>
+                </div>
+
+                {/* FOOTER */}
+                <div className="flex items-center justify-end gap-2 border-t border-zinc-100 px-6 py-3 dark:border-zinc-800">
+                    <Button
+                        variant="ghost"
+                        type="button"
+                        className="text-[13px] text-zinc-500 hover:text-zinc-700 dark:text-zinc-400"
+                    >
+                        Cancel
+                    </Button>
+                    <Button
+                        type="submit"
+                        disabled={form.processing}
+                        onClick={handleSubmit}
+                        className="gap-1.5 bg-blue-500 text-[13px] text-white hover:bg-blue-600"
+                    >
+                        {form.processing ? (
+                            <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                        ) : (
+                            <CheckIcon className="h-3.5 w-3.5" />
+                        )}
+                        Submit
+                    </Button>
                 </div>
             </DialogContent>
         </Dialog>

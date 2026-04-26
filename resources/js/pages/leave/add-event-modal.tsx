@@ -24,36 +24,27 @@ import {
 } from '@/components/ui/popover';
 import { Textarea } from '@/components/ui/textarea';
 import { store } from '@/routes/leave';
-import { Form, useForm, usePage } from '@inertiajs/react';
-import { addDays, format } from 'date-fns';
-import { CalendarIcon, CalendarOff, UserIcon } from 'lucide-react';
-import React, { useState } from 'react';
+import { useForm, usePage } from '@inertiajs/react';
+import { format } from 'date-fns';
+import { CalendarIcon, CalendarOff, CheckIcon, UserIcon } from 'lucide-react';
+import { useState } from 'react';
 import { DateRange } from 'react-day-picker';
-import { leave_types, statuses } from './leave_data/data';
+import { leave_types, LeaveEvent, statuses } from './leave_data/data';
+import { reset } from '@/routes/password';
 
 type AddModalProps = {
     openAddEvent: boolean;
     setOpenAddEvent: (value: boolean) => void;
-};
-
-type User = {
-    email: string;
-    name: string;
-    id: string | number;
-};
-
-type FileLeave = {
-    user_id: number;
-    leave_type: string;
+    form: ReturnType<typeof useForm<LeaveEvent>>;
 };
 
 export default function AddEventModal({
     openAddEvent,
     setOpenAddEvent,
+    form,
 }: AddModalProps) {
-    const { users, flash, leaves, auth } = usePage<PageProps>().props;
+    const { users, auth } = usePage<PageProps>().props;
 
-    const [leave, setLeave] = useState([]);
     const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
 
     // date picker
@@ -62,23 +53,14 @@ export default function AddEventModal({
         to: undefined,
     });
 
-    // useForm
-    const { data, setData, processing, submit, errors } = useForm({
-        user_id: (auth.role === 'employee' ? auth.user.id : '') as
-            | number
-            | string, // 1, 2, 3...
-        leave_type: '', // Sick Leave, Vacation Leave
-        date_from: '', // march 1 to april etc
-        date_to: '', // march 1 to april etc
-        description: '', // asdsad optiomal
-    });
-
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
-        submit(store(), {
+        form.submit(store(), {
             onSuccess: () => {
                 setOpenAddEvent(false);
                 setSelectedStatus(null);
+                setDate({ from: new Date() });
+                form.reset();
             },
         });
     };
@@ -89,52 +71,53 @@ export default function AddEventModal({
     };
 
     type PageProps = {
-        flash: {
+        flash?: {
             message?: string;
         };
-        users: User[];
-        leaves: [];
+        users?: User[];
+        leaves?: [];
     };
 
-    // usePage
     return (
         <Dialog
             modal={false}
             open={openAddEvent}
             onOpenChange={setOpenAddEvent}
         >
-            <DialogContent className="gap-0 overflow-hidden p-0 sm:max-w-md">
-                {/* accent bar */}
-                <div className="h-1 bg-blue-500" />
+            <DialogContent className="gap-0 overflow-hidden border-zinc-600 p-0 sm:max-w-md">
+                {/* ACCENT BAR */}
+                <div className="h-[3px] bg-blue-500" />
 
-                <div className="px-6 pt-5 pb-2">
+                {/* HEADER */}
+                <div className="border-b border-zinc-100 px-6 pt-5 pb-3 dark:border-zinc-800">
                     <DialogHeader>
-                        <DialogTitle className="text-base font-medium">
+                        <DialogTitle className="text-[15px] font-medium text-zinc-900 dark:text-zinc-50">
                             Add New Leave
                         </DialogTitle>
-                        <p className="text-[12px] text-zinc-400">
+                        <p className="text-[12px] text-zinc-400 dark:text-zinc-500">
                             Fill in the details below to submit a leave request.
                         </p>
                     </DialogHeader>
                 </div>
 
-                <div className="px-6 pb-6">
-                    <form onSubmit={handleSubmit} method="post">
+                {/* BODY */}
+                <div className="px-6 py-4">
+                    <form onSubmit={handleSubmit}>
                         <FieldGroup className="gap-4">
                             {/* EMPLOYEE NAME */}
                             <Field>
-                                <FieldLabel className="text-[13px] font-medium text-zinc-700 dark:text-zinc-300">
-                                    Employee Name
+                                <FieldLabel className="text-[12px] font-medium tracking-wide text-zinc-400 dark:text-zinc-500">
+                                    Employee name
                                 </FieldLabel>
                                 <Combobox
                                     defaultInputValue={
                                         auth.role === 'employee'
                                             ? auth.user.id
-                                            : data.user_id
+                                            : form.data.user_id
                                     }
                                     disabled={auth.role === 'employee'}
                                     onValueChange={(user) =>
-                                        setData(
+                                        form.setData(
                                             'user_id',
                                             user as string | number,
                                         )
@@ -143,7 +126,7 @@ export default function AddEventModal({
                                 >
                                     <ComboboxInput placeholder="Select an employee">
                                         <InputGroupAddon>
-                                            <UserIcon className="h-4 w-4 text-zinc-400" />
+                                            <UserIcon className="h-3.5 w-3.5 text-zinc-400" />
                                         </InputGroupAddon>
                                     </ComboboxInput>
                                     <ComboboxContent
@@ -177,45 +160,47 @@ export default function AddEventModal({
                                     </ComboboxContent>
                                 </Combobox>
                                 <InputError
-                                    message={errors.user_id}
-                                    className="mt-2"
+                                    message={form.errors.user_id}
+                                    className="mt-1"
                                 />
                             </Field>
 
-                            {/* DATE RAMGE 2 field*/}
+                            {/* DATE RANGE */}
                             <Field>
-                                <FieldLabel className="text-[13px] font-medium text-zinc-700 dark:text-zinc-300">
-                                    Date Range
+                                <FieldLabel className="text-[12px] font-medium tracking-wide text-zinc-400 dark:text-zinc-500">
+                                    Date range
                                 </FieldLabel>
                                 <Popover>
                                     <PopoverTrigger asChild>
                                         <Button
                                             variant="outline"
                                             id="date-picker-range"
-                                            className="justify-start px-2.5 font-normal"
+                                            className="justify-start px-2.5 text-[13px] font-normal"
                                         >
-                                            <CalendarIcon />
+                                            <CalendarIcon className="h-3.5 w-3.5 text-zinc-400" />
                                             {date?.from ? (
                                                 date.to ? (
                                                     <>
                                                         {format(
                                                             date.from,
-                                                            'LLL dd, y',
+                                                            'MMM dd, yyyy',
                                                         )}{' '}
-                                                        -{' '}
+                                                        —{' '}
                                                         {format(
                                                             date.to,
-                                                            'LLL dd, y',
+                                                            'MMM dd, yyyy',
                                                         )}
                                                     </>
                                                 ) : (
                                                     format(
                                                         date.from,
-                                                        'LLL dd, y',
+                                                        'MMM dd, yyyy',
                                                     )
                                                 )
                                             ) : (
-                                                <span>Pick a date</span>
+                                                <span className="text-zinc-400">
+                                                    Pick a date
+                                                </span>
                                             )}
                                         </Button>
                                     </PopoverTrigger>
@@ -229,8 +214,8 @@ export default function AddEventModal({
                                             selected={date}
                                             onSelect={(range) => {
                                                 setDate(range);
-                                                setData(
-                                                    'date_from',
+                                                form.setData(
+                                                    'start',
                                                     range?.from
                                                         ? format(
                                                               range.from,
@@ -238,8 +223,8 @@ export default function AddEventModal({
                                                           )
                                                         : '',
                                                 );
-                                                setData(
-                                                    'date_to',
+                                                form.setData(
+                                                    'end',
                                                     range?.to
                                                         ? format(
                                                               range.to,
@@ -253,17 +238,20 @@ export default function AddEventModal({
                                     </PopoverContent>
                                 </Popover>
                                 <InputError
-                                    message={errors.date_from && errors.date_to}
-                                    className="mt-2"
+                                    message={
+                                        form.errors.date_from ??
+                                        form.errors.date_to
+                                    }
+                                    className="mt-1"
                                 />
                             </Field>
 
-                            {/* LEAVE STATUS */}
+                            {/* LEAVE STATUS PILLS */}
                             <Field>
-                                <FieldLabel className="text-[13px] font-medium text-zinc-700 dark:text-zinc-300">
-                                    Leave Status
+                                <FieldLabel className="text-[12px] font-medium tracking-wide text-zinc-400 dark:text-zinc-500">
+                                    Leave status
                                 </FieldLabel>
-                                <div className="flex flex-wrap gap-2">
+                                <div className="flex flex-wrap gap-1.5">
                                     {statuses.map((status) => {
                                         const isSelected =
                                             selectedStatus === status.label;
@@ -275,26 +263,18 @@ export default function AddEventModal({
                                                     setSelectedStatus(
                                                         status.label,
                                                     );
-
-                                                    if (
+                                                    form.setData(
+                                                        'leave_type',
                                                         status.label ===
-                                                        'On Leave'
-                                                    ) {
-                                                        setData(
-                                                            'leave_type',
-                                                            '',
-                                                        );
-                                                    } else {
-                                                        setData(
-                                                            'leave_type',
-                                                            status.label,
-                                                        );
-                                                    }
+                                                            'On Leave'
+                                                            ? ''
+                                                            : status.label,
+                                                    );
                                                 }}
-                                                className={`rounded-full px-3 py-1 text-[12px] font-medium ring-1 transition-colors ${
+                                                className={`rounded-full px-3 py-1 text-[12px] font-medium ring-[0.5px] transition-colors ${
                                                     isSelected
                                                         ? `${status.activeBg} text-white ring-transparent`
-                                                        : `${status.bg} ${status.text} ${status.ring} hover:opacity-80`
+                                                        : `bg-zinc-50 text-zinc-500 ring-zinc-200 hover:opacity-80 dark:bg-zinc-800 dark:text-zinc-400 dark:ring-zinc-700`
                                                 }`}
                                             >
                                                 {status.label}
@@ -303,31 +283,32 @@ export default function AddEventModal({
                                     })}
                                 </div>
                                 <InputError
-                                    message={errors.leave_type}
-                                    className="mt-2"
+                                    message={form.errors.leave_type}
+                                    className="mt-1"
                                 />
                             </Field>
+
+                            {/* LEAVE TYPE COMBOBOX (On Leave only) */}
                             {selectedStatus === 'On Leave' && (
                                 <Field>
-                                    <FieldLabel className="text-[13px] font-medium text-zinc-700 dark:text-zinc-300">
-                                        Leave Type
+                                    <FieldLabel className="text-[12px] font-medium tracking-wide text-zinc-400 dark:text-zinc-500">
+                                        Leave type
                                     </FieldLabel>
-
                                     <Combobox
                                         items={leave_types}
-                                        onValueChange={(value) => {
-                                            setData(
+                                        onValueChange={(value) =>
+                                            form.setData(
                                                 'leave_type',
                                                 value as string,
-                                            );
-                                        }}
+                                            )
+                                        }
                                     >
                                         <ComboboxInput
                                             name="leave_type"
-                                            placeholder="Select an leave type"
+                                            placeholder="Select a leave type"
                                         >
                                             <InputGroupAddon>
-                                                <CalendarOff className="h-4 w-4 text-zinc-400" />
+                                                <CalendarOff className="h-3.5 w-3.5 text-zinc-400" />
                                             </InputGroupAddon>
                                         </ComboboxInput>
                                         <ComboboxContent
@@ -335,7 +316,7 @@ export default function AddEventModal({
                                             className="w-60"
                                         >
                                             <ComboboxEmpty>
-                                                No employees found.
+                                                No types found.
                                             </ComboboxEmpty>
                                             <ComboboxList>
                                                 {(leave) => (
@@ -350,29 +331,39 @@ export default function AddEventModal({
                                         </ComboboxContent>
                                     </Combobox>
                                     <InputError
-                                        message={errors.leave_type}
-                                        className="mt-2"
+                                        message={form.errors.leave_type}
+                                        className="mt-1"
                                     />
                                 </Field>
                             )}
 
-                            {/* REMAKRS / DESCRIPTION */}
+                            {/* DESCRIPTION */}
                             <Field>
-                                <FieldLabel className="text-[13px] font-medium text-zinc-700 dark:text-zinc-300">
-                                    Description/Remarks (Optional)
+                                <FieldLabel className="text-[12px] font-medium tracking-wide text-zinc-400 dark:text-zinc-500">
+                                    Description / remarks{' '}
+                                    <span className="font-normal text-zinc-300 dark:text-zinc-600">
+                                        (optional)
+                                    </span>
                                 </FieldLabel>
                                 <Textarea
                                     name="description"
                                     onChange={(e) =>
-                                        setData('description', e.target.value)
+                                        form.setData(
+                                            'description',
+                                            e.target.value,
+                                        )
                                     }
                                     placeholder="Type your message here."
+                                    className="h-16 resize-none text-[13px]"
                                 />
                             </Field>
-                            <div className="flex justify-end gap-2 border-t border-zinc-100 px-6 py-3 dark:border-zinc-800">
+
+                            {/* FOOTER */}
+                            <div className="flex justify-end gap-2 border-t border-zinc-100 pt-3 dark:border-zinc-800">
                                 <Button
+                                    type="button"
                                     variant="ghost"
-                                    className="text-[13px] text-zinc-600"
+                                    className="text-[13px] text-zinc-500 hover:text-zinc-700 dark:text-zinc-400"
                                     onClick={() => {
                                         setOpenAddEvent(false);
                                         setSelectedStatus(null);
@@ -382,10 +373,20 @@ export default function AddEventModal({
                                 </Button>
                                 <Button
                                     type="submit"
-                                    disabled={processing}
-                                    className="bg-blue-500 text-[13px] text-white hover:bg-blue-600"
+                                    disabled={form.processing}
+                                    className="gap-1.5 bg-blue-500 text-[13px] text-white hover:bg-blue-600"
                                 >
-                                    {processing ? 'Submitting...' : 'Submit'}
+                                    {form.processing ? (
+                                        <>
+                                            <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                                            Submitting...
+                                        </>
+                                    ) : (
+                                        <>
+                                            <CheckIcon className="h-3.5 w-3.5" />
+                                            Submit
+                                        </>
+                                    )}
                                 </Button>
                             </div>
                         </FieldGroup>

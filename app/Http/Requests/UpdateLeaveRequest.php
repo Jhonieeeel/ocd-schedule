@@ -23,10 +23,10 @@ class UpdateLeaveRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id'     => ['required', 'exists:users,id'],
-            'leave_type'  => ['required', 'string'],
-            'date_from'   => ['required', 'date'],
-            'date_to'     => ['required', 'date'],
+            'user_id'     => ['sometimes', 'exists:users,id'],
+            'leave_type'  => ['sometimes', 'string'],
+            'date_from'   => ['sometimes', 'date'],
+            'date_to'     => ['sometimes', 'date'],
             'description' => ['nullable', 'string'],
             'is_approve' => ['nullable', 'boolean']
         ];

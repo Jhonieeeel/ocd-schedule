@@ -16,25 +16,25 @@ class DashboardController extends Controller
 
         $cto = Leave::where('leave_type', 'CTO')
             ->where('is_approve', true)
-            ->whereBetween('date_from', [now()->startOfMonth(), now()->endOfMOnth()])
+            ->whereBetween('start', [now()->startOfMonth(), now()->endOfMOnth()])
             ->get();
 
         info($cto);
 
         $auto_offset = Leave::where('leave_type', 'Auto Offset')
             ->where('is_approve', true)
-            ->whereBetween('date_from', [now()->startOfMonth(), now()->endOfMOnth()])
+            ->whereBetween('start', [now()->startOfMonth(), now()->endOfMOnth()])
             ->get();
 
 
         $on_leave_not_filled = Leave::where('leave_type', 'On Leave (not filled)')
             ->where('is_approve', true)
-            ->whereBetween('date_from', [now()->startOfMonth(), now()->endOfMOnth()])
+            ->whereBetween('start', [now()->startOfMonth(), now()->endOfMOnth()])
             ->get();
 
         $auto_offset_not_filled = Leave::where('leave_type', 'Auto Offset (not filled)')
             ->where('is_approve', true)
-            ->whereBetween('date_from', [now()->startOfMonth(), now()->endOfMOnth()])
+            ->whereBetween('start', [now()->startOfMonth(), now()->endOfMOnth()])
             ->get();
 
         $leaveTypes = ['CTO', 'Auto Offset', 'On Leave (not filled)', 'Auto Offset (not filled)'];

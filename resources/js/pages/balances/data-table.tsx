@@ -22,6 +22,16 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { useState } from 'react';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from '@/components/ui/dialog';
+import { Calendar1Icon, Clock } from 'lucide-react';
+import AddBalance from './add-balance';
 
 interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
@@ -53,6 +63,7 @@ export function DataTable<TData, TValue>({
 
     return (
         <>
+            <div></div>
             <div className="flex items-center gap-4 py-4">
                 <Input
                     placeholder="Filter names..."
@@ -69,7 +80,8 @@ export function DataTable<TData, TValue>({
                     className="max-w-sm"
                 />
 
-                <Button variant="default">Add User Balance</Button>
+                {/* add user ni */}
+                <AddBalance />
             </div>
             <div className="overflow-hidden rounded-md border-2">
                 <Table>
@@ -117,7 +129,8 @@ export function DataTable<TData, TValue>({
                                     colSpan={columns.length}
                                     className="h-24 text-center"
                                 >
-                                    No results.
+                                    No data for{' '}
+                                    {new Date().getFullYear().toString()} yet
                                 </TableCell>
                             </TableRow>
                         )}

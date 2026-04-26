@@ -15,16 +15,27 @@ return new class extends Migration
         Schema::create('balances', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(User::class)->constrained()->cascadeOnDelete();
+
+            // vl
             $table->decimal('vl_balance', 8, 3)->nullable()->default(0);
             $table->decimal('vl_used', 8, 3)->nullable()->default(0);
+
+            // sl
             $table->decimal('sl_balance', 8, 3)->nullable()->default(0);
             $table->decimal('sl_used', 8, 3)->nullable()->default(0);
-            $table->decimal('fl_balance')->nullable()->default(0);
-            $table->decimal('fl_used')->nullable()->default(0);
+
+            // spl
             $table->decimal('spl_balance')->nullable()->default(5);
-            $table->decimal('undertime', 8, 3)->nullable()->default();
-            $table->tinyInteger('month')->nullable()->default(date('n')); // month
-            $table->integer('year')->nullable(date('Y')); // year
+
+            // fl
+            $table->decimal('fl_balance')->nullable()->default(5);
+            $table->decimal('fl_used')->nullable()->default(0);
+
+            $table->decimal('undertime', 8, 3)->nullable()->default(0);
+
+            $table->tinyInteger('month')->nullable()->default(date('n')); // month = 01-12
+            $table->integer('year')->nullable(date('Y')); // year = 2024
+
             // last updated
             $table->date('as_of')->nullable();
             $table->timestamps();

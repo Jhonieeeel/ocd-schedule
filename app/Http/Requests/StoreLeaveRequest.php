@@ -25,10 +25,11 @@ class StoreLeaveRequest extends FormRequest
        return [
             'user_id'     => ['required', 'exists:users,id'],
             'leave_type'  => ['required', 'string'],
-            'date_from'   => ['required', 'date'],
-            'date_to'     => ['required', 'date', 'after_or_equal:date_from'],
+            'start'   => ['required', 'date'],
+            'end'     => ['required', 'date', 'after_or_equal:date_from'],
             'description' => ['nullable', 'string'],
-            'is_approve' =>  ['nullable', 'boolean']
+            'is_approve' =>  ['nullable', 'boolean'],
+            'as_of' => ['nullable', 'date']
         ];
     }
 }

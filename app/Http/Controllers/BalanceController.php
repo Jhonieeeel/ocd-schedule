@@ -7,6 +7,7 @@ use App\Models\Leave;
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreBalanceRequest;
 use App\Http\Requests\UpdateBalanceRequest;
+use App\Models\User;
 use Inertia\Inertia;
 
 class BalanceController extends Controller
@@ -22,20 +23,18 @@ class BalanceController extends Controller
 
         $user = auth()->user();
 
-        $isAdmin = $user->hasRole('admin') || $user->hasRole('gip');
+        $isAdmin = $user->hasRole('admin') || $user->hasRole('employee');
 
-        $balances = Balance::where('user_id', $user->id)->latest()->get();
+        $userBalance = Balance::where('user_id', $user->id)->first();
 
-        return Inertia::render('balance/index', ['balances' => $balances, 'isAdmin' => $isAdmin]);
+        return Inertia::render('balance/index', ['userBalance' => $userBalance, 'isAdmin' => $isAdmin]);
     }
 
 
-  public function all_balances(Request $request)
+    public function all_balances(Request $request)
     {
         $month = $request->input('month');
         $year  = $request->input('year');
-
-        info($year);
 
         $balances = Balance::with('user')
             ->when($month, function($q) use ($month) {
@@ -47,14 +46,16 @@ class BalanceController extends Controller
             ->latest()
             ->get();
 
+
         return response()->json($balances);
     }
 
     public function all(Request $request)
     {
 
+        $users = User::select('id', 'name')->get();
 
-        return Inertia::render('balances/index', []);
+        return Inertia::render('balances/index', ['users' => $users]);
     }
 
     /**
@@ -74,6 +75,22 @@ class BalanceController extends Controller
 
         return redirect()->route("balance.store")->with("message", 'Balance created successfully');
     }
+
+    public function carry_over(StoreBalanceRequest $request) {
+
+        $validated = $request->validated();
+
+        $balance = Balance::where('id', $request['id'])->where('user_id', $validated['user_id'])
+                ->where('year', $validated['year'])
+                ->where('month', $validated['month'])
+                ->firstOrFail();
+
+        // add to next month or year ni
+        $balance->checkBalance($validated['month'],$validated['year']);
+
+        return to_route('balance.index')->with('message', 'New balance added successfully');
+    }
+
 
     /**
      * Display the specified resource.
@@ -96,9 +113,9 @@ class BalanceController extends Controller
      */
     public function update(UpdateBalanceRequest $request, Balance $balance)
     {
-        // validated['field_name;]
         $validated = $request->validated();
 
+        $balance->increaseUndertime($validated['undertime']);
 
         return redirect()->route('balance.update', $request['id'])
         ->with('message', 'Balance updated successfully.');

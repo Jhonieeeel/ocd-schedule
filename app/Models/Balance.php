@@ -14,6 +14,7 @@ class Balance extends Model
         'sl_used',
         'fl_balance',
         'fl_used',
+        'spl_balance',
         'undertime',
         'month',
         'year',
@@ -26,6 +27,7 @@ class Balance extends Model
         'sl_balance' => 'float',
         'sl_used'    => 'float',
         'fl_balance' => 'float',
+        'spl_balance' => 'float',
         'fl_used'    => 'float',
         'undertime'  => 'float',
         'as_of'      => 'date',
@@ -35,16 +37,73 @@ class Balance extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function addUndertime($value): float {
-        return $this->undertime + $value;
+    public function checkBalance($month, $year): void {
+
+
+        $nextMonth = $month == 12 ? 1 : $month + 1;
+        $nextYear = $month == 12 ? $year + 1 : $year;
+
+        Balance::firstOrCreate(
+            [
+                'user_id' => $this->user_id,
+                'year' => $nextYear,
+                'month' => $nextMonth
+            ],
+            [
+                'vl_balance' => $this->recalculateVL(),
+                'sl_balance' => $this->recalculateSL(),
+                'spl_balance' => $this->spl_balance
+            ]
+        );
+
+
     }
 
-    public function updateUndertime(float $undertime): float {
-        return $this->undertime = $this->undertime + $undertime;
+    public function increaseUndertime(float $undertime): void {
+        $this->undertime = $undertime;
+
+        $this->save();
     }
+
+    public function deductBalance(int $leaveDays): void {
+
+        if ($this->fl_balance <= 0) {
+            $this->vl_used += $leaveDays;
+        }elseif ($leaveDays > $this->fl_balance) {
+            $this->vl_used += $leaveDays - $this->fl_balance;
+            $this->fl_used += $this->fl_balance;
+            $this->fl_balance += 0;
+        }else {
+            $this->fl_balance -= $leaveDays;
+            $this->fl_used += $leaveDays;
+        }
+
+        $this->save();
+
+    }
+
+    public function recalculateSL(): float {
+
+        $this->sl_balance = ($this->sl_balance - $this->sl_used) + 1.25;
+
+        return $this->sl_balance;
+
+
+    }
+
+    public function recalculateVL(): float {
+
+        $this->vl_balance = $this->vl_balance - ($this->undertime + ($this->vl_used + $this->fl_used)) + 1.25;
+
+        return $this->vl_balance;
+    }
+
 
     public function getVL(float $undertime): float {
-       return $this->vl_balance = $this->vl_balance - ($undertime ?? 0 + ($this->used_vl ?? $this->used_fl)) + 1.25;
+
+        $this->vl_balance = $this->vl_balance - (($thundertime ?? 0) + ($this->used_vl ?: $this->used_fl)) + 1.25;
+
+        return $this->vl_balance;
 
     }
 

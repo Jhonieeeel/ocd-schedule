@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/select';
 import { index } from '@/routes/balance';
 import { Head, useForm } from '@inertiajs/react';
-import { Filter } from 'lucide-react';
+import { CalendarIcon, Filter } from 'lucide-react';
 import { Balance, months, years } from '../leave/leave_data/data';
 import { columns } from './columns';
 import { DataTable } from './data-table';
@@ -21,34 +21,47 @@ import { DataTable } from './data-table';
 import { useQuery } from '@tanstack/react-query';
 
 export default function UserBalances() {
+    let currentMonth = (new Date().getMonth() + 1).toString();
+    let currentYear = new Date().getFullYear().toString();
+
     const { setData, data } = useForm({
-        month: 11 as number | null,
-        year: '2024' as string | null,
-        balances: [],
+        month_id: currentMonth.toString(),
+        year: currentYear.toString(),
     });
 
-    async function fetchBalances(month: number | null, year: string | null) {
+    async function fetchBalances(month: string, year: string) {
         const res = await fetch(`/all_balances/?month=${month}&year=${year}`);
-        const data = res.json();
-
-        return data;
+        return res.json();
     }
 
     const { data: testBalances, isLoading } = useQuery({
-        queryKey: ['userBalances', data.month, data.year],
-        queryFn: () => fetchBalances(data.month, data.year),
+        queryKey: ['userBalances', data.month_id, data.year],
+        queryFn: () => fetchBalances(data.month_id, data.year),
         staleTime: 2000,
     });
+
+    let filterMonth = months.find((m) => m.id === Number(data.month_id))?.month;
 
     return (
         <>
             <Head title="User Balances" />
             <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4 md:m-6">
                 <div className="flex items-center justify-between">
-                    <div>
-                        <h3 className="text-md text-2xl font-semibold">
-                            Employee Balances
-                        </h3>
+                    <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
+                        <div>
+                            <p className="mb-1 text-xs font-medium tracking-widest text-muted-foreground uppercase">
+                                Overview
+                            </p>
+                            <h2 className="text-2xl font-semibold text-foreground">
+                                Employee Balances
+                            </h2>
+                            <div className="mt-2 flex items-center gap-2 rounded-md">
+                                <CalendarIcon className="h-4 w-4 text-muted-foreground" />
+                                <span className="text-md font-medium">
+                                    {filterMonth} {data.year}
+                                </span>
+                            </div>
+                        </div>
                     </div>
                     <div>
                         <DropdownMenu>
@@ -70,12 +83,13 @@ export default function UserBalances() {
                                             Filter
                                         </span>
                                     </div>
-                                    {(data.month || data.year) && (
+                                    {(data.month_id !== currentMonth ||
+                                        data.year !== currentYear) && (
                                         <button
                                             onClick={() => {
                                                 setData({
-                                                    month: null,
-                                                    year: undefined,
+                                                    month_id: currentMonth,
+                                                    year: currentYear,
                                                 });
                                             }}
                                             className="text-xs text-muted-foreground transition-colors hover:text-foreground"
@@ -86,19 +100,16 @@ export default function UserBalances() {
                                 </div>
 
                                 {/* Filters */}
-                                <div className="space-y-4 p-4">
+                                <div className="flex items-center justify-around p-4">
                                     {/* Month */}
                                     <div className="space-y-1.5">
                                         <label className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
                                             Month
                                         </label>
                                         <Select
-                                            value={data.month}
+                                            value={data.month_id}
                                             onValueChange={(value) =>
-                                                setData(
-                                                    'month',
-                                                    value as unknown as number,
-                                                )
+                                                setData('month_id', value)
                                             }
                                         >
                                             <SelectTrigger className="h-9">
@@ -108,9 +119,9 @@ export default function UserBalances() {
                                                 {months.map((m, i) => (
                                                     <SelectItem
                                                         key={i}
-                                                        value={m.id}
+                                                        value={m.id.toString()}
                                                     >
-                                                        {m.month}
+                                                        {m.month.toString()}
                                                     </SelectItem>
                                                 ))}
                                             </SelectContent>
@@ -135,7 +146,7 @@ export default function UserBalances() {
                                                 {years.map((y) => (
                                                     <SelectItem
                                                         key={y}
-                                                        value={y}
+                                                        value={y.toString()}
                                                     >
                                                         {y}
                                                     </SelectItem>
@@ -152,19 +163,12 @@ export default function UserBalances() {
                                         className="h-8 flex-1 text-sm"
                                         onClick={() => {
                                             setData({
-                                                month: undefined,
+                                                month_id: undefined,
                                                 year: undefined,
                                             });
                                         }}
                                     >
                                         Reset
-                                    </Button>
-                                    <Button
-                                        className="h-8 flex-1 text-sm"
-                                        // onClick={handleApply}
-                                        disabled={!data.month && !data.year}
-                                    >
-                                        Apply
                                     </Button>
                                 </div>
                             </DropdownMenuContent>

@@ -65,6 +65,7 @@ const mainNavItems: MainNav[] = [
                 title: 'Users',
                 href: '',
                 icon: Users2,
+                role: 'hr',
             },
         ],
     },

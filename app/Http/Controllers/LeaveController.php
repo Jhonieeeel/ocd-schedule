@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Balance;
 use App\Http\Requests\StoreLeaveRequest;
 use App\Http\Requests\UpdateLeaveRequest;
+use Carbon\Carbon;
 use Inertia\Inertia;
 
 class LeaveController extends Controller
@@ -26,8 +27,8 @@ class LeaveController extends Controller
                 'user' => $leave->user->name,
                 'user_id' => $leave->user->id,
                 'description' => $leave->description,
-                'start' => $leave->date_from->toDateString(),
-                'end' => $leave->date_to->toDateString(),
+                'start' => $leave->start->toDateString(),
+                'end' => $leave->end->toDateString(),
                 'is_approve' => $leave->is_approve
             ];
         });
@@ -51,11 +52,7 @@ class LeaveController extends Controller
     {
         Leave::create($request->validated());
 
-        // get user current balance leave this month
-        $user = Balance::where('user_id', auth()->user())->get();
-        info($user);
-
-       return redirect()->route('leave.index')->with('message', 'Leave created successfully.');
+        return redirect()->route('leave.index')->with('message', 'Leave created successfully.');
     }
 
     /**
@@ -80,14 +77,28 @@ class LeaveController extends Controller
     public function update(UpdateLeaveRequest $request, Leave $leave)
     {
 
-        info($leave->update($request->validated()));
+        $leave->update($request->validated());
+
+        $start = Carbon::parse($request['start']);
+        $end = Carbon::parse($request['end']);
+
+        $year = $start->year;
+        $month = $start->month;
+        $totalLeaveDays = $start->diffInDays($end) + 1;
 
 
-        $leaves = Leave::all();
-        info($leaves);
-        info($request->validated());
+        if ($request['is_approve'] && $request['leave'] == 'Vacation Leave') {
 
-        return redirect()->route("leave.index")->with('message', 'Leave updated successfully.');
+            $balance = Balance::where('user_id', $request['user_id'])->where('month', $month)->where('year', $year)->firstOrFail();
+
+            $balance->deductBalance($totalLeaveDays);
+
+            // $balance->recalculateVL();
+
+        }
+
+        return redirect()->route('leave.index')->with('message', 'Leave updated.');
+
     }
 
     /**
@@ -97,6 +108,7 @@ class LeaveController extends Controller
     {
         $leave->delete();
 
+        // dapat json, kaso dimo reload akoa kuan
         return redirect()->route('leave.index')->with('message', 'Leave deleted successfully.');
     }
 }

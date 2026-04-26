@@ -16,8 +16,8 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(User::class)->constrained()->cascadeOnDelete();
             $table->string('leave_type'); // cto/auto off/filled or not , leaves 12
-            $table->date('date_from');
-            $table->date('date_to');
+            $table->date('start');
+            $table->date('end');
             $table->text('description')->nullable();
             $table->boolean('is_approve')->default(false);
             $table->timestamps();

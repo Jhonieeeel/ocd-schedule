@@ -7,14 +7,17 @@ use Illuminate\Database\Eloquent\Builder;
 
 class Leave extends Model
 {
-    protected $fillable = ['user_id', 'leave_type', 'date_from', 'date_to', 'description', 'is_approve'];
+    protected $fillable = ['user_id', 'leave_type', 'start', 'end', 'description', 'is_approve'];
 
     protected $casts = [
-        'date_from' => 'date',
-        'date_to' => 'date',
+        'start' => 'date',
+        'end' => 'date',
         'is_approve' => 'boolean'
     ];
 
+    public function calaculateVL(int $user_id, string $leave) {
+        $balance = Balance::findOrFail($id);
+    }
 
 
     public function user() {

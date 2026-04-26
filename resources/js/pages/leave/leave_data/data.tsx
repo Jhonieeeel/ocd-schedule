@@ -1,3 +1,5 @@
+import { AlertCircle, AlertTriangle, MapPin, Star } from 'lucide-react';
+
 // lib/calendar-colors.ts
 export const CALENDARS = {
     'Sick Leave': {
@@ -361,36 +363,37 @@ export const leave_types = [
 ];
 
 export type Balance = {
-    id: number;
+    id?: number;
     user_id: number;
     year: number;
     month: number;
-    user: {
+    user?: {
         id: number;
         name: string;
     };
-    vl_balance: number;
+    vl_balance?: number;
     vl_used?: number;
-    sl_balance: number;
+    sl_balance?: number;
     sl_used?: number;
-    fl_balance: number;
+    fl_balance?: number;
     fl_used?: number;
+    spl_balance?: number;
     undertime?: number;
     as_of?: string;
 
-    created_at: string;
-    updated_at: string;
+    created_at?: string;
+    updated_at?: string;
 };
 
 export type LeaveEvent = {
-    id: number;
-    calendarId: string;
-    title: string;
-    card_title: string;
-    leave_type: string;
-    user: string;
-    user_id: string | number;
-    description: string;
+    id: number | undefined;
+    calendarId?: string;
+    title?: string;
+    card_title?: string;
+    leave_type?: string;
+    user?: string;
+    user_id?: string | number;
+    description?: string;
     is_approve: boolean;
     start: string;
     end: string;
@@ -465,4 +468,49 @@ export const months = [
     },
 ];
 
-export const years = ['2022', '2023', '2024', '2025'];
+export const leaves: {
+    key: string;
+    label: string;
+    icon: React.ReactNode;
+    iconClass: string;
+    balanceKey: keyof typeof form.data;
+    usedKey: keyof typeof form.data;
+}[] = [
+    {
+        key: 'vl',
+        label: 'Vacation Leave',
+        icon: <MapPin className="h-3.5 w-3.5" />,
+        iconClass:
+            'bg-blue-50 text-blue-600 dark:bg-blue-950 dark:text-blue-400',
+        balanceKey: 'vl_balance',
+        usedKey: 'vl_used',
+    },
+    {
+        key: 'sl',
+        label: 'Sick Leave',
+        icon: <AlertCircle className="h-3.5 w-3.5" />,
+        iconClass:
+            'bg-amber-50 text-amber-600 dark:bg-amber-950 dark:text-amber-400',
+        balanceKey: 'sl_balance',
+        usedKey: 'sl_used',
+    },
+    {
+        key: 'fl',
+        label: 'Force Leave',
+        icon: <AlertTriangle className="h-3.5 w-3.5" />,
+        iconClass: 'bg-red-50 text-red-600 dark:bg-red-950 dark:text-red-400',
+        balanceKey: 'fl_balance',
+        usedKey: 'fl_used',
+    },
+    {
+        key: 'spl',
+        label: 'Special Privilege',
+        icon: <Star className="h-3.5 w-3.5" />,
+        iconClass: 'bg-muted text-muted-foreground',
+        balanceKey: 'spl_balance',
+        usedKey: 'spl_used',
+    },
+];
+
+let currentYear = new Date().getFullYear();
+export const years = Array.from({ length: 7 }, (_, i) => currentYear - 5 + i);

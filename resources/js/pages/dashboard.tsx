@@ -20,8 +20,8 @@ type LeaveType = {
     user_id: number;
     leave_type: string;
     description: string;
-    date_from: string;
-    date_to: string;
+    start: string;
+    end: string;
 
     created_at: string;
     updated_at: string;
