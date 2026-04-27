@@ -37,6 +37,10 @@ class User extends Authenticatable
         ];
     }
 
+    public function attendance() {
+        return $this->hasMany(AttendanceLog::class);
+    }
+
     public function details() {
         return $this->hasOne(UserDetails::class);
     }

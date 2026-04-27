@@ -38,6 +38,11 @@ return new class extends Migration
 
             // last updated
             $table->date('as_of')->nullable();
+
+            // counts
+            $table->integer('tardiness_count')->nullable()->default(0);
+            $table->integer('undertime_count')->nullable()->default(0);
+
             $table->timestamps();
         });
     }

@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\StoreBalanceRequest;
 use App\Http\Requests\UpdateBalanceRequest;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Inertia\Inertia;
 
 class BalanceController extends Controller
@@ -26,6 +27,8 @@ class BalanceController extends Controller
         $isAdmin = $user->hasRole('admin') || $user->hasRole('employee');
 
         $userBalance = Balance::where('user_id', $user->id)->first();
+
+
 
         return Inertia::render('balance/index', ['userBalance' => $userBalance, 'isAdmin' => $isAdmin]);
     }
@@ -85,8 +88,11 @@ class BalanceController extends Controller
                 ->where('month', $validated['month'])
                 ->firstOrFail();
 
+
         // add to next month or year ni
-        $balance->checkBalance($validated['month'],$validated['year']);
+        // $balance->checkBalance($validated['month'],$validated['year']);
+
+        $balance->getUndertime();
 
         return to_route('balance.index')->with('message', 'New balance added successfully');
     }
@@ -117,7 +123,7 @@ class BalanceController extends Controller
 
         $balance->increaseUndertime($validated['undertime']);
 
-        return redirect()->route('balance.update', $request['id'])
+        return redirect()->route('balance.update', $balance->id)
         ->with('message', 'Balance updated successfully.');
     }
 
@@ -128,4 +134,8 @@ class BalanceController extends Controller
     {
         $balance->delete();
     }
+
+
+
+
 }

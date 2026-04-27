@@ -1,24 +1,21 @@
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Field } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
+import { Spinner } from '@/components/ui/spinner';
+import { cn } from '@/lib/utils';
 import { carry, update } from '@/routes/balance';
 import { useForm, usePage } from '@inertiajs/react';
+import { CheckCircle2Icon, Clock, Plus, X } from 'lucide-react';
 import {
-    Badge,
-    CheckCircle,
-    CheckCircle2Icon,
-    Clock,
-    LucideIcon,
-    Plus,
-    X,
-} from 'lucide-react';
-import { Balance, leaves, months } from '../leave/leave_data/data';
-import { Spinner } from '@/components/ui/spinner';
-import { Label } from '@/components/ui/label';
-import { cn } from '@/lib/utils';
+    AttendanceLog,
+    Balance,
+    leaves,
+    months,
+} from '../leave/leave_data/data';
+import UserAttendace from './user-attendance';
 
 type PageProps = {
     flash: {
@@ -52,12 +49,9 @@ export default function UserBalance({ userBalance }: { userBalance: Balance }) {
 
     const { flash } = usePage<PageProps>().props;
 
-    function handleUpdate() {
-        submit(update(Number(data.id)), {
-            onSuccess: () => {
-                reset();
-            },
-        });
+    function handleUpdate(e) {
+        e.preventDefault();
+        submit(update(Number(data.id)));
     }
 
     const form = useForm({
@@ -65,6 +59,15 @@ export default function UserBalance({ userBalance }: { userBalance: Balance }) {
         user_id: userBalance.user.id as number,
         month: userBalance.month as number,
         year: userBalance.year as number,
+    });
+
+    const attendanceForm = useForm<AttendanceLog>({
+        user_id: userBalance.user.id,
+        balance_id: userBalance.id!,
+        date: new Date(),
+        minutes: 0,
+        hours: 0,
+        is_tardy: false,
     });
 
     function carryOver() {
@@ -106,6 +109,7 @@ export default function UserBalance({ userBalance }: { userBalance: Balance }) {
                 className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4"
                 key={userBalance.id}
             >
+                {/* User Info */}
                 <div className="flex items-center justify-between">
                     <div>
                         <h5 className="flex items-center gap-1 text-sm">
@@ -126,11 +130,11 @@ export default function UserBalance({ userBalance }: { userBalance: Balance }) {
                         </p>
                     </div>
 
-                    {/* Status Badge */}
-                    <span className="flex items-center gap-1 rounded-full bg-green-100 px-3 py-1 text-xs font-medium text-green-700">
-                        <CheckCircle className="h-3 w-3" />
-                        Updated
-                    </span>
+                    <UserAttendace
+                        key={userBalance.id}
+                        userBalance={userBalance}
+                        attendanceForm={attendanceForm}
+                    />
                 </div>
                 <form
                     onSubmit={handleUpdate}
@@ -138,7 +142,7 @@ export default function UserBalance({ userBalance }: { userBalance: Balance }) {
                     className="grid auto-rows-min md:grid-cols-4 md:gap-8"
                 >
                     {/* Undertime */}
-                    <Card className="col-span-4 border-zinc-700">
+                    <Card className="col-span-4 shadow-md dark:border-zinc-700">
                         <CardContent className="flex items-center gap-4 pt-5">
                             <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-md bg-yellow-100 dark:bg-yellow-900">
                                 <Clock className="h-4 w-4 text-yellow-600 dark:text-yellow-300" />

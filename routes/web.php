@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AttendanceLogController;
 use App\Http\Controllers\BalanceController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LeaveController;
@@ -35,6 +36,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get("balances/{balance}", [BalanceController::class, 'show'])->name('balance.show');
         Route::put("balances/{balance}", [BalanceController::class, 'update'])->name('balance.update');
         Route::delete('balances/{balance}', [BalanceController::class, 'destroy'])->name('balance.destroy');
+
+        // logs
+        Route::post("attendance_logs", [AttendanceLogController::class, 'store'])->name('attendance_logs.store');
     });
 
 

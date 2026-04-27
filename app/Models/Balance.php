@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Attribute;
 use Illuminate\Database\Eloquent\Model;
 
 class Balance extends Model
@@ -18,7 +19,9 @@ class Balance extends Model
         'undertime',
         'month',
         'year',
-        'as_of'
+        'as_of',
+        'tardiness_count',
+        'undertime_count'
     ];
 
     protected $casts = [
@@ -35,6 +38,11 @@ class Balance extends Model
 
     public function user() {
         return $this->belongsTo(User::class);
+    }
+
+    public function attendanceLogs()
+    {
+        return $this->hasMany(AttendanceLog::class);
     }
 
     public function checkBalance($month, $year): void {
@@ -112,4 +120,21 @@ class Balance extends Model
         return $sl;
     }
 
+    // conversion
+
+    public function updateUndertime(): void
+    {
+        $sum = $this->attendanceLogs()->sum('total_minutes');
+
+        info($this->attendanceLogs()->where('is_tardy', true)->count());
+
+
+        $this->update([
+            'undertime'       => round($sum / 480, 3),
+            'tardiness_count' => $this->attendanceLogs()->where('is_tardy', true)->count(),
+            'undertime_count' => $this->attendanceLogs()->where('is_tardy', false)->count(),
+        ]);
+    }
+
 }
+

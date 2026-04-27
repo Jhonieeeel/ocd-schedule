@@ -414,3 +414,49 @@ $employees = [
             $user->assignRole($employee['role']);
 
         }
+
+
+AttendanceLog
+
+    ( input )
+    - date = January 13, 2024
+
+    ( input either of 2)
+    - minutes = 10
+    - hours = 0
+
+    ( input )
+    - is_tardy = no so considered UT
+
+
+    ( system na mo identify )
+
+    - cutoff (1st half/2nd half) day 1-15 /16-30 or 31
+    - month = 1 -> auto parse from date
+    - year = 2024 -> auto parse from date
+
+
+
+example input s
+    1.
+        - date = January 5, 2024
+        - minutes = 30 mins
+        - hours =
+        - is_tardy = NO ( if no then UT)
+
+    2.
+        - date = January 12, 2024
+        - minutes = 12 mins
+        - hours =
+        - is_tardy = YES ( then tardy )
+
+    3.
+        - date = January 14, 2024
+        - minutes = 2 mins
+        - hours =
+        - is_tardy = NO ( then UT )
+
+
+
+Then get the log from 1-15 if theres UT or Tardy
+next total the hrs and minutes then pass the undertime or tardy to "undertime" field from Balance Table

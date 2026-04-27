@@ -514,3 +514,12 @@ export const leaves: {
 
 let currentYear = new Date().getFullYear();
 export const years = Array.from({ length: 7 }, (_, i) => currentYear - 5 + i);
+
+export type AttendanceLog = {
+    user_id: number;
+    balance_id: number;
+    date: string;
+    minutes?: number;
+    hours?: number;
+    is_tardy: boolean;
+};

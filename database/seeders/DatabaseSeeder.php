@@ -15,7 +15,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        Role::create(['name' => 'gasu_admin'])
+        Role::create(['name' => 'gasu_admin']);
         Role::create(['name' => 'pmu_admin']);
         Role::create(['name' => 'super-admin']);
 
@@ -27,21 +27,41 @@ class DatabaseSeeder extends Seeder
 
         $employees = [
             [
-                'name' => 'Barry Arreo',
+                'name' => 'Barry Q. Arreo',
                 'email' => 'barry@example.com',
+                'vl_balance' => 33.861,
+                'vl_used' => 2,
+                'sl_balance' => 21.952,
+                'sl_used' => 0,
+                'fl_balance' => 5,
+                'fl_used' => 0,
+                'spl_balance' => 1,
+                'undertime' => 0,
+                'month' => 1,
+                'year' => 2024,
                 'role' => 'hr'
             ],
-            [
-                'name' => 'Michael Overly',
-                'email' => 'michael@example.com',
-                'role' => 'hr'
-            ]
+
         ];
 
         foreach($employees as $employee) {
             $user = User::factory()->create([
                 'name' => $employee['name'],
                 'email' => $employee['email']
+            ]);
+
+            Balance::create([
+                'user_id' => $user->id,
+                'vl_balance' => $employee['vl_balance'],
+                'vl_used' => $employee['vl_used'],
+                'sl_balance' => $employee['sl_balance'],
+                'sl_used' => $employee['sl_used'],
+                'fl_balance' => $employee['fl_balance'],
+                'fl_used' => $employee['fl_used'],
+                'spl_balance' => $employee['spl_balance'],
+                'undertime' => $employee['undertime'],
+                'month' => $employee['month'],
+                'year' => $employee['year']
             ]);
 
             $user->assignRole('hr');
