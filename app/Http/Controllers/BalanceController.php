@@ -7,6 +7,7 @@ use App\Models\Leave;
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreBalanceRequest;
 use App\Http\Requests\UpdateBalanceRequest;
+use App\Models\AttendanceLog;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Inertia\Inertia;
@@ -88,10 +89,6 @@ class BalanceController extends Controller
                 ->where('month', $validated['month'])
                 ->firstOrFail();
 
-
-        // add to next month or year ni
-        // $balance->checkBalance($validated['month'],$validated['year']);
-
         $balance->getUndertime();
 
         return to_route('balance.index')->with('message', 'New balance added successfully');
@@ -101,9 +98,14 @@ class BalanceController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Balance $balance)
+   public function show(Balance $balance)
     {
-        return Inertia::render('balances/user-balance', ['userBalance' => $balance->load('user')]);
+        $logs = $balance->attendanceLogs()->get();
+
+        return Inertia::render('balances/user-balance', [
+            'userBalance'    => $balance->load('user'),
+            'attendanceLogs' => $logs,
+        ]);
     }
 
     /**
@@ -120,6 +122,8 @@ class BalanceController extends Controller
     public function update(UpdateBalanceRequest $request, Balance $balance)
     {
         $validated = $request->validated();
+
+        $balance->update($validated);
 
         $balance->increaseUndertime($validated['undertime']);
 

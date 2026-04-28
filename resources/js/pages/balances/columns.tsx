@@ -100,7 +100,8 @@ export const columns: ColumnDef<Balance>[] = [
         cell: ({ row }) => {
             let balance = row.original;
 
-            let nextSL = balance.sl_balance - (balance.sl_used ?? 0) + 1.25;
+            let nextSL =
+                (balance.sl_balance ?? 0) - (balance.sl_used ?? 0) + 1.25;
 
             return (
                 <div className="py-1.5 font-medium text-muted-foreground">
@@ -121,7 +122,7 @@ export const columns: ColumnDef<Balance>[] = [
         ),
         cell: ({ row }) => {
             const dateString = row.original.updated_at;
-            const date = new Date(dateString);
+            const date = new Date(dateString ?? '');
 
             const isUpdated = differenceInDays(new Date(), date) <= 14;
 

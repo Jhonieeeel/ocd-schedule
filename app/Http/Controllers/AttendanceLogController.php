@@ -32,35 +32,28 @@ class AttendanceLogController extends Controller
     public function store(StoreAttendanceLogRequest $request)
     {
         $validated = $request->validated();
-
         $date = Carbon::parse($validated['date']);
 
         $attendance = AttendanceLog::create([
             ...$validated,
-            'month' => $date->month,
-            'year' => $date->year,
-            'cutoff' => $date->day <= 15 ? 1 : 2,
-            'total_minutes' => (($validated['hours'] * 60) + $validated['minutes'])
+            'month'         => $date->month,
+            'year'          => $date->year,
+            'cutoff'        => $date->day <= 15 ? 1 : 2,
+            'total_minutes' => ($validated['hours'] * 60) + $validated['minutes'],
         ]);
 
+        $balance = Balance::where('id', $attendance->balance_id)
+            ->where('user_id', $attendance->user_id)
+            ->where('month', $attendance->month)
+            ->where('year', $attendance->year)
+            ->firstOrFail();
 
-        $balance = Balance::where('id', $attendance->balance_id)->where('user_id', $attendance->user_id)
-            ->where('month', $attendance->month)->where('year', $attendance->year)->firstOrFail();
+        $balance->updateUndertime();
 
-        if ($balance) {
-            $balance->updateUndertime();
-            return redirect()->route('balance.update', $balance->id)->with('message', 'Attendance Log added!');
+        info("Attendance {$attendance->cutoff} Half - {$date->format('M')} - {$attendance->total_minutes}mins = {$balance->undertime}");
 
-        }
-
-        info("
-            Attendance {$attendance->cutoff} Half
-            - {$date->format('M')} - {$attendance->total_minutes}mins = {$balance->undertime}
-        ");
-
-        return redirect()->route('balance.update', $balance->id)->with('message', 'Attendance Log added!');
-
-
+        return redirect()->route('balance.update', $balance->id)
+            ->with('message', 'Attendance Log added!');
     }
 
     /**
