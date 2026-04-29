@@ -42,18 +42,17 @@ class AttendanceLogController extends Controller
             'total_minutes' => ($validated['hours'] * 60) + $validated['minutes'],
         ]);
 
-        $balance = Balance::where('id', $attendance->balance_id)
+        $balance = Balance::where('id',$attendance->balance_id)
             ->where('user_id', $attendance->user_id)
             ->where('month', $attendance->month)
             ->where('year', $attendance->year)
             ->firstOrFail();
 
-        $balance->updateUndertime();
+        $freshBalance = $balance->fresh();
+        $freshBalance->updateUndertime();
 
-        info("Attendance {$attendance->cutoff} Half - {$date->format('M')} - {$attendance->total_minutes}mins = {$balance->undertime}");
-
-        return redirect()->route('balance.update', $balance->id)
-            ->with('message', 'Attendance Log added!');
+        return redirect()->route('balance.show', $balance->id)
+                ->with('message', 'Attendance Log added!');
     }
 
     /**

@@ -30,7 +30,6 @@ class BalanceController extends Controller
         $userBalance = Balance::where('user_id', $user->id)->first();
 
 
-
         return Inertia::render('balance/index', ['userBalance' => $userBalance, 'isAdmin' => $isAdmin]);
     }
 
@@ -125,9 +124,7 @@ class BalanceController extends Controller
 
         $balance->update($validated);
 
-        $balance->increaseUndertime($validated['undertime']);
-
-        return redirect()->route('balance.update', $balance->id)
+        return redirect()->route('balance.show', $balance->id)
         ->with('message', 'Balance updated successfully.');
     }
 

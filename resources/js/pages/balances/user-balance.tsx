@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Spinner } from '@/components/ui/spinner';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 import { all, carry, update } from '@/routes/balance';
 import { Link, useForm, usePage } from '@inertiajs/react';
@@ -15,10 +16,10 @@ import {
     leaves,
     months,
 } from '../leave/leave_data/data';
-import UserAttendace from './user-attendance';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { LogsTable } from './logs-table';
 import { logsColumns } from './logs-columns';
+import { LogsTable } from './logs-table';
+import UserAttendace from './user-attendance';
+import { useEffect } from 'react';
 
 type PageProps = {
     flash: {
@@ -28,35 +29,32 @@ type PageProps = {
 };
 
 export default function UserBalance({
-    userBalance,
     attendanceLogs,
 }: {
-    userBalance: Balance;
     attendanceLogs: AttendanceLog;
 }) {
-    const { submit, setData, errors, processing, data, reset } =
-        useForm<Balance>({
-            id: userBalance?.id,
-            user_id: userBalance?.user_id,
-            undertime: userBalance.undertime ?? (0.0 as number),
+    const { flash, userBalance } = usePage<PageProps>().props;
 
-            // balance
-            vl_balance: userBalance.vl_balance,
-            fl_balance: userBalance.fl_balance,
-            sl_balance: userBalance.sl_balance,
-            spl_balance: userBalance.spl_balance,
+    const { submit, setData, processing, data } = useForm<Balance>({
+        id: userBalance?.id,
+        user_id: userBalance?.user_id,
+        undertime: userBalance.undertime,
 
-            // used
-            vl_used: userBalance.vl_used,
-            fl_used: userBalance.fl_used,
-            sl_used: userBalance.sl_used,
+        // balance
+        vl_balance: userBalance.vl_balance,
+        fl_balance: userBalance.fl_balance,
+        sl_balance: userBalance.sl_balance,
+        spl_balance: userBalance.spl_balance,
 
-            // date
-            month: userBalance.month,
-            year: userBalance.year,
-        });
+        // used
+        vl_used: userBalance.vl_used,
+        fl_used: userBalance.fl_used,
+        sl_used: userBalance.sl_used,
 
-    const { flash } = usePage<PageProps>().props;
+        // date
+        month: userBalance.month,
+        year: userBalance.year,
+    });
 
     function handleUpdate(e) {
         e.preventDefault();
@@ -70,15 +68,6 @@ export default function UserBalance({
         year: userBalance.year as number,
     });
 
-    const attendanceForm = useForm<AttendanceLog>({
-        user_id: userBalance?.user?.id,
-        balance_id: userBalance.id!,
-        date: new Date().toString(),
-        minutes: 0,
-        hours: 0,
-        is_tardy: false,
-    });
-
     function carryOver() {
         form.submit(carry(), {
             onSuccess: () => {
@@ -87,13 +76,44 @@ export default function UserBalance({
         });
     }
 
+    // attendance log form
+    const attendanceForm = useForm<AttendanceLog>({
+        user_id: userBalance?.user?.id,
+        balance_id: userBalance.id!,
+        date: new Date().toString(),
+        minutes: 0,
+        hours: 0,
+        is_tardy: false,
+        cutoff: 1,
+    });
+
     const usageRate = (balance: number, used: number) => {
         const total = balance + used;
         return total > 0 ? ((used / total) * 100).toFixed(2) : '0.00';
     };
 
     return (
-        <>
+        <div key={data.id}>
+            <div className="m-4">
+                {flash.message && (
+                    <Alert className="relative max-w-md border border-green-300 bg-green-200 dark:border-[#1D9E75] dark:bg-[#085041]">
+                        <CheckCircle2Icon className="h-[18px] w-[18px] text-green-700 dark:text-emerald-400" />
+
+                        <AlertTitle className="font-medium text-green-900 dark:text-emerald-200">
+                            {flash.message}
+                        </AlertTitle>
+
+                        <AlertDescription className="text-sm leading-relaxed text-green-700 dark:text-emerald-400">
+                            Your account balance has been updated and is now
+                            current.
+                        </AlertDescription>
+
+                        <button className="absolute top-3 right-3 text-green-600 transition-opacity hover:opacity-100 dark:text-emerald-500/60">
+                            <X size={14} />
+                        </button>
+                    </Alert>
+                )}
+            </div>
             <Tabs defaultValue="balance">
                 <TabsList variant="line" className="m-4">
                     <TabsTrigger value="balance">User Balance</TabsTrigger>
@@ -101,29 +121,9 @@ export default function UserBalance({
                 </TabsList>
                 {/* balance */}
                 <TabsContent value="balance">
-                    <div className="m-4">
-                        {flash.message && (
-                            <Alert className="relative max-w-md border border-green-300 bg-green-200 dark:border-[#1D9E75] dark:bg-[#085041]">
-                                <CheckCircle2Icon className="h-[18px] w-[18px] text-green-700 dark:text-emerald-400" />
-
-                                <AlertTitle className="font-medium text-green-900 dark:text-emerald-200">
-                                    Balance updated successfully
-                                </AlertTitle>
-
-                                <AlertDescription className="text-sm leading-relaxed text-green-700 dark:text-emerald-400">
-                                    Your account balance has been updated and is
-                                    now current.
-                                </AlertDescription>
-
-                                <button className="absolute top-3 right-3 text-green-600 transition-opacity hover:opacity-100 dark:text-emerald-500/60">
-                                    <X size={14} />
-                                </button>
-                            </Alert>
-                        )}
-                    </div>
                     <div
                         className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4"
-                        key={userBalance.id}
+                        key={data.id}
                     >
                         {/* User Info */}
                         <div className="flex items-center justify-between">
@@ -146,12 +146,6 @@ export default function UserBalance({
                                     Leave balances for the current period
                                 </p>
                             </div>
-
-                            {/* <UserAttendace
-                                key={userBalance.id}
-                                userBalance={userBalance}
-                                attendanceForm={attendanceForm}
-                            /> */}
                         </div>
                         <form
                             onSubmit={handleUpdate}
@@ -172,9 +166,9 @@ export default function UserBalance({
                                             <Input
                                                 type="number"
                                                 step={0.002}
-                                                className="h-9 pr-14 disabled:text-white"
+                                                className="h-9 pr-14"
                                                 disabled
-                                                value={data.undertime}
+                                                value={userBalance.undertime}
                                                 onChange={(e) =>
                                                     setData(
                                                         'undertime',
@@ -352,9 +346,8 @@ export default function UserBalance({
                             </div>
 
                             <UserAttendace
-                                key={userBalance.id}
-                                userBalance={userBalance}
                                 attendanceForm={attendanceForm}
+                                userBalance={userBalance}
                             />
                         </div>
                         <LogsTable
@@ -364,7 +357,7 @@ export default function UserBalance({
                     </div>
                 </TabsContent>
             </Tabs>
-        </>
+        </div>
     );
 }
 

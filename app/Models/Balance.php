@@ -124,15 +124,16 @@ class Balance extends Model
 
     public function updateUndertime(): void
     {
-        $sum = $this->attendanceLogs()->sum('total_minutes');
+        $logs = $this->attendanceLogs()->get(['total_minutes', 'is_tardy']);
 
-        info($this->attendanceLogs()->where('is_tardy', true)->count());
-
+        $totalMinutes   = $logs->sum('total_minutes');
+        $tardyCount     = $logs->where('is_tardy', true)->count();
+        $undertimeCount = $logs->where('is_tardy', false)->count();
 
         $this->update([
-            'undertime'       => round($sum / 480, 3),
-            'tardiness_count' => $this->attendanceLogs()->where('is_tardy', true)->count(),
-            'undertime_count' => $this->attendanceLogs()->where('is_tardy', false)->count(),
+            'undertime'       => round($totalMinutes / 480, 3),
+            'tardiness_count' => $tardyCount,
+            'undertime_count' => $undertimeCount,
         ]);
     }
 

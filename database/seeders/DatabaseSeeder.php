@@ -41,6 +41,21 @@ class DatabaseSeeder extends Seeder
                 'year' => 2024,
                 'role' => 'hr'
             ],
+            [
+                'name' => 'Rosalie Carpizo',
+                'email' => 'rosalie@example.com',
+                'vl_balance' => 13.034,
+                'vl_used' => 0,
+                'sl_balance' => 26.583,
+                'sl_used' => 0,
+                'fl_balance' => 5,
+                'fl_used' => 0,
+                'spl_balance' => 3,
+                'undertime' => 0,
+                'month' => 1,
+                'year' => 2024,
+                'role' => 'employee'
+            ],
 
         ];
 

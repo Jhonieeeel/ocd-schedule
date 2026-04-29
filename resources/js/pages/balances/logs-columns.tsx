@@ -105,7 +105,7 @@ export const logsColumns: ColumnDef<AttendanceLog>[] = [
                         className={
                             isTardy
                                 ? 'border-yellow-300 bg-yellow-50 text-yellow-700 dark:border-yellow-700 dark:bg-yellow-950 dark:text-yellow-300'
-                                : 'border-red-300 bg-red-50 text-red-700 dark:border-red-700 dark:bg-red-950 dark:text-red-300'
+                                : 'border-red-300 bg-red-50 text-blue-700 dark:border-blue-700 dark:bg-blue-950 dark:text-blue-300'
                         }
                     >
                         {isTardy ? '⏰ Tardiness' : '🕐 Undertime'}

@@ -21,20 +21,32 @@ import { store } from '@/routes/attendance_logs';
 import { useForm } from '@inertiajs/react';
 import { format } from 'date-fns';
 import { AttendanceLog, Balance } from '../leave/leave_data/data';
+import { useRef, useState } from 'react';
 
 export default function UserAttendace({
-    userBalance,
     attendanceForm,
+    userBalance,
 }: {
     userBalance: Balance;
     attendanceForm: ReturnType<typeof useForm<AttendanceLog>>;
 }) {
-    function handleSubmit() {
-        attendanceForm.submit(store());
+    const [open, setOpen] = useState(false);
+
+    function handleSubmit(e) {
+        e.preventDefault();
+        attendanceForm.submit(store(), {
+            onSuccess: () => {
+                setOpen(false);
+            },
+        });
     }
 
+    function handleUpdate() {}
+
+    function handleDelete() {}
+
     return (
-        <Dialog>
+        <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
                 <Button className="bg-yellow-600 text-white hover:bg-yellow-700 dark:text-yellow-100 dark:hover:bg-yellow-900">
                     {attendanceForm.processing && <Spinner />}
