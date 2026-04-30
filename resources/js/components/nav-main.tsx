@@ -29,7 +29,8 @@ export function NavMain({ items = [] }: { items: MainNav[] }) {
                             (item) =>
                                 !(
                                     auth.role === 'employee' &&
-                                    item.title === 'All Balances'
+                                    item.title === 'All Balances' &&
+                                    item.title === 'Users'
                                 ),
                         )
                         .map((item, index) => (

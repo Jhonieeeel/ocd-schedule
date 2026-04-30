@@ -4,10 +4,13 @@ import {
     ColumnDef,
     // filter
     ColumnFiltersState,
+    // sorting
+    SortingState,
     flexRender,
     getCoreRowModel,
     getFilteredRowModel,
     getPaginationRowModel,
+    getSortedRowModel,
     useReactTable,
 } from '@tanstack/react-table';
 
@@ -22,15 +25,6 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import { useState } from 'react';
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from '@/components/ui/dialog';
-import { Calendar1Icon, Clock } from 'lucide-react';
 import AddBalance from './add-balance';
 
 interface DataTableProps<TData, TValue> {
@@ -47,6 +41,9 @@ export function DataTable<TData, TValue>({
     // filter state
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
+    // sort
+    const [sorting, setSorting] = useState<SortingState>([]);
+
     const table = useReactTable({
         data,
         columns,
@@ -56,8 +53,14 @@ export function DataTable<TData, TValue>({
 
         // pagination
         getPaginationRowModel: getPaginationRowModel(),
+
+        // sorting
+        onSortingChange: setSorting,
+        getSortedRowModel: getSortedRowModel(),
+
         state: {
             columnFilters,
+            sorting,
         },
     });
 

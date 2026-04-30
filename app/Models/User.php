@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class User extends Authenticatable
 {
@@ -18,6 +19,13 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+
+        // details
+        'firstname',
+        'lastname',
+        'sex',
+        'employee_number',
+        'avatar'
     ];
 
     protected $hidden = [
@@ -37,13 +45,19 @@ class User extends Authenticatable
         ];
     }
 
+    // mutators
+
+    public function name(): Attribute {
+        return Attribute::make(
+            get: fn(string $value) => ucfirst($value),
+            set: fn (string $value,  $attributes) => ($attributes['firstname'] ?? '')." ".($attributes['lastname'] ?? '')
+        );
+    }
+
     public function attendance() {
         return $this->hasMany(AttendanceLog::class);
     }
 
-    public function details() {
-        return $this->hasOne(UserDetails::class);
-    }
 
     public function balance()
     {

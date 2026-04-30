@@ -2,18 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\UserDetails;
-use App\Http\Requests\StoreUserDetailsRequest;
-use App\Http\Requests\UpdateUserDetailsRequest;
+use App\Models\User;
+use Illuminate\Http\Request;
+use Inertia\Inertia;
 
-class UserDetailsController extends Controller
+class UserController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        //
+        $users = User::select(['id', 'name'])->get();
+
+        return Inertia::render('user/index', ['users' => $users]);
     }
 
     /**
@@ -27,7 +29,7 @@ class UserDetailsController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreUserDetailsRequest $request)
+    public function store(Request $request)
     {
         //
     }
@@ -35,7 +37,7 @@ class UserDetailsController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(UserDetails $userDetails)
+    public function show(string $id)
     {
         //
     }
@@ -43,7 +45,7 @@ class UserDetailsController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(UserDetails $userDetails)
+    public function edit(string $id)
     {
         //
     }
@@ -51,7 +53,7 @@ class UserDetailsController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateUserDetailsRequest $request, UserDetails $userDetails)
+    public function update(Request $request, string $id)
     {
         //
     }
@@ -59,7 +61,7 @@ class UserDetailsController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(UserDetails $userDetails)
+    public function destroy(string $id)
     {
         //
     }

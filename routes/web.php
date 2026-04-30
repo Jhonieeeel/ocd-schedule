@@ -4,6 +4,7 @@ use App\Http\Controllers\AttendanceLogController;
 use App\Http\Controllers\BalanceController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LeaveController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
 
@@ -39,6 +40,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         // logs
         Route::post("attendance_logs", [AttendanceLogController::class, 'store'])->name('attendance_logs.store');
+
+        Route::get('users', [UserController::class,'index'])->name('users.index');
     });
 
 

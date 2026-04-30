@@ -1,36 +1,39 @@
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
-    DropdownMenuLabel,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { show } from '@/routes/balance';
+import { Link } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
-import { MoreHorizontal } from 'lucide-react';
+import { differenceInDays } from 'date-fns';
+import { ArrowUpDown, MoreHorizontal } from 'lucide-react';
 import { Balance } from '../leave/leave_data/data';
-import {
-    differenceInDays,
-    format,
-    formatDistanceToNowStrict,
-    isThisWeek,
-} from 'date-fns';
-import { Badge } from '@/components/ui/badge';
-import { Link, useForm } from '@inertiajs/react';
-import { dashboard } from '@/routes';
-import { carry, show } from '@/routes/balance';
 
 export const columns: ColumnDef<Balance>[] = [
     {
         accessorKey: 'user.name',
         id: 'user.name',
-        header: () => <div className="py-4">Employee Name</div>,
-        cell: ({ row }) => {
+        header: ({ column }) => {
             return (
-                <div className="truncate font-medium">
-                    {row.original.user.name}
-                </div>
+                <Button
+                    variant="ghost"
+                    onClick={() =>
+                        column.toggleSorting(column.getIsSorted() === 'asc')
+                    }
+                >
+                    Email
+                    <ArrowUpDown className="ml-2 h-4 w-4" />
+                </Button>
             );
+        },
+        cell: ({ row }) => {
+            const user = row.original.user?.name;
+
+            return <div className="truncate font-medium">{user}</div>;
         },
     },
 

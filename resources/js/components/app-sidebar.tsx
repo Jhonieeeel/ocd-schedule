@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/sidebar';
 import balance from '@/routes/balance';
 import leave from '@/routes/leave';
+import users from '@/routes/users';
 import type { MainNav, NavItem } from '@/types';
 import { Link } from '@inertiajs/react';
 import {
@@ -63,9 +64,8 @@ const mainNavItems: MainNav[] = [
         items: [
             {
                 title: 'Users',
-                href: '',
+                href: users.index(),
                 icon: Users2,
-                role: 'hr',
             },
         ],
     },
