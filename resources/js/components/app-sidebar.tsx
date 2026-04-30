@@ -24,7 +24,6 @@ import {
     LayoutGrid,
     Rows,
     User,
-    User2Icon,
     Users2,
 } from 'lucide-react';
 
@@ -51,6 +50,7 @@ const mainNavItems: MainNav[] = [
                 title: 'All Balances',
                 href: balance.all(),
                 icon: Rows,
+                roles: ['admin', 'hr'],
             },
             {
                 title: 'Leaves',
@@ -66,6 +66,7 @@ const mainNavItems: MainNav[] = [
                 title: 'Users',
                 href: users.index(),
                 icon: Users2,
+                roles: ['admin', 'hr'],
             },
         ],
     },

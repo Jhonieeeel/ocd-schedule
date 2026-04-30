@@ -14,11 +14,12 @@ import {
 import { index } from '@/routes/balance';
 import { Head, useForm } from '@inertiajs/react';
 import { CalendarIcon, Filter } from 'lucide-react';
-import { Balance, months, years } from '../leave/leave_data/data';
+import { months, years } from '../leave/leave_data/data';
 import { columns } from './columns';
 import { DataTable } from './data-table';
 
 import { useQuery } from '@tanstack/react-query';
+import { useState } from 'react';
 
 export default function UserBalances() {
     let currentMonth = (new Date().getMonth() + 1).toString();
@@ -29,15 +30,19 @@ export default function UserBalances() {
         year: currentYear.toString(),
     });
 
-    async function fetchBalances(month: string, year: string) {
-        const res = await fetch(`/all_balances/?month=${month}&year=${year}`);
+    const [page, setPage] = useState(1);
+
+    async function fetchBalances(month: string, year: string, page: number) {
+        const res = await fetch(
+            `/all_balances?month=${month}&year=${year}&page=${page}`,
+        );
         return res.json();
     }
 
     const { data: testBalances, isLoading } = useQuery({
-        queryKey: ['userBalances', data.month_id, data.year],
-        queryFn: () => fetchBalances(data.month_id, data.year),
-        staleTime: 2000,
+        queryKey: ['userBalances', data.month_id, data.year, page],
+        queryFn: () => fetchBalances(data.month_id, data.year, page),
+        staleTime: 1000 * 60,
     });
 
     let filterMonth = months.find((m) => m.id === Number(data.month_id))?.month;
@@ -178,10 +183,33 @@ export default function UserBalances() {
 
                 <div className="relative mt-4 overflow-hidden rounded-xl">
                     <DataTable
-                        data={testBalances ?? []}
+                        data={testBalances?.data ?? []}
                         columns={columns}
                         isLoading={isLoading}
+                        page={page}
+                        onSetPage={setPage}
                     />
+                    <div className="flex items-center justify-end space-x-2 py-4">
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() =>
+                                setPage((prev) => Math.max(prev - 1, 1))
+                            }
+                            disabled={page <= 1}
+                        >
+                            Previous
+                        </Button>
+
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setPage((prev) => prev + 1)}
+                            disabled={page >= (testBalances?.last_page ?? 1)}
+                        >
+                            Next
+                        </Button>
+                    </div>
                 </div>
             </div>
         </>

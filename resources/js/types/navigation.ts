@@ -18,6 +18,7 @@ type Item = {
     href: NonNullable<InertiaLinkProps['href']>;
     icon?: LucideIcon | null;
     isActive?: boolean;
+    roles?: string;
 };
 
 export type MainNav = {

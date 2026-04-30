@@ -524,3 +524,13 @@ export type AttendanceLog = {
     is_tardy: boolean;
     cutoff?: number;
 };
+
+export type CreateUserType = {
+    firstname: string;
+    lastname: string;
+    sex: string;
+    email: string;
+    password: string;
+    password_confirmation: string;
+    employee_number: string;
+};

@@ -31,12 +31,16 @@ interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
     data: TData[];
     isLoading: boolean;
+    page: number;
+    onSetPage: (value: number) => void;
 }
 
 export function DataTable<TData, TValue>({
     columns,
     data,
     isLoading,
+    page,
+    onSetPage,
 }: DataTableProps<TData, TValue>) {
     // filter state
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -139,11 +143,14 @@ export function DataTable<TData, TValue>({
                         )}
                     </TableBody>
                 </Table>
-                <div className="flex items-center justify-end space-x-2 py-4">
+                {/* <div className="flex items-center justify-end space-x-2 py-4">
                     <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => table.previousPage()}
+                        onClick={() =>
+                            onSetPage((prev) => Math.max(prev - 1, 1))
+                        }
+                        // onClick={(prev) => table.previousPage()}
                         disabled={!table.getCanPreviousPage()}
                     >
                         Previous
@@ -151,12 +158,13 @@ export function DataTable<TData, TValue>({
                     <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => table.nextPage()}
+                        onClick={() => onSetPage((prev) => prev + 1)}
+                        // onClick={() => table.nextPage()}
                         disabled={!table.getCanNextPage()}
                     >
                         Next
                     </Button>
-                </div>
+                </div> */}
             </div>
         </>
     );

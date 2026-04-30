@@ -26,7 +26,8 @@ class DatabaseSeeder extends Seeder
 
         $employees = [
             [
-                'name' => 'Ray Francis Alingasa',
+                'firstname' => 'Ray Francis',
+                'lastname' => 'Alingasa',
                 'email' => 'alingasa@example.com',
                 'vl_balance' => 5.584,
                 'vl_used' => 0,
@@ -41,7 +42,8 @@ class DatabaseSeeder extends Seeder
                 'role' => 'employee'
             ],
             [
-                'name' => 'Jenn Eric Borday',
+                'firstname' => 'Jenn Eric',
+                'lastname' => 'Borday',
                 'email' => 'borday@example.com',
                 'vl_balance' => 6.188,
                 'vl_used' => 0,
@@ -56,7 +58,8 @@ class DatabaseSeeder extends Seeder
                 'role' => 'employee'
             ],
             [
-                'name' => 'Ronald Anthony Briol',
+                'firstname' => 'Ronald Anthony',
+                'lastname' => 'Briol',
                 'email' => 'briol@example.com',
                 'vl_balance' => 14.313,
                 'vl_used' => 0,
@@ -71,7 +74,8 @@ class DatabaseSeeder extends Seeder
                 'role' => 'employee'
             ],
             [
-                'name' => 'Marc Gil Calang',
+                'firstname' => 'Marc Gil',
+                'lastname' => 'Calang',
                 'email' => 'calang@example.com',
                 'vl_balance' => 61.89,
                 'vl_used' => 0,
@@ -86,7 +90,8 @@ class DatabaseSeeder extends Seeder
                 'role' => 'employee'
             ],
             [
-                'name' => 'Rosalie Caprizo',
+                'firstname' => 'Rosalie',
+                'lastname' => 'Caprizo',
                 'email' => 'caprizo@example.com',
                 'vl_balance' => 6.368,
                 'vl_used' => 0,
@@ -101,7 +106,8 @@ class DatabaseSeeder extends Seeder
                 'role' => 'employee'
             ],
             [
-                'name' => 'Kim Durango',
+                'firstname' => 'Kim',
+                'lastname' => 'Durango',
                 'email' => 'durango@example.com',
                 'vl_balance' => 85.496,
                 'vl_used' => 0,
@@ -116,7 +122,8 @@ class DatabaseSeeder extends Seeder
                 'role' => 'employee'
             ],
             [
-                'name' => 'Aizy Lyn Joloyohoy',
+                'firstname' => 'Aizy Lyny',
+                'lastname' => 'Joloyohoy',
                 'email' => 'aizy@example.com',
                 'vl_balance' => 95.102,
                 'vl_used' => 5,
@@ -132,7 +139,8 @@ class DatabaseSeeder extends Seeder
                 'role' => 'employee'
             ],
             [
-                'name' => 'Ryan Joloyohoy',
+                'firstname' => 'Ryany',
+                'lastname' => 'Joloyohoy',
                 'email' => 'ryan@example.com',
                 'vl_balance' => 76.8,
                 'vl_used' => 5,
@@ -148,7 +156,8 @@ class DatabaseSeeder extends Seeder
                 'role' => 'employee'
             ],
             [
-                'name' => 'Diana Lim',
+                'firstname' => 'Diana',
+                'lastname' => 'Lim',
                 'email' => 'lim@example.com',
                 'vl_balance' => 55.575,
                 'vl_used' => 0,
@@ -163,7 +172,8 @@ class DatabaseSeeder extends Seeder
                 'role' => 'employee'
             ],
             [
-                'name' => 'Dave Madayag',
+                'firstname' => 'Dave',
+                'lastname' => 'Madayag',
                 'email' => 'madagayag@example.com',
                 'vl_balance' => 79.479,
                 'vl_used' => 0,
@@ -178,7 +188,8 @@ class DatabaseSeeder extends Seeder
                 'role' => 'employee'
             ],
             [
-                'name' => 'Georiss Mae Maniago',
+                'firstname' => 'Georiss Mae',
+                'lastname' => 'Maniago',
                 'email' => 'maniago@example.com',
                 'vl_balance' => 41.644,
                 'vl_used' => 0,
@@ -194,7 +205,8 @@ class DatabaseSeeder extends Seeder
                 'role' => 'hr'
             ],
             [
-                'name' => 'Amado Posas',
+                'firstname' => 'Amado',
+                'lastname' => 'Posas',
                 'email' => 'posas@example.com',
                 'vl_balance' => 139.122,
                 'vl_used' => 0,
@@ -209,7 +221,8 @@ class DatabaseSeeder extends Seeder
                 'role' => 'employee'
             ],
             [
-                'name' => 'April Rose Anne Sanchez',
+                'firstname' => 'April Rose Anne',
+                'lastname' => 'Sanchez',
                 'email' => 'sanchez@example.com',
                 'vl_balance' => 81.921,
                 'vl_used' => 0,
@@ -224,7 +237,8 @@ class DatabaseSeeder extends Seeder
                 'role' => 'employee'
             ],
             [
-                'name' => 'Marie Lynn Tadle',
+                'firstname' => 'Marie Lynn',
+                'lastname' => 'Tadle',
                 'email' => 'tadle@example.com',
                 'vl_balance' => 132.852,
                 'vl_used' => 0,
@@ -240,7 +254,8 @@ class DatabaseSeeder extends Seeder
                 'role' => 'employee'
             ],
             [
-                'name' => 'John Lenn Uayan',
+                'firstname' => 'John Lenn',
+                'lastname' => 'Uayan',
                 'email' => 'uayan@example.com',
                 'vl_balance' => 72.169,
                 'vl_used' => 0,
@@ -255,7 +270,8 @@ class DatabaseSeeder extends Seeder
                 'role' => 'employee'
             ],
             [
-                'name' => 'Grace Villanueva',
+                'firstname' => 'Grace',
+                'lastname' => 'Villanueva',
                 'email' => 'villanueva@example.com',
                 'vl_balance' => 65.113,
                 'vl_used' => 0,
@@ -270,7 +286,8 @@ class DatabaseSeeder extends Seeder
                 'role' => 'employee'
             ],
             [
-                'name' => 'Angelic Mae Yu',
+                'firstname' => 'Angelic Mae',
+                'lastname' => 'Yu',
                 'email' => 'angelic@example.com',
                 'vl_balance' => 6.516,
                 'vl_used' => 0,
@@ -287,9 +304,12 @@ class DatabaseSeeder extends Seeder
         ];
 
         foreach($employees as $employee) {
-            $user = User::factory()->create([
-                'name' => $employee['name'],
-                'email' => $employee['email']
+            $user = User::create([
+                'firstname' => $employee['firstname'],
+                'lastname' => $employee['lastname'],
+                'email' => $employee['email'],
+                'password' => bcrypt('password'),
+                'name' => 'something'
             ]);
 
             Balance::create([
@@ -306,7 +326,7 @@ class DatabaseSeeder extends Seeder
                 'year' => $employee['year']
             ]);
 
-            $user->assignRole('hr');
+            $user->assignRole($employee['role']);
         }
 
         $super_admin = User::create([

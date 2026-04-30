@@ -47,7 +47,9 @@ class BalanceController extends Controller
                 $q->where('year', $year);
             })
             ->latest()
-            ->get();
+            ->paginate(10);
+
+        info($balances);
 
 
         return response()->json($balances);

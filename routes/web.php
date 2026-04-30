@@ -41,7 +41,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // logs
         Route::post("attendance_logs", [AttendanceLogController::class, 'store'])->name('attendance_logs.store');
 
+        // users
         Route::get('users', [UserController::class,'index'])->name('users.index');
+        Route::post('users', [UserController::class, 'store'])->name('users.store');
     });
 
 

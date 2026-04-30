@@ -1,30 +1,51 @@
-import PasswordInput from '@/components/password-input';
-import { Button } from '@/components/ui/button';
-import {
-    Dialog,
-    DialogClose,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from '@/components/ui/dialog';
-import { Field, FieldGroup } from '@/components/ui/field';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import users from '@/routes/users';
-import { usePage } from '@inertiajs/react';
-import { User2, User2Icon, UsersIcon } from 'lucide-react';
+import { useForm, usePage } from '@inertiajs/react';
+import { CheckCircle2Icon, User2, UsersIcon, X } from 'lucide-react';
 import CreateUser from './create-user';
+import users from '@/routes/users';
+import { CreateUserType } from '../leave/leave_data/data';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+
+type PageProps = {
+    flash: {
+        message: string;
+    };
+};
 
 export default function User() {
-    const { users } = usePage().props;
+    const form = useForm<CreateUserType>({
+        firstname: '',
+        lastname: '',
+        sex: '',
+        email: '',
+        password: '',
+        password_confirmation: '',
+        employee_number: '',
+    });
+
+    const { flash } = usePage<PageProps>().props;
 
     return (
         <div className="m-4">
+            {flash.message && (
+                <div className="py-4">
+                    <Alert className="relative max-w-md border border-green-300 bg-green-200 py-2 dark:border-[#1D9E75] dark:bg-[#085041]">
+                        <CheckCircle2Icon className="h-[18px] w-[18px] text-green-700 dark:text-emerald-400" />
+
+                        <AlertTitle className="font-medium text-green-900 dark:text-emerald-200">
+                            {flash.message}
+                        </AlertTitle>
+
+                        <AlertDescription className="text-sm leading-relaxed text-green-700 dark:text-emerald-400">
+                            The new account has been saved to database.
+                        </AlertDescription>
+
+                        <button className="absolute top-3 right-3 text-green-600 transition-opacity hover:opacity-100 dark:text-emerald-500/60">
+                            <X size={14} />
+                        </button>
+                    </Alert>
+                </div>
+            )}
             <Tabs defaultValue="users">
                 <TabsList variant="line">
                     <TabsTrigger value="users">
@@ -77,7 +98,7 @@ export default function User() {
                             </div>
                         </div>
                     </div>
-                    <CreateUser />
+                    <CreateUser form={form} />
                 </TabsContent>
             </Tabs>
 

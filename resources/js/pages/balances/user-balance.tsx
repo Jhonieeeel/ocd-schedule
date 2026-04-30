@@ -19,7 +19,6 @@ import {
 import { logsColumns } from './logs-columns';
 import { LogsTable } from './logs-table';
 import UserAttendace from './user-attendance';
-import { useEffect } from 'react';
 
 type PageProps = {
     flash: {

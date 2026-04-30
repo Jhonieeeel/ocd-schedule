@@ -46,11 +46,27 @@ class User extends Authenticatable
     }
 
     // mutators
-
     public function name(): Attribute {
         return Attribute::make(
-            get: fn(string $value) => ucfirst($value),
-            set: fn (string $value,  $attributes) => ($attributes['firstname'] ?? '')." ".($attributes['lastname'] ?? '')
+            set: fn (string $value) => $this->firstname." ". $this->lastname
+        );
+    }
+
+    public function firstName(): Attribute {
+        return Attribute::make(
+            set: fn (string $value) => ucfirst($value)
+        );
+    }
+
+    public function lastName(): Attribute {
+        return Attribute::make(
+            set: fn (string $value) => ucfirst($value)
+        );
+    }
+
+    public function email(): Attribute {
+        return Attribute::make(
+            set: fn ($value) => strtolower($value)
         );
     }
 

@@ -9,7 +9,7 @@ import {
 import { show } from '@/routes/balance';
 import { Link } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
-import { differenceInDays } from 'date-fns';
+import { differenceInDays, formatDistanceToNow } from 'date-fns';
 import { ArrowUpDown, MoreHorizontal } from 'lucide-react';
 import { Balance } from '../leave/leave_data/data';
 
@@ -120,7 +120,7 @@ export const columns: ColumnDef<Balance>[] = [
         accessorKey: 'updated_at',
         header: () => (
             <div className="font-semibold text-teal-600 dark:text-teal-400">
-                Updated
+                Updated At
             </div>
         ),
         cell: ({ row }) => {
@@ -131,7 +131,7 @@ export const columns: ColumnDef<Balance>[] = [
 
             return (
                 <div className="py-1.5 font-medium">
-                    <Badge
+                    {/* <Badge
                         variant="secondary"
                         className={
                             isUpdated
@@ -142,7 +142,10 @@ export const columns: ColumnDef<Balance>[] = [
                         }
                     >
                         {isUpdated ? 'Updated' : 'Outdated'}
-                    </Badge>
+                    </Badge> */}
+                    {formatDistanceToNow(new Date(dateString?.toString()), {
+                        addSuffix: true,
+                    })}
                 </div>
             );
         },

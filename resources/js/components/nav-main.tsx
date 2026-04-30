@@ -13,28 +13,20 @@ export function NavMain({ items = [] }: { items: MainNav[] }) {
 
     const { auth } = usePage().props;
 
-    const navs = items.map((data) =>
-        data.items.filter((item) => !(auth.role === 'employee' && item.title)),
-    );
-
     return (
         <SidebarGroup className="px-2 py-0">
-            {items.map((data, index) => (
-                <div key={index} className="md:mb-4">
-                    <SidebarGroupLabel key={index}>
-                        {data.label}
-                    </SidebarGroupLabel>
-                    {(data.items ?? [])
-                        .filter(
-                            (item) =>
-                                !(
-                                    auth.role === 'employee' &&
-                                    item.title === 'All Balances' &&
-                                    item.title === 'Users'
-                                ),
-                        )
-                        .map((item, index) => (
-                            <SidebarMenuItem key={index}>
+            {items.map((data, index) => {
+                const visibleItems = (data.items ?? []).filter(
+                    (item) => !item.roles || item.roles.includes(auth.role),
+                );
+
+                if (visibleItems.length === 0) return null;
+
+                return (
+                    <div key={index} className="md:mb-4">
+                        <SidebarGroupLabel>{data.label}</SidebarGroupLabel>
+                        {visibleItems.map((item, i) => (
+                            <SidebarMenuItem key={i}>
                                 <SidebarMenuButton
                                     asChild
                                     isActive={isCurrentUrl(item.href)}
@@ -47,8 +39,9 @@ export function NavMain({ items = [] }: { items: MainNav[] }) {
                                 </SidebarMenuButton>
                             </SidebarMenuItem>
                         ))}
-                </div>
-            ))}
+                    </div>
+                );
+            })}
         </SidebarGroup>
     );
 }
