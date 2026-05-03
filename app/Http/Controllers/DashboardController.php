@@ -13,35 +13,24 @@ class DashboardController extends Controller
      */
     public function index()
     {
+        $specialTypes = ['CTO', 'Auto Offset', 'On Leave (not filled)', 'Auto Offset (not filled)'];
 
-        $cto = Leave::where('leave_type', 'CTO')
-            ->where('is_approve', true)
-            ->whereBetween('start', [now()->startOfMonth(), now()->endOfMOnth()])
-            ->get();
+        $grouped = Leave::where('is_approve', true)
+            ->whereBetween('start', [now()->startOfMonth(), now()->endOfMonth()])
+            ->get()
+            ->groupBy('leave_type');
 
-        info($cto);
+        $otherLeaves = $grouped
+            ->filter(fn($group, $type) => !in_array($type, $specialTypes))
+            ->flatten();
 
-        $auto_offset = Leave::where('leave_type', 'Auto Offset')
-            ->where('is_approve', true)
-            ->whereBetween('start', [now()->startOfMonth(), now()->endOfMOnth()])
-            ->get();
-
-
-        $on_leave_not_filled = Leave::where('leave_type', 'On Leave (not filled)')
-            ->where('is_approve', true)
-            ->whereBetween('start', [now()->startOfMonth(), now()->endOfMOnth()])
-            ->get();
-
-        $auto_offset_not_filled = Leave::where('leave_type', 'Auto Offset (not filled)')
-            ->where('is_approve', true)
-            ->whereBetween('start', [now()->startOfMonth(), now()->endOfMOnth()])
-            ->get();
-
-        $leaveTypes = ['CTO', 'Auto Offset', 'On Leave (not filled)', 'Auto Offset (not filled)'];
-
-        $leaves = Leave::whereNotIn('leave_type', $leaveTypes)->get();
-
-        return Inertia::render('dashboard', ['cto' => $cto, 'auto_offset' => $auto_offset, 'leaves' => $leaves]);
+        return Inertia::render('dashboard', [
+            'cto'                   => $grouped->get('CTO', collect()),
+            'auto_offset'           => $grouped->get('Auto Offset', collect()),
+            'on_leave_not_filled'   => $grouped->get('On Leave (not filled)', collect()),
+            'auto_offset_not_filled'=> $grouped->get('Auto Offset (not filled)', collect()),
+            'leaves'                => $otherLeaves,
+        ]);
     }
 
     /**

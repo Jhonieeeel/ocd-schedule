@@ -30,6 +30,7 @@ class StoreBalanceRequest extends FormRequest
             'sl_used'     => ['nullable', 'numeric', 'min:0', 'max:99999.999'],
             'fl_balance'  => ['nullable', 'numeric', 'min:0'],
             'spl_balance' => ['nullable', 'numeric', 'min:0'],
+            'spl_used'    => ['nullable', 'numeric', 'min:0'],
             'fl_used'     => ['nullable', 'numeric', 'min:0'],
             'undertime'   => ['nullable', 'numeric', 'min:0', 'max:99999.999'],
             'month'       => ['nullable', 'integer', 'min:1', 'max:12'],

@@ -33,7 +33,6 @@ class LeaveController extends Controller
             ];
         });
 
-
         return Inertia::render("leave/index", ['users' => $users, 'leaves' => $leaves]);
     }
 
@@ -48,9 +47,35 @@ class LeaveController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreLeaveRequest $request)
-    {
-        Leave::create($request->validated());
+
+    public function store(StoreLeaveRequest $request) {
+
+        $validated = $request->validated();
+
+        $start = Carbon::parse($validated['start']);
+        $end = Carbon::parse($validated['end']);
+        $totalLeaveDays = $start->diffInDays($end) + 1;
+
+
+        // check balance first
+        $balance = Balance::forBalance($validated['user_id'], $start->month, $start->year);
+
+        if (!$balance) {
+            return back()->withErrors(['errors' => 'This user doesnt have balance yet. ']);
+        }
+
+        // check if theres a leave for the date range
+        if (Leave::checkDateRange($validated['user_id'], $start, $end)) {
+            return back()->withErrors(['leave_type' => 'This user still has a leave for this date range.']);
+        }
+
+
+        $result = $balance->checkLeaveType($validated['leave_type'], $balance);
+
+        if ($result) return $result;
+
+        // create if no errors at all
+        Leave::create($validated);
 
         return redirect()->route('leave.index')->with('message', 'Leave created successfully.');
     }
@@ -76,26 +101,38 @@ class LeaveController extends Controller
      */
     public function update(UpdateLeaveRequest $request, Leave $leave)
     {
-
-        $leave->update($request->validated());
-
+        $validated = $request->validated();
+        // slicing the date
         $start = Carbon::parse($request['start']);
         $end = Carbon::parse($request['end']);
-
-        $year = $start->year;
-        $month = $start->month;
         $totalLeaveDays = $start->diffInDays($end) + 1;
 
+        // query ang balance utro para mo deduct
+        $balance = Balance::forBalance($validated['user_id'], $start->month, $start->year);
 
-        if ($request['is_approve'] && $request['leave'] == 'Vacation Leave') {
-
-            $balance = Balance::where('user_id', $request['user_id'])->where('month', $month)->where('year', $year)->firstOrFail();
-
-            $balance->deductBalance($totalLeaveDays);
-
-            // $balance->recalculateVL();
-
+        if (!$balance) {
+            return back()->withErrors(['balance', 'No balances record found for this period.']);
         }
+
+        $isApprove = $leave->is_approve;
+
+        // deduct balance, if first time ang pag approve
+        if (!$isApprove && $validated['is_approve']) {
+            $balance->checkLeaveType($validated['leave_type'], $totalLeaveDays);
+        }
+
+        // restore the balance if mo e cancel balik
+
+        // if ($isApprove && !$validated['is_approve']) {
+        //     match ($validated['leave_type']) {
+        //         'Sick Leave'  => $balance->restoreSLBalance($totalLeaveDays),
+        //         'Special Privilege Leave'  => $balance->restoreSPLBalance(($totalLeaveDays)),
+        //         default => null
+        //     };
+        // }
+
+        // if no errors then update
+        $leave->update($validated);
 
         return redirect()->route('leave.index')->with('message', 'Leave updated.');
 

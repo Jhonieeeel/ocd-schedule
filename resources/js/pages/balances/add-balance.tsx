@@ -69,7 +69,6 @@ export default function AddBalance() {
     });
 
     function handleSubmit() {
-        console.log(form.data);
         form.submit(store(), {
             onSuccess: () => form.reset(),
         });

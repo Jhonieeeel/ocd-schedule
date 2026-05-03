@@ -94,7 +94,7 @@ export default function EditEventModal({
             open={open}
             onOpenChange={onOpenChange}
         >
-            <DialogTitle>Edit Event</DialogTitle>
+            <DialogTitle></DialogTitle>
             <DialogContent
                 aria-labelledby={undefined}
                 className="gap-0 overflow-hidden p-0 sm:max-w-md"

@@ -19,6 +19,7 @@ import {
 import { logsColumns } from './logs-columns';
 import { LogsTable } from './logs-table';
 import UserAttendace from './user-attendance';
+import { useEffect, useState } from 'react';
 
 type PageProps = {
     flash: {
@@ -49,6 +50,7 @@ export default function UserBalance({
         vl_used: userBalance.vl_used,
         fl_used: userBalance.fl_used,
         sl_used: userBalance.sl_used,
+        spl_used: userBalance.spl_used,
 
         // date
         month: userBalance.month,
@@ -68,11 +70,7 @@ export default function UserBalance({
     });
 
     function carryOver() {
-        form.submit(carry(), {
-            onSuccess: () => {
-                console.log(data);
-            },
-        });
+        form.submit(carry());
     }
 
     // attendance log form

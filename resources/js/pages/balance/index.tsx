@@ -13,8 +13,6 @@ import { Clock } from 'lucide-react';
 import { Balance as BalanceType } from '../leave/leave_userBalance?/userBalance?';
 
 export default function Balance({ userBalance }: { userBalance: BalanceType }) {
-    console.log(userBalance);
-
     return (
         <>
             <Head title="Balance" />

@@ -9,6 +9,7 @@ use App\Http\Requests\StoreBalanceRequest;
 use App\Http\Requests\UpdateBalanceRequest;
 use App\Models\AttendanceLog;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Inertia\Inertia;
 
@@ -40,16 +41,14 @@ class BalanceController extends Controller
         $year  = $request->input('year');
 
         $balances = Balance::with('user')
-            ->when($month, function($q) use ($month) {
-                $q->where('month', $month);
-            })
-            ->when($year, function($q) use ($year) {
-                $q->where('year', $year);
-            })
-            ->latest()
+            ->where('month', $month)
+            ->where('year', $year)
+            ->when($request->search, fn($q) =>
+                $q->whereHas('user', fn($q) =>
+                    $q->where('name', 'like', "%{$request->search}%")
+                )
+            )
             ->paginate(10);
-
-        info($balances);
 
 
         return response()->json($balances);
@@ -57,10 +56,7 @@ class BalanceController extends Controller
 
     public function all(Request $request)
     {
-
-        $users = User::select('id', 'name')->get();
-
-        return Inertia::render('balances/index', ['users' => $users]);
+        return Inertia::render('balances/index', []);
     }
 
     /**
@@ -78,7 +74,7 @@ class BalanceController extends Controller
     {
         Balance::create($request->validated());
 
-        return redirect()->route("balance.store")->with("message", 'Balance created successfully');
+        return to_route("balance.store")->with("message", 'Balance created successfully');
     }
 
     public function carry_over(StoreBalanceRequest $request) {
@@ -88,11 +84,16 @@ class BalanceController extends Controller
         $balance = Balance::where('id', $request['id'])->where('user_id', $validated['user_id'])
                 ->where('year', $validated['year'])
                 ->where('month', $validated['month'])
-                ->firstOrFail();
+                ->first();
 
-        $balance->getUndertime();
+        if (!$balance) {
+            return back()->withErrors(['errors', 'Balance not found']);
+        }
 
-        return to_route('balance.index')->with('message', 'New balance added successfully');
+        $balance->updateUndertime();
+        $balance->checkBalance($balance->month, $balance->year);
+
+        return to_route('balance.show', $balance->id)->with('message', 'New balance added to next month successfully');
     }
 
 
@@ -126,7 +127,7 @@ class BalanceController extends Controller
 
         $balance->update($validated);
 
-        return redirect()->route('balance.show', $balance->id)
+        return to_route('balance.show', $balance->id)
         ->with('message', 'Balance updated successfully.');
     }
 
@@ -136,7 +137,10 @@ class BalanceController extends Controller
     public function destroy(Balance $balance)
     {
         $balance->delete();
+
+        return to_route('balance.index')->with('message', 'Data for this month deleted successfully');
     }
+
 
 
 

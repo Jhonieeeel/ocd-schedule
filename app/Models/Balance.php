@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Attribute;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 class Balance extends Model
@@ -16,6 +17,7 @@ class Balance extends Model
         'fl_balance',
         'fl_used',
         'spl_balance',
+        'spl_used',
         'undertime',
         'month',
         'year',
@@ -31,6 +33,7 @@ class Balance extends Model
         'sl_used'    => 'float',
         'fl_balance' => 'float',
         'spl_balance' => 'float',
+        'spl_used' => 'float',
         'fl_used'    => 'float',
         'undertime'  => 'float',
         'as_of'      => 'date',
@@ -51,45 +54,138 @@ class Balance extends Model
         $nextMonth = $month == 12 ? 1 : $month + 1;
         $nextYear = $month == 12 ? $year + 1 : $year;
 
+        $isNewYear = $month == 12;
         Balance::firstOrCreate(
             [
                 'user_id' => $this->user_id,
-                'year' => $nextYear,
-                'month' => $nextMonth
+                'year'    => $nextYear,
+                'month'   => $nextMonth,
             ],
             [
-                'vl_balance' => $this->recalculateVL(),
-                'sl_balance' => $this->recalculateSL(),
-                'spl_balance' => $this->spl_balance
+                'vl_balance'  => $this->recalculateVL($isNewYear),
+                'sl_balance'  => $isNewYear ? 5 : $this->recalculateSL(),
+                'fl_balance'  => $isNewYear ? 5 : $this->fl_balance,
+                'spl_balance' => $isNewYear ? 3 : $this->spl_balance
             ]
         );
 
-
     }
 
-    public function increaseUndertime(float $undertime): void {
-        $this->undertime = $undertime;
-
-        $this->save();
-    }
-
-    public function deductBalance(int $leaveDays): void {
-
-        if ($this->fl_balance <= 0) {
-            $this->vl_used += $leaveDays;
-        }elseif ($leaveDays > $this->fl_balance) {
-            $this->vl_used += $leaveDays - $this->fl_balance;
-            $this->fl_used += $this->fl_balance;
-            $this->fl_balance += 0;
-        }else {
-            $this->fl_balance -= $leaveDays;
-            $this->fl_used += $leaveDays;
+    // checker
+    public function checkSLBalance(int $leaveDays) {
+        if ($leaveDays > $this->sl_balance) {
+            return back()->withErrors(['leave_type' => 'Not enough balance. SL: '.$this->sl_balance.', filed days: '.$leaveDays]);
         }
-
-        $this->save();
-
     }
 
+    public function checkSPLBalance(int $leaveDays) {
+        if ($leaveDays > $this->spl_balance) {
+           return back()->withErrors(['leave_type' => 'Not enough balance. SPL: '.$this->spl_balance.', filed days: '.$leaveDays]);
+        }
+    }
+
+    public function checkFLBalance(int $leaveDays) {
+        if ($leaveDays > $this->fl_balance) {
+            return back()->withErrors(['leave_type' => 'Not enough balance. FL: '.$this->fl_balance.', filed days: '.$leaveDays]);
+        }
+    }
+
+    public function checkVLBalance(int $leaveDays) {
+        if ($leaveDays > $this->vl_balance) {
+            return back()->withErrors(['leave_type' => 'Not enough balance. FL: '.$this->vl_balance.', filed days: '.$leaveDays]);
+        }
+    }
+
+    // deduction
+    public function deductSLBalance(int $leaveDays)
+    {
+        $this->sl_balance -= $leaveDays;
+        $this->sl_used += $leaveDays;
+        $this->save();
+    }
+
+    public function deductSPLBalance(int $leaveDays)
+    {
+        $this->spl_balance -= $leaveDays;
+        $this->spl_used += $leaveDays;
+        $this->save();
+
+        info($this->spl_balance);
+    }
+
+    public function deductVLBalance(float $leaveDays)
+    {
+        $this->vl_balance -= $leaveDays;
+        $this->vl_used += $leaveDays;
+        $this->save();
+    }
+
+    public function deductFLBalance(float $leaveDays, int $month)
+    {
+        $isDecember = $month === 12;
+
+        $this->fl_balance -= $leaveDays;
+        $isDecember ? $this->vl_used += $leaveDays : $this->fl_used += $leaveDays;
+
+        $this->save();
+    }
+
+    // public function deductVLBalance(int $leaveDays, int $month)
+    // {
+    //     $isDecember = $month === 12;
+
+    //     if ($this->fl_balance <= 0) {
+
+    //         $this->vl_balance -= $leaveDays;
+    //         $this->vl_used += $leaveDays;
+
+    //     } elseif ($leaveDays > $this->fl_balance) {
+
+    //         $remaining = $leaveDays - $this->fl_balance;
+
+    //         $this->fl_used += $this->fl_balance;
+    //         $this->fl_balance = 0;
+
+    //         $this->vl_balance -= $remaining;
+    //         $this->vl_used += $remaining;
+    //     } else {
+    //         $this->fl_balance -= $leaveDays;
+    //         $this->fl_used += $leaveDays;
+    //     }
+
+
+    //     $this->save();
+    // }
+
+    // restoration
+    public function restoreSLBalance(int $leaveDays)
+    {
+        $this->sl_balance += $leaveDays;
+        $this->sl_used -= $leaveDays;
+        $this->save();
+    }
+
+    public function restoreSPLBalance(int $leaveDays) {
+        $this->spl_balance += $leaveDays;
+        $this->spl_used -= $leaveDays;
+        $this->save();
+    }
+
+    public function restoreVLBalance(int $leaveDays)
+    {
+        $flRestored = min($leaveDays, $this->fl_used);
+        $vlRestored = $leaveDays - $flRestored;
+
+        $this->fl_balance += $flRestored;
+        $this->fl_used -= $flRestored;
+
+        $this->vl_balance += $vlRestored;
+        $this->vl_used -= $vlRestored;
+
+        $this->save();
+    }
+
+    // calculation
     public function recalculateSL(): float {
 
         $this->sl_balance = ($this->sl_balance - $this->sl_used) + 1.25;
@@ -99,29 +195,16 @@ class Balance extends Model
 
     }
 
-    public function recalculateVL(): float {
+    public function recalculateVL($isNextYear): float {
 
-        $this->vl_balance = $this->vl_balance - ($this->undertime + ($this->vl_used + $this->fl_used)) + 1.25;
+        $deduction = $isNextYear ? $this->fl_balance : ($this->vl_used + $this->fl_used);
 
-        return $this->vl_balance;
-    }
-
-
-    public function getVL(float $undertime): float {
-
-        $this->vl_balance = $this->vl_balance - (($thundertime ?? 0) + ($this->used_vl ?: $this->used_fl)) + 1.25;
+        $this->vl_balance = $this->vl_balance - ($this->undertime + $deduction ) + 1.25;
 
         return $this->vl_balance;
-
-    }
-
-    public function getSL(): float {
-        $sl = $this->sl_balance - ($this->used_sl) + 1.25;
-        return $sl;
     }
 
     // conversion
-
     public function updateUndertime(): void
     {
         $logs = $this->attendanceLogs()->get(['total_minutes', 'is_tardy']);
@@ -135,6 +218,26 @@ class Balance extends Model
             'tardiness_count' => $tardyCount,
             'undertime_count' => $undertimeCount,
         ]);
+    }
+
+
+    public function scopeForBalance(Builder $query, $user_id, $month, $year) {
+        return $query->where('user_id',$user_id)
+            ->where('month', $month)
+            ->where('year', $year)
+            ->first();
+    }
+
+
+
+    public function checkLeaveType($leave_type, $totalLeaveDays) {
+        return match ($leave_type) {
+            'Vacation Leave'          => $this->checkVLBalance($totalLeaveDays),
+            'Sick Leave'              => $this->checkSLBalance($totalLeaveDays),
+            'Special Privilege Leave' => $this->checkSPLBalance($totalLeaveDays),
+            'Mandatory/Force Leave'   => $this->checkFLBalance($totalLeaveDays),
+            default                   => false
+        };
     }
 
 }

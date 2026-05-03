@@ -84,6 +84,8 @@ class AttendanceLogController extends Controller
      */
     public function destroy(AttendanceLog $attendanceLog)
     {
-        //
+        $attendanceLog->delete();
+
+        return to_route('balance.index')->with('message', 'Attendance Log deleted successfully!');
     }
 }

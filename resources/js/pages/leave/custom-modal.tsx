@@ -51,13 +51,11 @@ export const ViewEventModal = ({
 
     function handleApprove() {
         const next = !form.data.is_approve;
-        form.setData('is_approve', next);
+        form.setData({ ...form.data, is_approve: next });
         setTimeout(() => {
             form.submit(update(Number(event.id)), {
                 onSuccess: () => {
-                    form.setData({
-                        user_id: undefined,
-                    });
+                    form.reset();
                 },
             });
             onOpenChange(!open);
@@ -78,7 +76,7 @@ export const ViewEventModal = ({
             open={open ?? internalOpen}
             onOpenChange={onOpenChange}
         >
-            <DialogTitle>View Event</DialogTitle>
+            <DialogTitle></DialogTitle>
             <DialogContent
                 aria-describedby={undefined}
                 className="max-w-md overflow-hidden border-zinc-600 bg-transparent p-0 shadow-none"

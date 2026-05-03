@@ -25,7 +25,8 @@ return new class extends Migration
             $table->decimal('sl_used', 8, 3)->nullable()->default(0);
 
             // spl
-            $table->decimal('spl_balance')->nullable()->default(5);
+            $table->decimal('spl_balance')->nullable()->default(3);
+            $table->decimal('spl_used')->nullable()->default(0);
 
             // fl
             $table->decimal('fl_balance')->nullable()->default(5);
@@ -42,6 +43,8 @@ return new class extends Migration
             // counts
             $table->integer('tardiness_count')->nullable()->default(0);
             $table->integer('undertime_count')->nullable()->default(0);
+
+            // indexing
 
             $table->timestamps();
         });

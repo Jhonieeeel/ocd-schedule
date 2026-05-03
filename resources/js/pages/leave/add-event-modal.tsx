@@ -25,7 +25,7 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { store } from '@/routes/leave';
 import { useForm, usePage } from '@inertiajs/react';
-import { format } from 'date-fns';
+import { format, formatDate } from 'date-fns';
 import { CalendarIcon, CalendarOff, CheckIcon, UserIcon } from 'lucide-react';
 import { useState } from 'react';
 import { DateRange } from 'react-day-picker';
@@ -43,13 +43,13 @@ export default function AddEventModal({
     setOpenAddEvent,
     form,
 }: AddModalProps) {
-    const { users, auth } = usePage<PageProps>().props;
+    const { users, auth, errors } = usePage<PageProps>().props;
 
     const [selectedStatus, setSelectedStatus] = useState<string | null>(null);
 
     // date picker
     const [date, setDate] = useState<DateRange | undefined>({
-        from: new Date(),
+        from: form.data.start ? new Date(form.data.start) : new Date(), // 2025-05-01
         to: undefined,
     });
 
@@ -84,7 +84,7 @@ export default function AddEventModal({
             open={openAddEvent}
             onOpenChange={setOpenAddEvent}
         >
-            <DialogContent className="gap-0 overflow-hidden border-zinc-600 p-0 sm:max-w-md">
+            <DialogContent className="gap-0 overflow-hidden border-zinc-300 p-0 sm:max-w-md">
                 {/* ACCENT BAR */}
                 <div className="h-[3px] bg-blue-500" />
 
@@ -239,8 +239,7 @@ export default function AddEventModal({
                                 </Popover>
                                 <InputError
                                     message={
-                                        form.errors.date_from ??
-                                        form.errors.date_to
+                                        form.errors.start ?? form.errors.end
                                     }
                                     className="mt-1"
                                 />
@@ -274,7 +273,7 @@ export default function AddEventModal({
                                                 className={`rounded-full px-3 py-1 text-[12px] font-medium ring-[0.5px] transition-colors ${
                                                     isSelected
                                                         ? `${status.activeBg} text-white ring-transparent`
-                                                        : `bg-zinc-50 text-zinc-500 ring-zinc-200 hover:opacity-80 dark:bg-zinc-800 dark:text-zinc-400 dark:ring-zinc-700`
+                                                        : `border bg-zinc-50 text-zinc-500 ring-zinc-200 hover:opacity-80 dark:bg-zinc-800 dark:text-zinc-400 dark:ring-zinc-700`
                                                 }`}
                                             >
                                                 {status.label}
@@ -282,10 +281,12 @@ export default function AddEventModal({
                                         );
                                     })}
                                 </div>
-                                <InputError
-                                    message={form.errors.leave_type}
-                                    className="mt-1"
-                                />
+                                {selectedStatus !== 'On Leave' && (
+                                    <InputError
+                                        message={form.errors.leave_type}
+                                        className="mt-1"
+                                    />
+                                )}
                             </Field>
 
                             {/* LEAVE TYPE COMBOBOX (On Leave only) */}

@@ -6,8 +6,8 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { show } from '@/routes/balance';
-import { Link } from '@inertiajs/react';
+import { destroy, show } from '@/routes/balance';
+import { Link, useForm } from '@inertiajs/react';
 import { ColumnDef } from '@tanstack/react-table';
 import { differenceInDays, formatDistanceToNow } from 'date-fns';
 import { ArrowUpDown, MoreHorizontal } from 'lucide-react';
@@ -60,19 +60,26 @@ export const columns: ColumnDef<Balance>[] = [
             <div className="text-muted-foreground">Remaining VL (Possible)</div>
         ),
         cell: ({ row }) => {
-            let balance = row.original;
+            const balance = row.original;
 
-            let vlBalance = balance.vl_balance;
-            let undertime = balance.undertime ?? 0;
-            let vlUsed = balance.vl_used ?? 0;
-            let flUsed = balance.fl_used ?? 0;
+            const isNextYear = balance.month === 12;
 
-            let remainingVL =
-                vlBalance! - (undertime + (vlUsed + flUsed)) + 1.25;
+            const vlBalance = balance.vl_balance ?? 0;
+            const flBalance = balance.fl_balance ?? 0;
+            const undertime = balance.undertime ?? 0;
+            const vlUsed = balance.vl_used ?? 0;
+            const flUsed = balance.fl_used ?? 0;
+
+            const totalUsed = vlUsed + flUsed;
+
+            const calculate =
+                vlBalance - (undertime + (isNextYear ? flBalance : totalUsed));
+
+            const result = calculate + 1.25;
 
             return (
                 <div className="py-1.5 font-medium text-muted-foreground">
-                    {remainingVL.toFixed(3)}
+                    {result.toFixed(3)}
                 </div>
             );
         },
@@ -155,6 +162,10 @@ export const columns: ColumnDef<Balance>[] = [
         cell: ({ row }) => {
             const balance = row.original;
 
+            const form = useForm({
+                id: balance.id,
+            });
+
             return (
                 <>
                     <DropdownMenu>
@@ -171,7 +182,11 @@ export const columns: ColumnDef<Balance>[] = [
                             <Link href={show(balance.id as number)}>
                                 <DropdownMenuItem>View</DropdownMenuItem>
                             </Link>
-                            <DropdownMenuItem>Delete</DropdownMenuItem>
+                            <DropdownMenuItem
+                                onClick={() => form.submit(destroy(balance))}
+                            >
+                                Delete
+                            </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
 

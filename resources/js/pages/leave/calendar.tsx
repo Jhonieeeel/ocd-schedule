@@ -43,6 +43,16 @@ function CalendarLeave() {
         is_approve: false as boolean,
     });
 
+    const addForm = useForm<LeaveEvent>({
+        id: undefined as number | undefined,
+        user_id: '',
+        leave_type: '',
+        start: '',
+        end: '',
+        description: '',
+        is_approve: false as boolean,
+    });
+
     // dark mode
     const { appearance } = useAppearance();
 
@@ -54,7 +64,7 @@ function CalendarLeave() {
             calendarId: leave.calendarId,
             title: `${leave.title} - ${leave.user}`,
             card_title: leave.title,
-            leave: leave.title,
+            leave_type: leave.title,
             user: leave.user,
             user_id: leave.user_id,
             description: leave.description,
@@ -75,23 +85,16 @@ function CalendarLeave() {
         timezone: 'Asia/Taipei',
         isDark: appearance === 'dark',
         monthGridOptions: {
-            nEventsPerDay: 20,
+            nEventsPerDay: 50,
         },
         callbacks: {
             onClickDate(date) {
-                // const today = Temporal.PlainDate.from(
-                //     new Intl.DateTimeFormat('en-CA').format(new Date()),
-                // );
-                // const clicked = Temporal.PlainDate.from(date);
-
-                // if (Temporal.PlainDate.compare(clicked, today) < 0) return;
-
+                addForm.setData('start', date.toString());
                 setOpenAddEvent(true);
             },
 
             onEventClick(clickedEvent) {
                 form.setData(clickedEvent as unknown as LeaveEvent);
-
                 setViewEvent(true);
             },
         },
@@ -104,13 +107,14 @@ function CalendarLeave() {
     return (
         <div className="w-full">
             <ScheduleXCalendar calendarApp={calendar} />
-
-            <AddEventModal
-                form={form}
-                openAddEvent={openAddEvent}
-                setOpenAddEvent={setOpenAddEvent}
-            />
-
+            {addForm.data.start && (
+                <AddEventModal
+                    key={addForm.data.start}
+                    form={addForm}
+                    openAddEvent={openAddEvent}
+                    setOpenAddEvent={setOpenAddEvent}
+                />
+            )}
             {form.data && (
                 <ViewEventModal
                     key={form.data.id}
@@ -124,7 +128,6 @@ function CalendarLeave() {
                     }}
                 />
             )}
-
             {form.data && (
                 <EditEventModal
                     key={form.data.calendarId}

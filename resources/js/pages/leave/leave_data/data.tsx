@@ -378,6 +378,7 @@ export type Balance = {
     fl_balance?: number;
     fl_used?: number;
     spl_balance?: number;
+    spl_used?: number;
     undertime?: number;
     as_of?: string;
 
@@ -516,6 +517,7 @@ let currentYear = new Date().getFullYear();
 export const years = Array.from({ length: 7 }, (_, i) => currentYear - 5 + i);
 
 export type AttendanceLog = {
+    id: number;
     user_id: number | undefined;
     balance_id: number;
     date: string;

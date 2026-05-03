@@ -14,7 +14,6 @@ import {
     useReactTable,
 } from '@tanstack/react-table';
 
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
     Table,
@@ -31,16 +30,19 @@ interface DataTableProps<TData, TValue> {
     columns: ColumnDef<TData, TValue>[];
     data: TData[];
     isLoading: boolean;
+    // page
     page: number;
     onSetPage: (value: number) => void;
+    // search
+    search: string;
+    onSearchChange: (value: string) => void;
 }
 
 export function DataTable<TData, TValue>({
     columns,
     data,
-    isLoading,
-    page,
-    onSetPage,
+    search,
+    onSearchChange,
 }: DataTableProps<TData, TValue>) {
     // filter state
     const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -56,7 +58,7 @@ export function DataTable<TData, TValue>({
         getFilteredRowModel: getFilteredRowModel(),
 
         // pagination
-        getPaginationRowModel: getPaginationRowModel(),
+        // getPaginationRowModel: getPaginationRowModel(),
 
         // sorting
         onSortingChange: setSorting,
@@ -74,16 +76,8 @@ export function DataTable<TData, TValue>({
             <div className="flex items-center gap-4 py-4">
                 <Input
                     placeholder="Filter names..."
-                    value={
-                        (table
-                            .getColumn('user.name')
-                            ?.getFilterValue() as string) ?? ''
-                    }
-                    onChange={(event) =>
-                        table
-                            .getColumn('user.name')
-                            ?.setFilterValue(event.target.value)
-                    }
+                    value={search}
+                    onChange={(e) => onSearchChange(e.target.value)}
                     className="max-w-sm"
                 />
 

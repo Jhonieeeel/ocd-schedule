@@ -27,7 +27,9 @@ export const columns: ColumnDef<Balance>[] = [
     },
     {
         accessorKey: 'vl_used',
-        header: () => <div className="text-muted-foreground">Remaining VL (Possible)</div>,
+        header: () => (
+            <div className="text-muted-foreground">Remaining VL (Possible)</div>
+        ),
         cell: ({ row }) => {
             let balance = row.original;
 
@@ -66,7 +68,9 @@ export const columns: ColumnDef<Balance>[] = [
     },
     {
         accessorKey: 'sl_used',
-        header: () => <div className="text-muted-foreground">Remaining SL (Possible)</div>,
+        header: () => (
+            <div className="text-muted-foreground">Remaining SL (Possible)</div>
+        ),
         cell: ({ row }) => {
             let balance = row.original;
 
@@ -107,9 +111,9 @@ export const columns: ColumnDef<Balance>[] = [
                         className={
                             isUpdated
                                 ? // Updated — green pill: same-ramp text on fill for both modes
-                                  'bg-green-200 text-green-800 dark:bg-green-900 dark:text-green-300 text-xs'
+                                  'bg-green-200 text-xs text-green-800 dark:bg-green-900 dark:text-green-300'
                                 : // Outdated — coral/red pill
-                                  'bg-red-200 text-red-800 dark:bg-red-900 dark:text-red-300 text-xs'
+                                  'bg-red-200 text-xs text-red-800 dark:bg-red-900 dark:text-red-300'
                         }
                     >
                         {isUpdated ? 'Updated' : 'Outdated'}
@@ -132,9 +136,7 @@ export const columns: ColumnDef<Balance>[] = [
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => console.log(balance)}>
-                            Add to Next month
-                        </DropdownMenuItem>
+                        <DropdownMenuItem o>Add to Next month</DropdownMenuItem>
                         <DropdownMenuItem>Update</DropdownMenuItem>
                         <DropdownMenuItem>Delete</DropdownMenuItem>
                     </DropdownMenuContent>

@@ -19,7 +19,7 @@ import { columns } from './columns';
 import { DataTable } from './data-table';
 
 import { useQuery } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function UserBalances() {
     let currentMonth = (new Date().getMonth() + 1).toString();
@@ -30,22 +30,46 @@ export default function UserBalances() {
         year: currentYear.toString(),
     });
 
+    const [search, setSearch] = useState('');
+    const [debouncedSearch, setDebouncedSearch] = useState('');
+
     const [page, setPage] = useState(1);
 
-    async function fetchBalances(month: string, year: string, page: number) {
+    async function fetchBalances(
+        month: string,
+        year: string,
+        page: number,
+        search: string,
+    ) {
         const res = await fetch(
-            `/all_balances?month=${month}&year=${year}&page=${page}`,
+            `/all_balances?month=${month}&year=${year}&page=${page}&search=${search}`,
         );
         return res.json();
     }
 
-    const { data: testBalances, isLoading } = useQuery({
-        queryKey: ['userBalances', data.month_id, data.year, page],
-        queryFn: () => fetchBalances(data.month_id, data.year, page),
-        staleTime: 1000 * 60,
+    const { data: testBalances } = useQuery({
+        queryKey: [
+            'userBalances',
+            data.month_id,
+            data.year,
+            page,
+            debouncedSearch,
+        ],
+        queryFn: () =>
+            fetchBalances(data.month_id, data.year, page, debouncedSearch),
+        staleTime: 3000,
     });
 
     let filterMonth = months.find((m) => m.id === Number(data.month_id))?.month;
+
+    useEffect(() => {
+        const timeout = setTimeout(() => {
+            setDebouncedSearch(search);
+            setPage(1);
+        }, 500);
+
+        return () => clearTimeout(timeout);
+    }, [search]);
 
     return (
         <>
@@ -185,9 +209,9 @@ export default function UserBalances() {
                     <DataTable
                         data={testBalances?.data ?? []}
                         columns={columns}
-                        isLoading={isLoading}
-                        page={page}
-                        onSetPage={setPage}
+                        // search
+                        search={search}
+                        onSearchChange={setSearch}
                     />
                     <div className="flex items-center justify-end space-x-2 py-4">
                         <Button

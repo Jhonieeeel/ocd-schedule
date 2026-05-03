@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Balance;
+use App\Models\Leave;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -36,6 +37,7 @@ class DatabaseSeeder extends Seeder
                 'fl_balance' => 5,
                 'fl_used' => 0,
                 'spl_balance' => 3,
+                'spl_used' => 0,
                 'undertime' => 0,
                 'month' => 1,
                 'year' => 2023,
@@ -52,6 +54,7 @@ class DatabaseSeeder extends Seeder
                 'fl_balance' => 5,
                 'fl_used' => 0,
                 'spl_balance' => 3,
+                'spl_used' => 0,
                 'undertime' => 0,
                 'month' => 1,
                 'year' => 2023,
@@ -67,7 +70,8 @@ class DatabaseSeeder extends Seeder
                 'sl_used' => 0,
                 'fl_balance' => 5,
                 'fl_used' => 0,
-                'spl_balance' => 0,
+                'spl_balance' => 3,
+                'spl_used' => 0,
                 'undertime' => 0,
                 'month' => 1,
                 'year' => 2023,
@@ -84,6 +88,7 @@ class DatabaseSeeder extends Seeder
                 'fl_balance' => 5,
                 'fl_used' => 1,
                 'spl_balance' => 3,
+                'spl_used' => 0,
                 'undertime' => 0,
                 'month' => 1,
                 'year' => 2023,
@@ -100,6 +105,41 @@ class DatabaseSeeder extends Seeder
                 'fl_balance' => 5,
                 'fl_used' => 0,
                 'spl_balance' => 3,
+                'spl_used' => 0,
+                'undertime' => 0,
+                'month' => 1,
+                'year' => 2023,
+                'role' => 'employee'
+            ],
+            [
+                'firstname' => 'Lorene',
+                'lastname' => 'Catedral',
+                'email' => 'catedral@example.com',
+                'vl_balance' => 19.875,
+                'vl_used' => 0,
+                'sl_balance' => 308.25,
+                'sl_used' => 0,
+                'fl_balance' => 5,
+                'fl_used' => 0,
+                'spl_balance' => 3,
+                'spl_used' => 0,
+                'undertime' => 0,
+                'month' => 1,
+                'year' => 2023,
+                'role' => 'employee'
+            ],
+            [
+                'firstname' => 'Carlito Jr',
+                'lastname' => 'Clarete',
+                'email' => 'clarete@example.com',
+                'vl_balance' => 6.53,
+                'vl_used' => 0,
+                'sl_balance' => 11.708,
+                'sl_used' => 0,
+                'fl_balance' => 5,
+                'fl_used' => 0,
+                'spl_balance' => 3,
+                'spl_used' => 0,
                 'undertime' => 0,
                 'month' => 1,
                 'year' => 2023,
@@ -121,8 +161,9 @@ class DatabaseSeeder extends Seeder
                 'year' => 2023,
                 'role' => 'employee'
             ],
+
             [
-                'firstname' => 'Aizy Lyny',
+                'firstname' => 'Aizy Lyn',
                 'lastname' => 'Joloyohoy',
                 'email' => 'aizy@example.com',
                 'vl_balance' => 95.102,
@@ -139,7 +180,7 @@ class DatabaseSeeder extends Seeder
                 'role' => 'employee'
             ],
             [
-                'firstname' => 'Ryany',
+                'firstname' => 'Ryan',
                 'lastname' => 'Joloyohoy',
                 'email' => 'ryan@example.com',
                 'vl_balance' => 76.8,
@@ -185,7 +226,7 @@ class DatabaseSeeder extends Seeder
                 'undertime' => 0,
                 'month' => 1,
                 'year' => 2023,
-                'role' => 'employee'
+                'role' => 'hr'
             ],
             [
                 'firstname' => 'Georiss Mae',
@@ -229,7 +270,7 @@ class DatabaseSeeder extends Seeder
                 'sl_balance' => 122.5,
                 'sl_used' => 0,
                 'fl_balance' => 3,
-                'fl_used' => 0,
+                'fl_used' => 2,
                 'spl_balance' => 3,
                 'undertime' => 0,
                 'month' => 1,
@@ -321,6 +362,7 @@ class DatabaseSeeder extends Seeder
                 'fl_balance' => $employee['fl_balance'],
                 'fl_used' => $employee['fl_used'],
                 'spl_balance' => $employee['spl_balance'],
+                'spl_used' => $employee['spl_used'] ?? 0,
                 'undertime' => $employee['undertime'],
                 'month' => $employee['month'],
                 'year' => $employee['year']
@@ -337,6 +379,7 @@ class DatabaseSeeder extends Seeder
 
         $super_admin->assignRole('super-admin');
 
+        // Leave::factory()->count(10000)->create();
 
     }
 }

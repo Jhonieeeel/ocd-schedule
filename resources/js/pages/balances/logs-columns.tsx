@@ -13,6 +13,8 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { useForm } from '@inertiajs/react';
+import { destroy } from '@/routes/attendance_logs';
 
 export const logsColumns: ColumnDef<AttendanceLog>[] = [
     {
@@ -119,6 +121,10 @@ export const logsColumns: ColumnDef<AttendanceLog>[] = [
         cell: ({ row }) => {
             const log = row.original;
 
+            const form = useForm({
+                id: log.id,
+            });
+
             return (
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -127,14 +133,10 @@ export const logsColumns: ColumnDef<AttendanceLog>[] = [
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                        <DropdownMenuItem
-                            onClick={() => console.log('edit', log.id)}
-                        >
-                            Edit
-                        </DropdownMenuItem>
+                        <DropdownMenuItem>Edit</DropdownMenuItem>
                         <DropdownMenuItem
                             className="text-red-600 dark:text-red-400"
-                            onClick={() => console.log('delete', log.id)}
+                            onClick={() => form.submit(destroy(log))}
                         >
                             Delete
                         </DropdownMenuItem>

@@ -70,6 +70,12 @@ class User extends Authenticatable
         );
     }
 
+    // relationships
+    public function leave() {
+        return $this->hasMany(Leave::class);
+    }
+
+
     public function attendance() {
         return $this->hasMany(AttendanceLog::class);
     }

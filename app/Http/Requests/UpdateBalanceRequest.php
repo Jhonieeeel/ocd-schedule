@@ -30,6 +30,8 @@ class UpdateBalanceRequest extends FormRequest
             'sl_used'     => ['nullable', 'numeric', 'decimal:0,3', 'min:0', 'max:99999.999'],
             'fl_balance'  => ['nullable', 'numeric', 'decimal:0,2', 'min:0', 'max:99999999.99'],
             'fl_used'     => ['nullable', 'numeric', 'decimal:0,2', 'min:0', 'max:99999999.99'],
+            'spl_balance' => ['nullable', 'numeric',  'min:0', 'max:99999999.99'],
+            'spl_used' => ['nullable', 'numeric', 'min:0', 'max:99999999.99'],
             'undertime'   => ['nullable', 'numeric', 'decimal:0,3', 'min:0', 'max:99999.999'],
             'month'       => ['nullable', 'integer', 'min:1', 'max:12'],
             'year'        => ['nullable', 'integer', 'min:1900', 'max:' . date('Y')],

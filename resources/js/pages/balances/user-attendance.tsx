@@ -22,6 +22,7 @@ import { useForm } from '@inertiajs/react';
 import { format } from 'date-fns';
 import { AttendanceLog, Balance } from '../leave/leave_data/data';
 import { useRef, useState } from 'react';
+import { destroy } from '@/routes/balance';
 
 export default function UserAttendace({
     attendanceForm,
@@ -37,11 +38,14 @@ export default function UserAttendace({
         attendanceForm.submit(store(), {
             onSuccess: () => {
                 setOpen(false);
+                attendanceForm.reset();
             },
         });
     }
 
-    function handleUpdate() {}
+    function handleUpdate() {
+        attendanceForm.submit(destroy(attendanceForm.data?.id));
+    }
 
     function handleDelete() {}
 
