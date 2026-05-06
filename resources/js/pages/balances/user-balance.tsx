@@ -19,7 +19,6 @@ import {
 import { logsColumns } from './logs-columns';
 import { LogsTable } from './logs-table';
 import UserAttendace from './user-attendance';
-import { useEffect, useState } from 'react';
 
 type PageProps = {
     flash: {
@@ -94,7 +93,7 @@ export default function UserBalance({
             <div className="m-4">
                 {flash.message && (
                     <Alert className="relative max-w-md border border-green-300 bg-green-200 dark:border-[#1D9E75] dark:bg-[#085041]">
-                        <CheckCircle2Icon className="h-[18px] w-[18px] text-green-700 dark:text-emerald-400" />
+                        <CheckCircle2Icon className="h-4.5 w-4.5 text-green-700 dark:text-emerald-400" />
 
                         <AlertTitle className="font-medium text-green-900 dark:text-emerald-200">
                             {flash.message}

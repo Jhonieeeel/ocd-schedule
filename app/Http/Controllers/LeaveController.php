@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Balance;
 use App\Http\Requests\StoreLeaveRequest;
 use App\Http\Requests\UpdateLeaveRequest;
+use App\Models\Holiday;
 use Carbon\Carbon;
 use Inertia\Inertia;
 
@@ -33,7 +34,9 @@ class LeaveController extends Controller
             ];
         });
 
-        return Inertia::render("leave/index", ['users' => $users, 'leaves' => $leaves]);
+        $holidays = Holiday::all();
+
+        return Inertia::render("leave/index", ['users' => $users, 'leaves' => $leaves, 'holidays' => $holidays]);
     }
 
     /**1
@@ -61,7 +64,7 @@ class LeaveController extends Controller
         $balance = Balance::forBalance($validated['user_id'], $start->month, $start->year);
 
         if (!$balance) {
-            return back()->withErrors(['errors' => 'This user doesnt have balance yet. ']);
+            return back()->withErrors(['errors' => 'This user doesnt have balance for this month yet. ']);
         }
 
         // check if theres a leave for the date range
@@ -70,7 +73,7 @@ class LeaveController extends Controller
         }
 
 
-        $result = $balance->checkLeaveType($validated['leave_type'], $balance);
+        $result = $balance->checkLeaveType($validated['leave_type'], $totalLeaveDays);
 
         if ($result) return $result;
 
@@ -122,7 +125,6 @@ class LeaveController extends Controller
         }
 
         // restore the balance if mo e cancel balik
-
         // if ($isApprove && !$validated['is_approve']) {
         //     match ($validated['leave_type']) {
         //         'Sick Leave'  => $balance->restoreSLBalance($totalLeaveDays),
@@ -145,7 +147,6 @@ class LeaveController extends Controller
     {
         $leave->delete();
 
-        // dapat json, kaso dimo reload akoa kuan
         return redirect()->route('leave.index')->with('message', 'Leave deleted successfully.');
     }
 }

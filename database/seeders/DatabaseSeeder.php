@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Balance;
+use App\Models\Holiday;
 use App\Models\Leave;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -344,6 +345,7 @@ class DatabaseSeeder extends Seeder
             ],
         ];
 
+
         foreach($employees as $employee) {
             $user = User::create([
                 'firstname' => $employee['firstname'],
@@ -375,6 +377,12 @@ class DatabaseSeeder extends Seeder
             'name' => 'Super Admin',
             'email' => 'superadmin@ocdcaraga.com',
             'password' => 'ocdcaraga13',
+        ]);
+
+        Holiday::create([
+            'name' => 'Araw ng Kamote',
+            'month' => 4,
+            'day' => 9
         ]);
 
         $super_admin->assignRole('super-admin');

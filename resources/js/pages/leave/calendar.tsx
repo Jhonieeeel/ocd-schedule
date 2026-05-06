@@ -15,16 +15,17 @@ import { useAppearance } from '@/hooks/use-appearance';
 import AddEventModal from './add-event-modal';
 import { ViewEventModal } from './custom-modal';
 import EditEventModal from './edit-event-modal';
-import { CALENDARS, LeaveEvent } from './leave_data/data';
+import { CALENDARS, Holidays, HOLIDAYS, LeaveEvent } from './leave_data/data';
 
 type Props = {
     leaves: LeaveEvent[];
+    holidays: Holidays[];
 };
 
 type CalendarId = keyof typeof CALENDARS;
 
 function CalendarLeave() {
-    const { leaves } = usePage<Props>().props;
+    const { leaves, holidays } = usePage<Props>().props;
 
     const [openAddEvent, setOpenAddEvent] = useState(false);
     const [viewEvent, setViewEvent] = useState(false);
@@ -56,6 +57,27 @@ function CalendarLeave() {
     // dark mode
     const { appearance } = useAppearance();
 
+    // holidays
+    function generateHolidayEvents(fromYear: number, toYear: number) {
+        const events = [];
+        let id = 900000;
+        for (let year = fromYear; year <= toYear; year++) {
+            for (const h of holidays) {
+                const mm = String(h.month).padStart(2, '0');
+                const dd = String(h.day).padStart(2, '0');
+                const dateStr = `${year}-${mm}-${dd}`;
+                events.push({
+                    id: id++,
+                    title: h.name,
+                    start: Temporal.PlainDate.from(dateStr),
+                    end: Temporal.PlainDate.from(dateStr),
+                    calendarId: 'holidays',
+                });
+            }
+        }
+        return events;
+    }
+
     const mappedEvents = (leaves ?? []).map((leave) => {
         const calendar = CALENDARS[leave.calendarId as CalendarId];
 
@@ -76,11 +98,17 @@ function CalendarLeave() {
         };
     });
 
+    const currentYear = new Date().getFullYear();
+    const holidayEvents = generateHolidayEvents(
+        currentYear - 1,
+        currentYear + 3,
+    );
+
     const calendar = useCalendarApp({
         views: [createViewDay(), createViewWeek(), createViewMonthGrid()],
         calendars: CALENDARS,
         defaultView: viewMonthGrid.name,
-        events: mappedEvents,
+        events: [...mappedEvents, ...holidayEvents],
         plugins: [eventsService],
         timezone: 'Asia/Taipei',
         isDark: appearance === 'dark',
@@ -101,7 +129,7 @@ function CalendarLeave() {
     });
 
     useEffect(() => {
-        eventsService.set(mappedEvents);
+        eventsService.set([...mappedEvents, ...holidayEvents]);
     }, [leaves]);
 
     return (

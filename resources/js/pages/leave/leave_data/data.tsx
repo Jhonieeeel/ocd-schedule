@@ -517,7 +517,7 @@ let currentYear = new Date().getFullYear();
 export const years = Array.from({ length: 7 }, (_, i) => currentYear - 5 + i);
 
 export type AttendanceLog = {
-    id: number;
+    id?: number;
     user_id: number | undefined;
     balance_id: number;
     date: string;
@@ -536,3 +536,17 @@ export type CreateUserType = {
     password_confirmation: string;
     employee_number: string;
 };
+
+export type Holidays = {
+    name: string;
+    month: number;
+    day: number;
+};
+
+export const HOLIDAYS: { name: string; month: number; day: number }[] = [
+    {
+        name: 'New Year`s Day',
+        month: 1,
+        day: 1,
+    },
+];
