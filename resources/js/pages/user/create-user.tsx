@@ -137,7 +137,7 @@ export default function CreateUser({
                         <Label className="text-xs tracking-wide text-muted-foreground uppercase">
                             Sex
                         </Label>
-                        <div className="flex max-w-md gap-3">
+                        <div className="max-w-auto flex gap-3">
                             {['Male', 'Female', 'Other'].map((option) => (
                                 <label
                                     key={option}
@@ -155,6 +155,44 @@ export default function CreateUser({
                                     {option}
                                 </label>
                             ))}
+                        </div>
+                        {form.errors.sex ? (
+                            <InputError message={form.errors.sex} />
+                        ) : (
+                            <p className="text-xs text-muted-foreground">
+                                Your valid email address
+                            </p>
+                        )}
+                    </Field>
+
+                    {/* Roles */}
+                    <Field className="space-y-1.5">
+                        <Label className="text-xs tracking-wide text-muted-foreground uppercase">
+                            Employee Role
+                        </Label>
+                        <div className="max-w-auto flex gap-3">
+                            {['hr', 'gip', 'employee', 'super-admin'].map(
+                                (option) => (
+                                    <label
+                                        key={option}
+                                        className="flex h-10 flex-1 cursor-pointer items-center gap-2.5 rounded-md border border-input bg-background px-4 text-sm text-foreground capitalize transition-colors hover:bg-accent hover:text-accent-foreground"
+                                    >
+                                        <input
+                                            type="radio"
+                                            name="role"
+                                            value={option.toLowerCase()}
+                                            onChange={(e) =>
+                                                form.setData(
+                                                    'sex',
+                                                    e.target.value,
+                                                )
+                                            }
+                                            className="accent-primary"
+                                        />
+                                        {option}
+                                    </label>
+                                ),
+                            )}
                         </div>
                         {form.errors.sex ? (
                             <InputError message={form.errors.sex} />
