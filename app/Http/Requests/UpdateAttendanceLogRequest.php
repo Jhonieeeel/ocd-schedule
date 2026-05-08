@@ -11,7 +11,7 @@ class UpdateAttendanceLogRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,12 @@ class UpdateAttendanceLogRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'user_id'  => ['required', 'exists:users,id'],
+            'balance_id' => ['required', 'exists:balances,id'],
+            'date'     => ['required', 'date', 'before_or_equal:today'],
+            'hours'    => ['required', 'integer', 'min:0', 'max:23'],
+            'minutes'  => ['required', 'integer', 'min:0', 'max:59'],
+            'is_tardy' => ['required', 'boolean'],
         ];
     }
 }

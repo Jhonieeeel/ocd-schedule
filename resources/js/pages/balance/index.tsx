@@ -32,7 +32,7 @@ export default function Balance({ userBalance }: { userBalance: BalanceType }) {
                     key={userBalance?.id}
                 >
                     <div className="col-span-4 flex items-center justify-between">
-                        <p className="text-sm text-muted-foreground">
+                        <p className="rounded-xl border-2 border-yellow-300 bg-yellow-100 p-2 text-sm text-yellow-300 dark:border-yellow-700 dark:bg-yellow-900 dark:text-yellow-200">
                             {userBalance?.as_of ? (
                                 <>
                                     Showing balance for{' '}
@@ -45,16 +45,6 @@ export default function Balance({ userBalance }: { userBalance: BalanceType }) {
                                         })}{' '}
                                         {userBalance?.year}
                                     </span>{' '}
-                                    as of{' '}
-                                    <span className="font-medium text-foreground">
-                                        {/* {new Date(
-                                                userBalance?.as_of,
-                                            ).toLocaleDateString('en-US', {
-                                                month: 'long',
-                                                day: 'numeric',
-                                                year: 'numeric',
-                                            })} */}
-                                    </span>
                                     . Contact HR if this seems outdated.
                                 </>
                             ) : (
@@ -86,7 +76,7 @@ export default function Balance({ userBalance }: { userBalance: BalanceType }) {
                     {/* Undertime */}
                     <Card className="col-span-4 dark:bg-zinc-900" key={index}>
                         <CardContent className="flex items-center gap-4 py-4">
-                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-yellow-100">
+                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-yellow-100 dark:bg-yellow-900 dark:text-yellow-200">
                                 <Clock className="h-5 w-5 text-yellow-600" />
                             </div>
                             <div>

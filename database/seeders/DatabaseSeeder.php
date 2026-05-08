@@ -24,7 +24,6 @@ class DatabaseSeeder extends Seeder
         Role::create(['name' => 'hr']);
         Role::create(['name' => 'gip']);
         Role::create(['name' => 'employee']);
-    ñ
 
         $employees = [
             [

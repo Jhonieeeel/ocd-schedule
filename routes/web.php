@@ -40,7 +40,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         // logs
         Route::post("attendance_logs", [AttendanceLogController::class, 'store'])->name('attendance_logs.store');
-        Route::delete("attendnace_logs/{attendanceLog}", [AttendanceLogController::class, 'destroy'])->name('attendance_logs.destroy');
+        Route::delete("attendance_logs/{attendanceLog}", [AttendanceLogController::class, 'destroy'])->name('attendance_logs.destroy');
+        Route::put("attendance_logs/{attendance_log}", [AttendanceLogController::class, 'update'])->name("attendance_log.update");
 
         // users
         Route::get('users', [UserController::class,'index'])->name('users.index');

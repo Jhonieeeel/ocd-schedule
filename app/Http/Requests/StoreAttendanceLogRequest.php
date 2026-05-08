@@ -30,4 +30,17 @@ class StoreAttendanceLogRequest extends FormRequest
             'is_tardy' => ['required', 'boolean'],
         ];
     }
+
+    /**
+     * Get the error messages for the defined validation rules.
+     *
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'date.before_or_equal' => 'The attendance date must not be a future date.',
+        ];
+    }
+
 }

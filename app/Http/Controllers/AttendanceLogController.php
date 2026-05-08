@@ -46,12 +46,17 @@ class AttendanceLogController extends Controller
             ->where('user_id', $attendance->user_id)
             ->where('month', $attendance->month)
             ->where('year', $attendance->year)
-            ->firstOrFail();
+            ->first();
 
-        $freshBalance = $balance->fresh();
-        $freshBalance->updateUndertime();
+        if (!$balance) {
+            return back()
+                ->withErrors(['balance' => 'This user doesn\'t have a balance for this month yet.'])
+                ->with('message', 'This user doesn\'t have a balance for this month yet.');
+        }
 
-        return redirect()->route('balance.show', $balance->id)
+        $balance->updateUndertime();
+
+        return to_route('balance.show', $balance->id)
                 ->with('message', 'Attendance Log added!');
     }
 
@@ -76,7 +81,29 @@ class AttendanceLogController extends Controller
      */
     public function update(UpdateAttendanceLogRequest $request, AttendanceLog $attendanceLog)
     {
-        //
+        $validated = $request->validated();
+
+        $attendanceLog->update([
+            ...$validated,
+            'total_minutes' => ($validated['hours'] * 60) + $validated['minutes'],
+        ]);
+
+        $attendanceLog->refresh();
+
+        $balance = Balance::where('id', $attendanceLog->balance_id)
+            ->where('user_id', $attendanceLog->user_id)
+            ->where('month', $attendanceLog->month)
+            ->where('year', $attendanceLog->year)
+            ->first();
+
+        if (!$balance) {
+            return back()->withErrors(['errors', 'Balance couldnt find']);
+        }
+
+
+        $balance->updateUndertime();
+
+        return to_route('balance.show', $balance->id)->with('message', 'Attendance Log updated');
     }
 
     /**
@@ -84,8 +111,9 @@ class AttendanceLogController extends Controller
      */
     public function destroy(AttendanceLog $attendanceLog)
     {
+        $balance_id = $attendanceLog->id;
         $attendanceLog->delete();
 
-        return to_route('balance.index')->with('message', 'Attendance Log deleted successfully!');
+        return to_route('balance.show', $balance_id)->with('message', 'Attendance Log deleted successfully!');
     }
 }

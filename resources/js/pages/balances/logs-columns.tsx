@@ -15,6 +15,8 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useForm } from '@inertiajs/react';
 import { destroy } from '@/routes/attendance_logs';
+import EditAttendance from './edit-attendance';
+import { useState } from 'react';
 
 export const logsColumns: ColumnDef<AttendanceLog>[] = [
     {
@@ -125,6 +127,17 @@ export const logsColumns: ColumnDef<AttendanceLog>[] = [
                 id: log.id,
             });
 
+            const attendanceForm = useForm<AttendanceLog>({
+                id: log.id,
+                user_id: log.user_id,
+                balance_id: log.balance_id!,
+                date: log.date,
+                minutes: log?.minutes,
+                hours: log?.hours,
+                is_tardy: log.is_tardy,
+                cutoff: log.cutoff,
+            });
+
             return (
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -133,7 +146,15 @@ export const logsColumns: ColumnDef<AttendanceLog>[] = [
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                        <DropdownMenuItem>Edit</DropdownMenuItem>
+                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                            {log && (
+                                <EditAttendance
+                                    key={log.id}
+                                    attendanceForm={attendanceForm}
+                                    attendanceLog={log}
+                                />
+                            )}
+                        </DropdownMenuItem>
                         <DropdownMenuItem
                             className="text-red-600 dark:text-red-400"
                             onClick={() => form.submit(destroy(log))}

@@ -121,17 +121,13 @@ class LeaveController extends Controller
 
         // deduct balance, if first time ang pag approve
         if (!$isApprove && $validated['is_approve']) {
-            $balance->checkLeaveType($validated['leave_type'], $totalLeaveDays);
+            $balance->deductLeaveType($validated['leave_type'], $totalLeaveDays);
         }
 
         // restore the balance if mo e cancel balik
-        // if ($isApprove && !$validated['is_approve']) {
-        //     match ($validated['leave_type']) {
-        //         'Sick Leave'  => $balance->restoreSLBalance($totalLeaveDays),
-        //         'Special Privilege Leave'  => $balance->restoreSPLBalance(($totalLeaveDays)),
-        //         default => null
-        //     };
-        // }
+        if ($isApprove && !$validated['is_approve']) {
+            $balance->restoreLeaveDays($validated['leave_type'], $totalLeaveDays);
+        }
 
         // if no errors then update
         $leave->update($validated);

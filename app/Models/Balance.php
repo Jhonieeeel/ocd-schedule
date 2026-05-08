@@ -130,33 +130,6 @@ class Balance extends Model
         $this->save();
     }
 
-    // public function deductVLBalance(int $leaveDays, int $month)
-    // {
-    //     $isDecember = $month === 12;
-
-    //     if ($this->fl_balance <= 0) {
-
-    //         $this->vl_balance -= $leaveDays;
-    //         $this->vl_used += $leaveDays;
-
-    //     } elseif ($leaveDays > $this->fl_balance) {
-
-    //         $remaining = $leaveDays - $this->fl_balance;
-
-    //         $this->fl_used += $this->fl_balance;
-    //         $this->fl_balance = 0;
-
-    //         $this->vl_balance -= $remaining;
-    //         $this->vl_used += $remaining;
-    //     } else {
-    //         $this->fl_balance -= $leaveDays;
-    //         $this->fl_used += $leaveDays;
-    //     }
-
-
-    //     $this->save();
-    // }
-
     // restoration
     public function restoreSLBalance(int $leaveDays)
     {
@@ -171,17 +144,16 @@ class Balance extends Model
         $this->save();
     }
 
-    public function restoreVLBalance(int $leaveDays)
+    public function restoreVLBalance(float $leaveDays)
     {
-        $flRestored = min($leaveDays, $this->fl_used);
-        $vlRestored = $leaveDays - $flRestored;
+        $this->vl_balance += $leaveDays;
+        $this->vl_used -= $leaveDays;
+        $this->save();
+    }
 
-        $this->fl_balance += $flRestored;
-        $this->fl_used -= $flRestored;
-
-        $this->vl_balance += $vlRestored;
-        $this->vl_used -= $vlRestored;
-
+    public function restoreFLBalance(float $leaveDays) {
+        $this->fl_balance += $leaveDays;
+        $this->vl_used -= $leaveDays;
         $this->save();
     }
 
@@ -191,7 +163,6 @@ class Balance extends Model
         $this->sl_balance = ($this->sl_balance - $this->sl_used) + 1.25;
 
         return $this->sl_balance;
-
 
     }
 
@@ -236,6 +207,26 @@ class Balance extends Model
             'Sick Leave'              => $this->checkSLBalance($totalLeaveDays),
             'Special Privilege Leave' => $this->checkSPLBalance($totalLeaveDays),
             'Mandatory/Force Leave'   => $this->checkFLBalance($totalLeaveDays),
+            default                   => false
+        };
+    }
+
+    public function deductLeaveType($leave_type, $totalLeaveDays) {
+        return match($leave_type) {
+            'Vacation Leave'          => $this->deductVLBalance($totalLeaveDays),
+            'Sick Leave'              => $this->deductSLBalance($totalLeaveDays),
+            'Special Privilege Leave' => $this->deductSPLBalance($totalLeaveDays),
+            'Mandatory/Force Leave'   => $this->deductFLBalance($totalLeaveDays, $this->month),
+            default                   => false
+        };
+    }
+
+    public function restoreLeaveDays($leave_type, $totalLeaveDays) {
+        return match($leave_type) {
+            'Vacation Leave'          => $this->restoreVLBalance($totalLeaveDays),
+            'Sick Leave'              => $this->restoreSLBalance($totalLeaveDays),
+            'Special Privilege Leave' => $this->restoreSPLBalance($totalLeaveDays),
+            'Mandatory/Force Leave'   => $this->restoreFLBalance($totalLeaveDays),
             default                   => false
         };
     }

@@ -9,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { cn } from '@/lib/utils';
 import { all, carry, update } from '@/routes/balance';
 import { Link, useForm, usePage } from '@inertiajs/react';
-import { CheckCircle2Icon, Clock, Plus, X } from 'lucide-react';
+import { Calendar, CheckCircle2Icon, Clock, Plus, X } from 'lucide-react';
 import {
     AttendanceLog,
     Balance,
@@ -19,6 +19,7 @@ import {
 import { logsColumns } from './logs-columns';
 import { LogsTable } from './logs-table';
 import UserAttendace from './user-attendance';
+import EditAttendance from './edit-attendance';
 
 type PageProps = {
     flash: {
@@ -32,7 +33,7 @@ export default function UserBalance({
 }: {
     attendanceLogs: AttendanceLog;
 }) {
-    const { flash, userBalance } = usePage<PageProps>().props;
+    const { flash, userBalance, errors } = usePage<PageProps>().props;
 
     const { submit, setData, processing, data } = useForm<Balance>({
         id: userBalance?.id,
@@ -109,6 +110,23 @@ export default function UserBalance({
                         </button>
                     </Alert>
                 )}
+                {errors?.balance && (
+                    <Alert className="relative max-w-md border border-red-300 bg-red-200 dark:border-red-700 dark:bg-red-950">
+                        <X className="h-4.5 w-4.5 text-red-700 dark:text-red-400" />
+                        <AlertTitle className="font-medium text-red-900 dark:text-red-200">
+                            {errors.balance}
+                        </AlertTitle>
+                        <AlertDescription className="text-sm leading-relaxed text-red-700 dark:text-red-400">
+                            Please resolve the issue and try again.
+                        </AlertDescription>
+                        <button
+                            // onClick={() => setShowError(false)}
+                            className="absolute top-3 right-3 text-red-600 transition-opacity hover:opacity-100 dark:text-red-500/60"
+                        >
+                            <X size={14} />
+                        </button>
+                    </Alert>
+                )}
             </div>
             <Tabs defaultValue="balance">
                 <TabsList variant="line" className="m-4">
@@ -124,18 +142,16 @@ export default function UserBalance({
                         {/* User Info */}
                         <div className="flex items-center justify-between">
                             <div>
-                                <h5 className="flex items-center gap-1 text-sm">
-                                    Month of
-                                    <div className="dark:text-yellow-300">
-                                        {
-                                            months.find(
-                                                (m) =>
-                                                    m.id === userBalance.month,
-                                            )?.month
-                                        }
-                                    </div>
-                                </h5>
-                                <h3 className="text-2xl font-semibold">
+                                <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-400 bg-amber-100 px-2.5 py-0.5 text-xs font-medium text-amber-800 dark:border-amber-600 dark:bg-amber-900 dark:text-amber-200">
+                                    <Calendar className="h-3 w-3" />
+                                    Month of{' '}
+                                    {
+                                        months.find(
+                                            (m) => m.id === userBalance.month,
+                                        )?.month
+                                    }
+                                </span>
+                                <h3 className="mt-1.5 text-2xl font-medium">
                                     {userBalance.user?.name} Balance
                                 </h3>
                                 <p className="text-xs text-muted-foreground">
@@ -322,18 +338,16 @@ export default function UserBalance({
                     <div className="m-4">
                         <div className="flex items-center justify-between">
                             <div>
-                                <h5 className="flex items-center gap-1 text-sm">
-                                    Month of
-                                    <div className="dark:text-yellow-300">
-                                        {
-                                            months.find(
-                                                (m) =>
-                                                    m.id === userBalance.month,
-                                            )?.month
-                                        }
-                                    </div>
-                                </h5>
-                                <h3 className="text-2xl font-semibold">
+                                <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-400 bg-amber-100 px-2.5 py-0.5 text-xs font-medium text-amber-800 dark:border-amber-600 dark:bg-amber-900 dark:text-amber-200">
+                                    <Calendar className="h-3 w-3" />
+                                    Month of{' '}
+                                    {
+                                        months.find(
+                                            (m) => m.id === userBalance.month,
+                                        )?.month
+                                    }
+                                </span>
+                                <h3 className="mt-1.5 text-2xl font-medium">
                                     {userBalance.user?.name} Logs
                                 </h3>
                                 <p className="text-xs text-muted-foreground">

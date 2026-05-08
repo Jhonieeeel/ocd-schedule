@@ -1,5 +1,4 @@
 import { Button } from '@/components/ui/button';
-import { Calendar } from '@/components/ui/calendar';
 import {
     Dialog,
     DialogClose,
@@ -16,40 +15,39 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from '@/components/ui/popover';
-import { Spinner } from '@/components/ui/spinner';
-import { store } from '@/routes/attendance_logs';
+import { AttendanceLog } from '../leave/leave_data/data';
 import { useForm } from '@inertiajs/react';
+import { useState } from 'react';
+import { Calendar } from '@/components/ui/calendar';
+import { Spinner } from '@/components/ui/spinner';
 import { format } from 'date-fns';
-import { AttendanceLog, Balance } from '../leave/leave_data/data';
-import { useRef, useState } from 'react';
-import { destroy } from '@/routes/balance';
+import { update } from '@/routes/attendance_log';
 
-export default function UserAttendace({
+export default function EditAttendance({
     attendanceForm,
-    userBalance,
+    attendanceLog,
 }: {
-    userBalance: Balance;
     attendanceForm: ReturnType<typeof useForm<AttendanceLog>>;
+    attendanceLog: AttendanceLog;
 }) {
     const [open, setOpen] = useState(false);
 
     function handleSubmit(e) {
         e.preventDefault();
-        attendanceForm.submit(store(), {
+
+        attendanceForm.submit(update(Number(attendanceForm.data?.id)), {
             onSuccess: () => {
-                setOpen(false);
                 attendanceForm.reset();
+                setOpen(false);
             },
         });
     }
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>
-                <Button className="bg-yellow-600 text-white hover:bg-yellow-700 dark:text-yellow-100 dark:hover:bg-yellow-900">
-                    {attendanceForm.processing && <Spinner />}
-                    Log Attendance
-                </Button>
+            <DialogTrigger>
+                {attendanceForm.processing && <Spinner />}
+                Log Attendance
             </DialogTrigger>
             <DialogContent className="sm:max-w-md">
                 <DialogHeader>
@@ -113,11 +111,6 @@ export default function UserAttendace({
                                     />
                                 </PopoverContent>
                             </Popover>
-                            {attendanceForm.errors.date && (
-                                <span className="text-sm text-red-500">
-                                    {attendanceForm.errors.date}
-                                </span>
-                            )}
                         </div>
 
                         {/* Hours + Minutes */}
@@ -144,11 +137,6 @@ export default function UserAttendace({
                                         className="flex-1 bg-transparent px-3 py-2 text-sm text-foreground outline-none"
                                     />
                                 </div>
-                                {attendanceForm.errors.hours && (
-                                    <span className="text-sm text-red-500">
-                                        {attendanceForm.errors.hours}
-                                    </span>
-                                )}
                             </div>
                             <div className="flex flex-col gap-1.5">
                                 <Label className="text-xs tracking-widest text-muted-foreground uppercase">
@@ -172,11 +160,6 @@ export default function UserAttendace({
                                         className="flex-1 bg-transparent px-3 py-2 text-sm text-foreground outline-none"
                                     />
                                 </div>
-                                {attendanceForm.errors.minutes && (
-                                    <span className="text-sm text-red-500">
-                                        {attendanceForm.errors.minutes}
-                                    </span>
-                                )}
                             </div>
                         </div>
 

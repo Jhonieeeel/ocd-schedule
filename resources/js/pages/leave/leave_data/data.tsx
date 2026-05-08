@@ -271,22 +271,6 @@ export const statuses = [
         ring: 'ring-blue-200',
         activeBg: 'bg-blue-500',
     },
-    {
-        label: 'On Leave (not filled)',
-        type: 'on_leave_not_filled',
-        bg: 'bg-yellow-100',
-        text: 'text-yellow-700',
-        ring: 'ring-yellow-200',
-        activeBg: 'bg-yellow-500',
-    },
-    {
-        label: 'Auto Offset (not filled)',
-        type: 'auto_offset_not_filled',
-        bg: 'bg-zinc-100',
-        text: 'text-zinc-600',
-        ring: 'ring-zinc-200',
-        activeBg: 'bg-zinc-500',
-    },
 ];
 
 export const leave_types = [

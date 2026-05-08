@@ -77,14 +77,14 @@ export default function AddBalance() {
     return (
         <Dialog modal={false}>
             <DialogTrigger asChild>
-                <Button className="bg-yellow-600 text-white hover:bg-yellow-700 dark:bg-yellow-300 dark:text-yellow-800 dark:hover:bg-yellow-400">
+                <Button className="border-2 border-yellow-300 bg-yellow-100 text-yellow-300 hover:bg-yellow-200 dark:border-yellow-700 dark:bg-yellow-900 dark:text-yellow-200 dark:hover:bg-yellow-800">
                     Add User Balance
                 </Button>
             </DialogTrigger>
 
             <DialogContent
                 aria-describedby={undefined}
-                className="overflow-hidden p-0 sm:max-w-[580px]"
+                className="overflow-hidden p-0 sm:max-w-145"
             >
                 <DialogHeader className="flex flex-row items-center gap-3 border-b px-6 py-4">
                     <div className="flex h-8 w-8 items-center justify-center rounded-md bg-yellow-100 dark:bg-yellow-900">
@@ -350,7 +350,7 @@ export default function AddBalance() {
                     </DialogClose>
                     <Button
                         disabled={form.processing}
-                        className="flex-[2] bg-yellow-600 text-white hover:bg-yellow-700 dark:bg-yellow-500 dark:hover:bg-yellow-400"
+                        className="flex-2 border-2 border-yellow-300 bg-yellow-100 text-yellow-300 hover:border-yellow-400 hover:bg-yellow-200 dark:border-yellow-700 dark:bg-yellow-900 dark:text-yellow-200 dark:hover:border-yellow-600 dark:hover:bg-yellow-800"
                         onClick={handleSubmit}
                     >
                         Save Balance

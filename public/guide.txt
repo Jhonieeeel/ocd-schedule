@@ -1,0 +1,2 @@
+Light Mode = bg-color-100, border-color-300, text-color-300 hover-color-200 hover:border-color-400
+Dark Mode = dark:bg-900, dark:border-700, dark:text-color-200 dark:hover-color-800 dark:hover:border-color-600
