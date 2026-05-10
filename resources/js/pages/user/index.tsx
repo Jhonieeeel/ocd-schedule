@@ -5,11 +5,15 @@ import CreateUser from './create-user';
 import users from '@/routes/users';
 import { CreateUserType } from '../leave/leave_data/data';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { UserTable } from './user-table';
+import { userColumns } from './user-column';
+import { User as Users } from '@/types';
 
 type PageProps = {
     flash: {
         message: string;
     };
+    users: Users[];
 };
 
 export default function User() {
@@ -21,9 +25,10 @@ export default function User() {
         password: '',
         password_confirmation: '',
         employee_number: '',
+        role: '',
     });
 
-    const { flash } = usePage<PageProps>().props;
+    const { flash, users } = usePage<PageProps>().props;
 
     return (
         <div className="m-4">
@@ -58,7 +63,7 @@ export default function User() {
                     </TabsTrigger>
                 </TabsList>
                 <TabsContent className="m-4" value="users">
-                    <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl">
+                    <div className="mb-4 flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl">
                         <div className="flex items-center justify-between">
                             <div>
                                 <h5 className="flex items-center gap-1 text-sm">
@@ -77,7 +82,10 @@ export default function User() {
                         </div>
                     </div>
 
-                    <div className="m-4">{/* Data table */}</div>
+                    {/* data table */}
+                    <div>
+                        <UserTable columns={userColumns} data={users ?? []} />
+                    </div>
                 </TabsContent>
                 <TabsContent className="m-4 space-y-1.5" value="create">
                     <div className="rounded-x flex h-full flex-1 flex-col gap-4 overflow-x-auto">
@@ -101,9 +109,6 @@ export default function User() {
                     <CreateUser form={form} />
                 </TabsContent>
             </Tabs>
-
-            {/* data table */}
-            <div></div>
         </div>
     );
 }

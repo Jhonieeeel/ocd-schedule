@@ -24,7 +24,6 @@ class DatabaseSeeder extends Seeder
         Role::create(['name' => 'hr']);
         Role::create(['name' => 'gip']);
         Role::create(['name' => 'employee']);
-    ñ
 
         $employees = [
             [
@@ -374,9 +373,11 @@ class DatabaseSeeder extends Seeder
         }
 
         $super_admin = User::create([
-            'name' => 'Super Admin',
+            'firstname' => 'Super',
+            'lastname' => 'Admin',
             'email' => 'superadmin@ocdcaraga.com',
             'password' => 'ocdcaraga13',
+            'name' => 'anything'
         ]);
 
         Holiday::create([

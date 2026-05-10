@@ -14,7 +14,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::select(['id', 'name'])->get();
+        $users = User::select(['id', 'name', 'email'])->with('roles')->get();
 
         return Inertia::render('user/index', ['users' => $users]);
     }
@@ -39,7 +39,8 @@ class UserController extends Controller
             'name' => 'any',
         ]);
 
-        info($user);
+        $user->assignRole($request->input('role'));
+
 
         return redirect()->route('users.index')->with('message', 'User created successfully');
     }
