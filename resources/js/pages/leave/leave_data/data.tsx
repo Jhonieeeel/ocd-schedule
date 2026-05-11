@@ -519,6 +519,7 @@ export type CreateUserType = {
     password: string;
     password_confirmation: string;
     employee_number: string;
+    role: string;
 };
 
 export type Holidays = {

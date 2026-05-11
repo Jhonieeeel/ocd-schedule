@@ -50,7 +50,7 @@ const mainNavItems: MainNav[] = [
                 title: 'All Balances',
                 href: balance.all(),
                 icon: Rows,
-                roles: ['admin', 'hr'],
+                roles: ['super-admin', 'hr'],
             },
             {
                 title: 'Leaves',
@@ -66,7 +66,7 @@ const mainNavItems: MainNav[] = [
                 title: 'Users',
                 href: users.index(),
                 icon: Users2,
-                roles: ['admin', 'hr'],
+                roles: ['super-admin', 'hr'],
             },
         ],
     },

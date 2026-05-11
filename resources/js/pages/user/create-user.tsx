@@ -123,8 +123,10 @@ export default function CreateUser({
                                 }
                                 className="h-10"
                             />
-                            {form.errors.email ? (
-                                <InputError message={form.errors.email} />
+                            {form.errors.employee_number ? (
+                                <InputError
+                                    message={form.errors.employee_number}
+                                />
                             ) : (
                                 <p className="text-xs text-muted-foreground">
                                     Your valid employee numebr
@@ -183,7 +185,7 @@ export default function CreateUser({
                                             value={option.toLowerCase()}
                                             onChange={(e) =>
                                                 form.setData(
-                                                    'sex',
+                                                    'role',
                                                     e.target.value,
                                                 )
                                             }
@@ -194,11 +196,11 @@ export default function CreateUser({
                                 ),
                             )}
                         </div>
-                        {form.errors.sex ? (
-                            <InputError message={form.errors.sex} />
+                        {form.errors.role ? (
+                            <InputError message={form.errors.role} />
                         ) : (
                             <p className="text-xs text-muted-foreground">
-                                Your valid email address
+                                Your valid Role
                             </p>
                         )}
                     </Field>
@@ -241,7 +243,7 @@ export default function CreateUser({
                             </Label>
                             <PasswordInput
                                 placeholder="Re-enter your password"
-                                value={form.data.confirm_password}
+                                value={form.data.password_confirmation}
                                 onChange={(e) =>
                                     form.setData(
                                         'password_confirmation',
